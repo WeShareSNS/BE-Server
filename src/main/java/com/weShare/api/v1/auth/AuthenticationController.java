@@ -19,23 +19,16 @@ public class AuthenticationController {
   private final AuthenticationService service;
 
   @PostMapping("/join")
-  public ResponseEntity<AuthenticationResponse> register(
-      @RequestBody RegisterRequest request
-  ) {
-    return ResponseEntity.ok(service.register(request));
+  public ResponseEntity<AuthenticationResponse> join(@RequestBody JoinRequest request) {
+    return ResponseEntity.ok(service.join(request));
   }
-  @PostMapping("/authenticate")
-  public ResponseEntity<AuthenticationResponse> authenticate(
-      @RequestBody AuthenticationRequest request
-  ) {
-    return ResponseEntity.ok(service.authenticate(request));
+  @PostMapping("/login")
+  public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request) {
+    return ResponseEntity.ok(service.login(request));
   }
 
   @PostMapping("/refresh-token")
-  public void refreshToken(
-      HttpServletRequest request,
-      HttpServletResponse response
-  ) throws IOException {
+  public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
     service.refreshToken(request, response);
   }
 

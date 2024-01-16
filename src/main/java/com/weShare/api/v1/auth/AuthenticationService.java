@@ -29,7 +29,7 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
+  public AuthenticationResponse join(JoinRequest request) {
     validateEmail(request);
     User savedUser = repository.save(createUser(request));
 
@@ -40,13 +40,13 @@ public class AuthenticationService {
     return createAuthenticationResponse(refreshToken, jwtToken);
   }
 
-  private void validateEmail(RegisterRequest request) {
+  private void validateEmail(JoinRequest request) {
     repository.findByEmail(request.getEmail())
             .ifPresent(user -> {
               throw new IllegalArgumentException(String.format("%s은 가입된 이메일 입니다.", user.getEmail()));});
   }
 
-  private User createUser(RegisterRequest request) {
+  private User createUser(JoinRequest request) {
     return User.builder()
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
@@ -56,7 +56,7 @@ public class AuthenticationService {
             .build();
   }
 
-  public AuthenticationResponse authenticate(AuthenticationRequest request) {
+  public AuthenticationResponse login(LoginRequest request) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),

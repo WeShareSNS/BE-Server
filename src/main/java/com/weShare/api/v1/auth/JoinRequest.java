@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class JoinRequest {
 
   private String email;
   private String username;
