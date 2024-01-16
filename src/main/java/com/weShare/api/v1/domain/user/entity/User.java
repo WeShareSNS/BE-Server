@@ -3,6 +3,7 @@ package com.weShare.api.v1.domain.user.entity;
 import com.weShare.api.v1.domain.user.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,6 +39,16 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Builder
+    private User(String email, String username, String profileImg, LocalDate birthDate, String password, Role role) {
+        this.email = email;
+        this.username = username;
+        this.profileImg = profileImg;
+        this.birthDate = birthDate;
+        this.password = password;
+        this.role = role;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
