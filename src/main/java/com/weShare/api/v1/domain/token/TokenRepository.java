@@ -15,6 +15,6 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
       """)
   List<Token> findAllValidTokenByUser(Long id);
 
-  // user join 해야하는지 다음에 쿼리보고 확인하기
+  // user 정보 사용안해서 fetch 안해도 괜찮
   Optional<Token> findByToken(String token);
 }

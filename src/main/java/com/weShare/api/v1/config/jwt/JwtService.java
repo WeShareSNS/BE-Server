@@ -1,9 +1,7 @@
 package com.weShare.api.v1.config.jwt;
 
 import com.weShare.api.v1.domain.user.entity.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtProvider {
+public class JwtService {
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${application.security.jwt.expiration}")
@@ -48,7 +46,7 @@ public class JwtProvider {
     ) {
         return Jwts
                 .builder()
-                .setSubject(user.getUsername())
+                .setSubject(user.getEmail())
                 .setHeader(createHeader())
                 .setClaims(createClaims(user))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -96,7 +94,7 @@ public class JwtProvider {
     private Map<String, Object> createClaims(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
-        claims.put("email", user.getEmail());
+        claims.put("username", user.getUsername());
         claims.put("role", user.getRole());
         return claims;
     }
