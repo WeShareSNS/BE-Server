@@ -1,134 +1,178 @@
 package com.weShare.api.v1.auth;
 
-import com.weShare.api.v1.domain.token.Token;
-import com.weShare.api.v1.domain.token.TokenType;
+import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
+import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
+import com.weShare.api.v1.token.Token;
+import com.weShare.api.v1.token.TokenType;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.weShare.api.v1.config.jwt.JwtService;
-import com.weShare.api.v1.domain.token.TokenRepository;
+import com.weShare.api.v1.token.jwt.JwtService;
+import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AuthenticationService {
-  private final UserRepository repository;
-  private final TokenRepository tokenRepository;
-  private final PasswordEncoder passwordEncoder;
-  private final JwtService jwtService;
-  private final AuthenticationManager authenticationManager;
+    //멤버 변수 너무 많음 ;;;
+    private final UserRepository repository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final LogoutAccessTokenRedisRepository logoutTokenRedisRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse join(JoinRequest request) {
-    validateEmail(request);
-    User savedUser = repository.save(createUser(request));
-
-    String jwtToken = jwtService.generateAccessToken(savedUser);
-    String refreshToken = jwtService.generateRefreshToken(savedUser);
-
-    createTokenWithUser(savedUser, jwtToken);
-    return createAuthenticationResponse(refreshToken, jwtToken);
-  }
-
-  private void validateEmail(JoinRequest request) {
-    repository.findByEmail(request.getEmail())
-            .ifPresent(user -> {
-              throw new IllegalArgumentException(String.format("%s은 가입된 이메일 입니다.", user.getEmail()));});
-  }
-
-  private User createUser(JoinRequest request) {
-    return User.builder()
-            .email(request.getEmail())
-            .password(passwordEncoder.encode(request.getPassword()))
-            .username(request.getUsername())
-            .birthDate(request.getBirthDate())
-            .role(Role.USER)
-            .build();
-  }
-
-  public AuthenticationResponse login(LoginRequest request) {
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getEmail(),
-            request.getPassword())
-    );
-
-    User user = getUserByEmailOrThrowException(request.getEmail());
-
-    String accessToken = jwtService.generateAccessToken(user);
-    String refreshToken = jwtService.generateRefreshToken(user);
-    revokeAllUserTokens(user);
-    tokenRepository.save(createTokenWithUser(user, accessToken));
-    return createAuthenticationResponse(refreshToken, accessToken);
-  }
-
-  private User getUserByEmailOrThrowException(String email) {
-    return repository.findByEmail(email)
-            .orElseThrow(() -> {
-              throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
-            });
-  }
-  private void revokeAllUserTokens(User user) {
-    List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
-    if (validUserTokens.isEmpty()) return;
-
-    validUserTokens.forEach(token -> {
-      token.setExpired(true);
-      token.setRevoked(true);
-    });
-
-    //하아 db로 건드니까 이런게 문제네 휘발성 데이터 처리 (deleteAll => select Query + deletequery => batch 돌리는게 맞나... 이게)
-    tokenRepository.saveAll(validUserTokens);
-  }
-
-  private Token createTokenWithUser(User user, String jwtToken) {
-    return Token.builder()
-        .user(user)
-        .token(jwtToken)
-        .tokenType(TokenType.BEARER)
-        .expired(false)
-        .revoked(false)
-        .build();
-  }
-
-
-  private AuthenticationResponse createAuthenticationResponse(String refreshToken, String accessToken) {
-    return AuthenticationResponse.builder()
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
-  }
-
-  public void refreshToken(
-          HttpServletRequest request,
-          HttpServletResponse response
-  ) throws IOException {
-
-    final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getType())) {
-      return;
+    public User join(JoinRequest request) {
+        validateEmail(request);
+        return repository.save(createUser(request));
     }
-    final String refreshToken = authHeader.substring(7);
-    final String userEmail = jwtService.extractEmail(refreshToken);
-    if (userEmail != null) {
-      User user = getUserByEmailOrThrowException(userEmail);
-      if (jwtService.isTokenValid(refreshToken, user)) {
+
+    private void validateEmail(JoinRequest request) {
+        repository.findByEmail(request.getEmail())
+                .ifPresent(user -> {
+                    throw new IllegalArgumentException(String.format("%s은 가입된 이메일 입니다.", user.getEmail()));
+                });
+    }
+
+    private User createUser(JoinRequest request) {
+        return User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .username(getDefaultUsername())
+                .birthDate(request.getBirthDate())
+                .profileImg(getDefaultProfileImgURL())
+                .role(Role.USER)
+                .build();
+    }
+
+    //우선 16자리로 (중복 올라가도 사용자는 닉네임 변경할꺼같으니까)
+    private String getDefaultUsername() {
+        return UUID.randomUUID().toString()
+                .replaceAll("-", "")
+                .substring(0, 16);
+    }
+
+    //하드코딩 지우고 좀 고민해보기 s3에 담아서 사용할건지 db에서 사용할건지 yml로 처리할건지
+    private String getDefaultProfileImgURL() {
+        return "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg";
+    }
+
+    public AuthenticationResponse login(LoginRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword())
+        );
+
+        User user = getUserByEmailOrThrowException(request.getEmail());
+
         String accessToken = jwtService.generateAccessToken(user);
-        revokeAllUserTokens(user);
-        tokenRepository.save(createTokenWithUser(user, accessToken));
-        AuthenticationResponse authResponse = createAuthenticationResponse(refreshToken, accessToken);
-        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-      }
+        String refreshToken = jwtService.generateRefreshToken(user);
+        reissueRefreshTokenByUser(user, refreshToken);
+        return createAuthenticationResponse(refreshToken, accessToken);
     }
-  }
+
+    private User getUserByEmailOrThrowException(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> {
+                    throw new IllegalArgumentException("사용자가 존재하지 않습니다.");
+                });
+    }
+
+    private void reissueRefreshTokenByUser(User user, String refreshToken) {
+        Token token = refreshTokenRepository.findTokenByUser(user)
+                .orElse(createRefreshTokenWithUser(user, refreshToken));
+
+        // token이 없을 수 있어서 변경감지 말고 직접 save
+        token.updateToken(refreshToken);
+        refreshTokenRepository.save(token);
+    }
+
+    private Token createRefreshTokenWithUser(User user, String refreshToken) {
+        return Token.builder()
+                .user(user)
+                .token(refreshToken)
+                .tokenType(TokenType.BEARER)
+                .build();
+    }
+
+    private AuthenticationResponse createAuthenticationResponse(String refreshToken, String accessToken) {
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    public AuthenticationResponse refreshToken(HttpServletRequest request) {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getType())) {
+            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
+        }
+        final String refreshToken = authHeader.substring(7);
+        User user = findUserByValidRefreshToken(refreshToken);
+
+        String accessToken = jwtService.generateAccessToken(user);
+        String reissueToken = jwtService.generateRefreshToken(user);
+        reissueRefreshTokenByUser(user, reissueToken);
+        return createAuthenticationResponse(reissueToken, accessToken);
+    }
+
+    private User findUserByValidRefreshToken(String refreshToken) {
+        User user = refreshTokenRepository.findUserByToken(refreshToken)
+                .orElseThrow(() -> {
+                    throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
+                });
+
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
+        }
+
+        return user;
+    }
+
+    public void logout(HttpServletRequest request) {
+        // refresh token 삭제하기
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getType())) {
+            throw new IllegalArgumentException("토큰 정보가 존재하지 않습니다.");
+        }
+
+        final String jwt = authHeader.substring(7);
+        if (logoutTokenRedisRepository.existsById(jwt)) {
+            // 4xx대 예외를 던지는게 맞을까? 304처럼...
+            // return;
+            throw new IllegalArgumentException("이미 로그아웃된 사용자 입니다.");
+        }
+
+        String userEmail = jwtService.extractEmail(jwt);
+        saveLogoutToken(jwt);
+        //refresh token 지워야함
+        refreshTokenRepository.findTokenByUserEmail(userEmail)
+                        .ifPresent(this::deleteRefreshToken);
+    }
+
+    private void saveLogoutToken(String accessToken) {
+        long expireTimeFromToken = jwtService.getExpireTimeFromToken(accessToken);
+
+        LogoutAccessTokenFromRedis logoutToken = LogoutAccessTokenFromRedis.builder()
+                .id(accessToken)
+                .expiration(expireTimeFromToken)
+                .build();
+
+        logoutTokenRedisRepository.save(logoutToken);
+    }
+
+    private void deleteRefreshToken(Token token) {
+        refreshTokenRepository.delete(token);
+    }
 }

@@ -1,4 +1,4 @@
-package com.weShare.api.v1.config.jwt.logout;
+package com.weShare.api.v1.token.jwt.logout;
 
 import org.springframework.data.repository.CrudRepository;
 

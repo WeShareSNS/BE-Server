@@ -1,7 +1,9 @@
-package com.weShare.api.v1.config.jwt;
+package com.weShare.api.v1.config;
 
-import com.weShare.api.v1.domain.token.TokenRepository;
-import com.weShare.api.v1.domain.token.TokenType;
+import com.weShare.api.v1.token.jwt.JwtService;
+import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
+import com.weShare.api.v1.token.TokenType;
+import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -25,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
-    private final TokenRepository tokenRepository;
+    private final LogoutAccessTokenRedisRepository logoutTokenRedisRepository;
 
     @Override
     protected void doFilterInternal(
@@ -46,19 +47,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7);
+        if (logoutTokenRedisRepository.existsById(jwt)) {
+            //로그아웃 된 토큰이라고 예외던지기
+            filterChain.doFilter(request, response);
+            return;
+        }
         final String userEmail = jwtService.extractEmail(jwt);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
-            boolean isTokenValid = tokenRepository.findByToken(jwt)
-                    .map(t -> !t.isExpired() && !t.isRevoked())
-                    .orElse(false);
+            User user = customUserDetailsService.loadUserByUsername(userEmail);
 
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+            if (jwtService.isTokenValid(jwt, user)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
+                        user,
                         null,
-                        userDetails.getAuthorities()
+                        user.getAuthorities()
                 );
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
@@ -68,4 +71,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
 }

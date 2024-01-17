@@ -1,4 +1,4 @@
-package com.weShare.api.v1.domain.token;
+package com.weShare.api.v1.token;
 
 public enum TokenType {
   BEARER("Bearer ");

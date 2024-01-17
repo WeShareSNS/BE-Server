@@ -1,4 +1,4 @@
-package com.weShare.api.v1.domain.token;
+package com.weShare.api.v1.token;
 
 import com.weShare.api.v1.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -24,11 +24,11 @@ public class Token {
   @Enumerated(EnumType.STRING)
   public TokenType tokenType = TokenType.BEARER;
 
-  public boolean revoked;
-
-  public boolean expired;
-
-  @ManyToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   public User user;
+
+  public void updateToken(String token) {
+    this.token = token;
+  }
 }

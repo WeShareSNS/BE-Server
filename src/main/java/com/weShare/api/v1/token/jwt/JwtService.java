@@ -1,8 +1,9 @@
-package com.weShare.api.v1.config.jwt;
+package com.weShare.api.v1.token.jwt;
 
 import com.weShare.api.v1.domain.user.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,12 @@ import java.util.function.Function;
 public class JwtService {
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
+
+    @Getter
     @Value("${application.security.jwt.expiration}")
     private long accessExpiration;
+
+    @Getter
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
@@ -97,5 +102,10 @@ public class JwtService {
         claims.put("username", user.getUsername());
         claims.put("role", user.getRole());
         return claims;
+    }
+
+    public long getExpireTimeFromToken(String token){
+        final Claims claims = extractAllClaims(token);
+        return claims.getExpiration().getTime();
     }
 }
