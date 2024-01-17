@@ -2,7 +2,7 @@ package com.weShare.api.v1.auth;
 
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
-import com.weShare.api.v1.token.Token;
+import com.weShare.api.v1.token.RefreshToken;
 import com.weShare.api.v1.token.TokenType;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
@@ -48,7 +48,7 @@ public class AuthenticationService {
         return User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .username(getDefaultUsername())
+                .name(getDefaultUsername())
                 .birthDate(request.getBirthDate())
                 .profileImg(getDefaultProfileImgURL())
                 .role(Role.USER)
@@ -90,7 +90,7 @@ public class AuthenticationService {
     }
 
     private void reissueRefreshTokenByUser(User user, String refreshToken) {
-        Token token = refreshTokenRepository.findTokenByUser(user)
+        RefreshToken token = refreshTokenRepository.findTokenByUser(user)
                 .orElse(createRefreshTokenWithUser(user, refreshToken));
 
         // token이 없을 수 있어서 변경감지 말고 직접 save
@@ -98,8 +98,8 @@ public class AuthenticationService {
         refreshTokenRepository.save(token);
     }
 
-    private Token createRefreshTokenWithUser(User user, String refreshToken) {
-        return Token.builder()
+    private RefreshToken createRefreshTokenWithUser(User user, String refreshToken) {
+        return RefreshToken.builder()
                 .user(user)
                 .token(refreshToken)
                 .tokenType(TokenType.BEARER)
@@ -172,7 +172,7 @@ public class AuthenticationService {
         logoutTokenRedisRepository.save(logoutToken);
     }
 
-    private void deleteRefreshToken(Token token) {
-        refreshTokenRepository.delete(token);
+    private void deleteRefreshToken(RefreshToken refreshToken) {
+        refreshTokenRepository.delete(refreshToken);
     }
 }

@@ -26,8 +26,8 @@ public class User implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
 
     @Column(name = "profile_img")
     private String profileImg;
@@ -41,9 +41,9 @@ public class User implements UserDetails {
     private Role role;
 
     @Builder
-    private User(String email, String username, String profileImg, LocalDate birthDate, String password, Role role) {
+    private User(String email, String name, String profileImg, LocalDate birthDate, String password, Role role) {
         this.email = email;
-        this.username = username;
+        this.name = name;
         this.profileImg = profileImg;
         this.birthDate = birthDate;
         this.password = password;
