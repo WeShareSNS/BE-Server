@@ -1,7 +1,5 @@
 package com.weShare.api.v1.auth;
 
-import com.weShare.api.v1.common.Response;
-import com.weShare.api.v1.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,7 @@ public class AuthenticationController {
   private final CookieTokenHandler cookieTokenHandler;
 
   @PostMapping("/signup")
-  public ResponseEntity<User> signup(@RequestBody SignupRequest request) {
+  public ResponseEntity signup(@RequestBody SignupRequest request) {
     service.signup(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
