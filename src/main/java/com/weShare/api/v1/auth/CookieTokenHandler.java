@@ -2,7 +2,9 @@ package com.weShare.api.v1.auth;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 
+@Component
 public final class CookieTokenHandler {
 
     private static final String KEY = "Refresh-Token";

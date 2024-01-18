@@ -16,11 +16,11 @@ public class AuthenticationController {
 
   private final AuthenticationService service;
   private final CookieTokenHandler cookieTokenHandler;
-  private final Response response;
 
   @PostMapping("/signup")
   public ResponseEntity<User> signup(@RequestBody SignupRequest request) {
-    return response.success(service.signup(request), "회원가입 성공", HttpStatus.CREATED);
+    service.signup(request);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
   @PostMapping("/login")
   public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {

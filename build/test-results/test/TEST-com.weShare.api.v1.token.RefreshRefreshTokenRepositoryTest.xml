@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-01-18T08:24:11" hostname="hyunwoo-MacBookAir.local" time="0.046">
+<testsuite name="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-01-18T14:22:05" hostname="hyunwoo-MacBookAir.local" time="0.032">
   <properties/>
-  <testcase name="사용자 email을 통해서 토큰을 조회할 수 있다." classname="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" time="0.027"/>
-  <testcase name="사용자가 가지고 있는 토큰을 조회할 수 있다." classname="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" time="0.009"/>
-  <testcase name="refresh token을 사용해서 사용자를 조회할 수 있다." classname="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" time="0.008"/>
-  <system-out><![CDATA[2024.01.18 17:24:11.380 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest]: RefreshRefreshTokenRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.18 17:24:11.395 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest 
+  <testcase name="사용자 email을 통해서 토큰을 조회할 수 있다." classname="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" time="0.012"/>
+  <testcase name="사용자가 가지고 있는 토큰을 조회할 수 있다." classname="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" time="0.008"/>
+  <testcase name="refresh token을 사용해서 사용자를 조회할 수 있다." classname="com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest" time="0.011"/>
+  <system-out><![CDATA[2024.01.18 23:22:05.567 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest]: RefreshRefreshTokenRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.18 23:22:05.578 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest 
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on u1_0.user_id=rt1_0.user_id where u1_0.email=?

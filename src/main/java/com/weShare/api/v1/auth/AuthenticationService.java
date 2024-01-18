@@ -161,7 +161,7 @@ public class AuthenticationService {
         //refresh token 지워야함
         refreshTokenRepository.findTokenByUserEmail(userEmail)
                         .ifPresent(this::deleteRefreshToken);
-        // context 지워주기
+        // context 지워주기 (먹히는지 모르겠음)
         SecurityContextHolder.clearContext();
     }
 

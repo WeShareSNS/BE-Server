@@ -100,7 +100,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         TokenDto response = authService.login(request);
         // then
         RefreshToken refreshToken = tokenRepository.findTokenByUser(user).get();
-        assertEquals(response.getRefreshToken(), refreshToken.getToken());
+        assertEquals(response.refreshToken(), refreshToken.getToken());
     }
 
     @Test
@@ -114,7 +114,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         // when
         TokenDto response = authService.login(request);
         // then
-        String findEmail = jwtService.extractEmail(response.getAccessToken());
+        String findEmail = jwtService.extractEmail(response.accessToken());
         assertEquals(user.getEmail(), findEmail);
     }
 
@@ -132,7 +132,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         // when
         TokenDto response = authService.reissueToken(request);
         // then
-        assertTrue(jwtService.isTokenValid(response.getAccessToken(), user));
+        assertTrue(jwtService.isTokenValid(response.accessToken(), user));
     }
 
     @Test
@@ -150,7 +150,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         TokenDto response = authService.reissueToken(request);
         // then
         Optional<User> userByOldToken = tokenRepository.findUserByToken(refreshToken);
-        Optional<User> userByNewToken = tokenRepository.findUserByToken(response.getRefreshToken());
+        Optional<User> userByNewToken = tokenRepository.findUserByToken(response.refreshToken());
 
         assertTrue(userByOldToken.isEmpty());
         assertTrue(userByNewToken.isPresent());

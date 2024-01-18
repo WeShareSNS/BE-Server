@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-18T08:24:11" hostname="hyunwoo-MacBookAir.local" time="0.006">
+<testsuite name="com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-18T14:22:05" hostname="hyunwoo-MacBookAir.local" time="0.01">
   <properties/>
-  <testcase name="accessToken가 존재하는지 확인할 수 있다." classname="com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest" time="0.006"/>
-  <system-out><![CDATA[2024.01.18 17:24:11.540 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest]: LogoutAccessTokenRedisRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.18 17:24:11.550 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest 
+  <testcase name="accessToken가 존재하는지 확인할 수 있다." classname="com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest" time="0.01"/>
+  <system-out><![CDATA[2024.01.18 23:22:05.717 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest]: LogoutAccessTokenRedisRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.18 23:22:05.727 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest 
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

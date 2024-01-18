@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - AuthenticationControllerTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>AuthenticationControllerTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.weShare.api.v1.auth.html">com.weShare.api.v1.auth</a> &gt; AuthenticationControllerTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">1</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.225s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">사용자는 로그인을 할 수 있다.</td>
+<td class="success">signup()</td>
+<td class="success">0.225s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2024.01.18 23:22:02.960 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationControllerTest]: AuthenticationControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.18 23:22:02.971 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationControllerTest 
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.1)
+
+2024.01.18 23:22:02.985 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - Starting AuthenticationControllerTest using Java 21.0.1 with PID 3067 (started by macm1 in /Users/ryu/프로젝트/weShare) 
+2024.01.18 23:22:02.985 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - No active profile set, falling back to 1 default profile: &quot;default&quot; 
+2024.01.18 23:22:03.052 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.18 23:22:03.052 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
+2024.01.18 23:22:03.054 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces. 
+2024.01.18 23:22:03.070 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.18 23:22:03.070 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode. 
+2024.01.18 23:22:03.074 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository 
+2024.01.18 23:22:03.077 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 2 JPA repository interfaces. 
+2024.01.18 23:22:03.078 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.18 23:22:03.078 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
+2024.01.18 23:22:03.081 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.domain.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
+2024.01.18 23:22:03.081 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
+2024.01.18 23:22:03.083 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interface. 
+2024.01.18 23:22:03.128 [Test worker] INFO  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default] 
+2024.01.18 23:22:03.129 [Test worker] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled 
+2024.01.18 23:22:03.131 [Test worker] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer 
+2024.01.18 23:22:03.131 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-2 - Starting... 
+2024.01.18 23:22:03.133 [Test worker] INFO  c.z.h.p.HikariPool - HikariPool-2 - Added connection org.mariadb.jdbc.Connection@537dc661 
+2024.01.18 23:22:03.133 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-2 - Start completed. 
+2024.01.18 23:22:03.133 [Test worker] WARN  o.h.o.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default) 
+2024.01.18 23:22:03.158 [Test worker] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration) 
+Hibernate: alter table refresh_token drop foreign key FKjtx87i0jvq2svedphegvdwcuy
+Hibernate: drop table if exists refresh_token
+Hibernate: drop table if exists users
+Hibernate: create table refresh_token (id bigint not null auto_increment, user_id bigint, token varchar(255), token_type enum ('BEARER'), primary key (id)) engine=InnoDB
+Hibernate: create table users (birth_date date not null, user_id bigint not null auto_increment, email varchar(255) not null, name varchar(255) not null, password varchar(255), profile_img varchar(255), role enum ('USER','ADMIN','MANAGER'), primary key (user_id)) engine=InnoDB
+Hibernate: alter table refresh_token add constraint UK_f95ixxe7pa48ryn1awmh2evt7 unique (user_id)
+Hibernate: alter table refresh_token add constraint UK_r4k4edos30bx9neoq81mdvwph unique (token)
+Hibernate: alter table users add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email)
+Hibernate: alter table users add constraint UK_3g1j96g94xpk3lpxl2qbl985x unique (name)
+Hibernate: alter table refresh_token add constraint FKjtx87i0jvq2svedphegvdwcuy foreign key (user_id) references users (user_id)
+2024.01.18 23:22:03.528 [Test worker] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default' 
+2024.01.18 23:22:03.641 [Test worker] INFO  o.s.s.w.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7b255b15, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2165828d, org.springframework.security.web.context.SecurityContextHolderFilter@138617da, org.springframework.security.web.header.HeaderWriterFilter@4306191, org.springframework.web.filter.CorsFilter@3540d5e3, org.springframework.security.web.authentication.logout.LogoutFilter@4fbdc20, com.weShare.api.v1.config.JwtAuthenticationFilter@1b786da0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6f1f1a7d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6824c2e6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1a325aa, org.springframework.security.web.session.SessionManagementFilter@649573d0, org.springframework.security.web.access.ExceptionTranslationFilter@5cf4023d, org.springframework.security.web.access.intercept.AuthorizationFilter@5ddd3150] 
+2024.01.18 23:22:03.702 [Test worker] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet '' 
+2024.01.18 23:22:03.702 [Test worker] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet '' 
+2024.01.18 23:22:03.703 [Test worker] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms 
+2024.01.18 23:22:03.708 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - Started AuthenticationControllerTest in 0.735 seconds (process running for 4.782) 
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/auth/signup
+       Parameters = {}
+          Headers = [Content-Type:&quot;application/json;charset=UTF-8&quot;, Accept:&quot;application/json&quot;, Content-Length:&quot;72&quot;]
+             Body = {&quot;email&quot;:&quot;email@asd.com&quot;,&quot;password&quot;:&quot;password&quot;,&quot;birthDate&quot;:&quot;1999-09-27&quot;}
+    Session Attrs = {}
+
+Handler:
+             Type = com.weShare.api.v1.auth.AuthenticationController
+           Method = com.weShare.api.v1.auth.AuthenticationController#signup(SignupRequest)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 201
+    Error message = null
+          Headers = [Vary:&quot;Origin&quot;, &quot;Access-Control-Request-Method&quot;, &quot;Access-Control-Request-Headers&quot;, X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 8.5</a> at 2024. 1. 18. 오후 11:22:05</p>
+</div>
+</div>
+</body>
+</html>
