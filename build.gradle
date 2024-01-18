@@ -45,6 +45,11 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 }
 
+//이거 먹히나,, 일단 IDE에서 Java Compiler → Additional command line parameters (-parameters)추가
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs.add("-parameters")
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

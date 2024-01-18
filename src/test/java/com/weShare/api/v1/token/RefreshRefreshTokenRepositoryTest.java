@@ -71,9 +71,6 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
         // when
         RefreshToken refreshToken = tokenRepository.findTokenByUserEmail("admin@test.com").get();
         User findUser = refreshToken.getUser();
-        System.out.println("========================");
-        System.out.println(findUser);
-        System.out.println("========================");
         // then
         Assertions.assertAll(
                 () -> Assertions.assertEquals(token.getToken(), refreshToken.getToken()),
