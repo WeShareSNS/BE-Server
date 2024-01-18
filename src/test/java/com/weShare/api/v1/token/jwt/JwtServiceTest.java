@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JwtServiceTest extends IntegrationTestSupport {
 
@@ -35,6 +38,18 @@ class JwtServiceTest extends IntegrationTestSupport {
         Assertions.assertFalse(accessToken.isBlank());
     }
 
+    @Test
+    @DisplayName("토큰값이 중복되는지 체크")
+    public void duplicateGenerateAccessToken() {
+        User user = createAndSaveUser("email@ggg.com", "pass", "kk");
+        int count = 100;
+        List<String> tokens = Stream.generate(() -> jwtService.generateAccessToken(user))
+                .limit(count)
+                .distinct()
+                .collect(Collectors.toList());
+
+        assertEquals(tokens.size(), count);
+    }
 
     @Test
     @DisplayName("사용자 정보를 통해서 RefreshToken을 발급받을 수 있다.")

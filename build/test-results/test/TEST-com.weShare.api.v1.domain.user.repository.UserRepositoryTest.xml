@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.weShare.api.v1.domain.user.repository.UserRepositoryTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-18T08:24:11" hostname="hyunwoo-MacBookAir.local" time="0.008">
+  <properties/>
+  <testcase name="사용자를 이메일로 조회할 수 있다." classname="com.weShare.api.v1.domain.user.repository.UserRepositoryTest" time="0.008"/>
+  <system-out><![CDATA[2024.01.18 17:24:11.352 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.domain.user.repository.UserRepositoryTest]: UserRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.18 17:24:11.368 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.domain.user.repository.UserRepositoryTest 
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: delete from users
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

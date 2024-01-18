@@ -97,7 +97,6 @@ public class AuthenticationService {
         RefreshToken token = refreshTokenRepository.findTokenByUser(user)
                 .orElse(createRefreshTokenWithUser(user, refreshToken));
 
-        // token이 없을 수 있어서 변경감지 말고 직접 save
         token.updateToken(refreshToken);
         refreshTokenRepository.save(token);
     }

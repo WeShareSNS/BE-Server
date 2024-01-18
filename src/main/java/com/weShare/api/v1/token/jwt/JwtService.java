@@ -67,23 +67,18 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-    private String buildToken(
-            User user,
-            long expiration
-    ) {
-        // setSubject 먼저하고 setClaims 하면 sub 날라감
+    private String buildToken(User user, long expiration) {
         return Jwts
                 .builder()
                 .setHeader(createHeader())
                 .setClaims(createClaims(user))
                 .setSubject(user.getEmail())
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .setIssuedAt(new Date(System.nanoTime()))
                 .setExpiration(new Date(System.nanoTime() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractEmail(token);

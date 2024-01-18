@@ -12,7 +12,6 @@ import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +19,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 // jwtService를 수정하면 모든 테스트가 깨질 수 있음... 어떤식으로 설계해야 하는걸까
@@ -130,7 +126,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String refreshToken = jwtService.generateRefreshToken(user);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(String.format("%s%s", TokenType.BEARER.getType(), refreshToken));
+                .thenReturn(TokenType.BEARER.getType() + refreshToken);
 
         createAndSaveRefreshToken(user, refreshToken);
         // when
@@ -140,17 +136,16 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("refresh token을 통해서 accessToken을 재발행시 기존 refresh 토큰을 서버에서 제거하고 재발행한다.")
+    @DisplayName("refresh 토큰을 통해서 access 토큰을 재발행시 기존 refresh 토큰을 재발행한다.")
     public void refreshToken() {
         // given
         User user = createAndSaveUser("email", "password");
         String refreshToken = jwtService.generateRefreshToken(user);
+        createAndSaveRefreshToken(user, refreshToken);
 
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(String.format("%s%s", TokenType.BEARER.getType(), refreshToken));
-
-        createAndSaveRefreshToken(user, refreshToken); //기존꺼
+                .thenReturn(TokenType.BEARER.getType() + refreshToken);
         // when
         AuthenticationResponse response = authService.reissueToken(request);
         // then
@@ -159,19 +154,6 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
 
         assertTrue(userByOldToken.isEmpty());
         assertTrue(userByNewToken.isPresent());
-    }
-
-    @Test
-    @DisplayName("test")
-    public void tokenTest() {
-        User user = createAndSaveUser("test", "kkk");
-        List<String> tokens = Stream.generate(() -> jwtService.generateAccessToken(user))
-                .limit(100)
-                .distinct()
-                .collect(Collectors.toList());
-
-        System.out.println(tokens);
-        System.out.println(tokens.size());
     }
 
     //jwt service를 테스트할 때마다 넣어서 처리해주는 일이 생길거같은 느낌,,
@@ -187,7 +169,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         // request Mock 처리하기
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(String.format("%s%s", TokenType.BEARER.getType(), jwt));
+                .thenReturn(TokenType.BEARER.getType() + jwt);
 
         LoginRequest loginRequest = createLoginRequest(email, password);
         authService.login(loginRequest);

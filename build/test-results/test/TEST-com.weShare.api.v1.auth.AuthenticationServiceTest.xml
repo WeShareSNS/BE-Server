@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.weShare.api.v1.auth.AuthenticationServiceTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2024-01-18T08:24:09" hostname="hyunwoo-MacBookAir.local" time="1.706">
+  <properties/>
+  <testcase name="사용자가 로그인하면 access 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.593"/>
+  <testcase name="사용자는 로그아웃을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.421"/>
+  <testcase name="refresh 토큰을 통해서 access 토큰을 재발행시 기존 refresh 토큰을 재발행한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.113"/>
+  <testcase name="사용자는 회원가입을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.172"/>
+  <testcase name="이미 가입된 이메일인 경우 예외가 발생한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.118"/>
+  <testcase name="사용자가 로그인하면 refresh 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.177"/>
+  <testcase name="refresh token을 통해서 accessToken을 재발행 할 수있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.103"/>
+  <system-out><![CDATA[2024.01.18 17:24:09.627 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationServiceTest]: AuthenticationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.18 17:24:09.640 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationServiceTest 
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+2024.01.18 17:24:09.965 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+2024.01.18 17:24:10.557 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on u1_0.user_id=rt1_0.user_id where u1_0.email=?
+Hibernate: delete from refresh_token where id=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.token=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: update refresh_token set token=?,token_type=?,user_id=? where id=?
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.token=?
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.token=?
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+2024.01.18 17:24:11.232 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.token=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: update refresh_token set token=?,token_type=?,user_id=? where id=?
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

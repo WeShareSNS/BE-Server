@@ -1,0 +1,21 @@
+<!--https://velog.io/@minji/%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-%EB%A1%9C%EA%B7%B8%EB%A1%9C-%EC%BF%BC%EB%A6%AC-%ED%99%95%EC%9D%B8%ED%95%98%EA%B8%B0Gradle-->
+<configuration>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy.MM.dd HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="jdbc.resultsettable" level="DEBUG"/>
+    <logger name="jdbc.sqltiming" level="DEBUG"/>
+    <logger name="jdbc.resultset" level="DEBUG"/>
+    <logger name="jdbc.sqlonly" level="DEBUG"/>
+    <logger name="jdbc.audit" level="DEBUG"/>
+    <logger name="jdbc.connection" level="DEBUG"/>
+
+    <root level="INFO">
+        <appender-ref ref="console"></appender-ref>
+    </root>
+
+</configuration>
