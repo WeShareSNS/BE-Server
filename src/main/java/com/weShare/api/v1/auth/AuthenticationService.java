@@ -27,6 +27,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthenticationService {
+    //여기 멤버변수가 너무 많아서 테스트도 많아
     private final UserRepository repository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutTokenRedisRepository;
@@ -34,7 +35,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public User join(JoinRequest request) {
+    public User signup(JoinRequest request) {
         validateEmail(request);
         return repository.save(createUser(request));
     }
@@ -116,7 +117,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse refreshToken(HttpServletRequest request) {
+    public AuthenticationResponse reissueToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getType())) {
             throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
@@ -136,6 +137,8 @@ public class AuthenticationService {
                     throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
                 });
 
+        //사용자 토큰이 아닐 때 유효하지 않은 토큰은(위에서 걸러지고)
+        // expire는 tokenValid에서 예외 던짐 (catch에서 false 반환하는 방법도 있음)
         if (!jwtService.isTokenValid(refreshToken, user)) {
             throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         }
@@ -157,15 +160,13 @@ public class AuthenticationService {
             throw new IllegalArgumentException("이미 로그아웃된 사용자 입니다.");
         }
 
-        try {
-
-        } catch (io.jsonwebtoken.ExpiredJwtException e) {
-        }
         String userEmail = jwtService.extractEmail(jwt);
         saveLogoutToken(jwt);
         //refresh token 지워야함
         refreshTokenRepository.findTokenByUserEmail(userEmail)
                         .ifPresent(this::deleteRefreshToken);
+        // context 지워주기
+        SecurityContextHolder.clearContext();
     }
 
     private void saveLogoutToken(String accessToken) {

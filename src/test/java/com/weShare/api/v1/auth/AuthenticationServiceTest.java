@@ -6,20 +6,34 @@ import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.token.RefreshToken;
 import com.weShare.api.v1.token.RefreshTokenRepository;
+import com.weShare.api.v1.token.TokenType;
 import com.weShare.api.v1.token.jwt.JwtService;
+import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
+import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
+
+// jwtService를 수정하면 모든 테스트가 깨질 수 있음... 어떤식으로 설계해야 하는걸까
 class AuthenticationServiceTest extends IntegrationTestSupport {
 
     @Autowired
@@ -32,9 +46,12 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     private RefreshTokenRepository tokenRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private LogoutAccessTokenRedisRepository logoutTokenRepository;
 
     @AfterEach
     void tearDown(){
+        logoutTokenRepository.deleteAll();
         tokenRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
     }
@@ -49,12 +66,12 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         LocalDate birthDate = LocalDate.of(1999, 9, 27);
         JoinRequest request = createJoinRequest(email, password, birthDate);
         // when
-        authService.join(request);
+        authService.signup(request);
         // then
         User findUSer = userRepository.findByEmail(email).get();
         assertAll(
                 () -> assertEquals(findUSer.getEmail(), email),
-                () -> Assertions.assertTrue(passwordEncoder.matches(password, findUSer.getPassword())),
+                () -> assertTrue(passwordEncoder.matches(password, findUSer.getPassword())),
                 () -> assertEquals(findUSer.getBirthDate(), birthDate)
         );
     }
@@ -70,7 +87,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         JoinRequest request = createJoinRequest(email, password, birthDate);
 
         // when //then
-        assertThatThrownBy(() -> authService.join(request))
+        assertThatThrownBy(() -> authService.signup(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(String.format("%s은 가입된 이메일 입니다.", email));
     }
@@ -90,20 +107,99 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         assertEquals(response.getRefreshToken(), refreshToken.getToken());
     }
 
-//    @Test
-//    @DisplayName("사용자가 로그인하면 access 토큰을 발급 받는다.")
-//    public void login_accessToken() {
-//        // given
-//        String email ="test";
-//        String password = "pass";
-//        User user = createAndSaveUser(email, password);
-//        LoginRequest request = createLoginRequest(email, password);
-//        // when
-//        AuthenticationResponse response = authService.login(request);
-//        // then
-//        String findEmail = jwtService.extractEmail(response.getAccessToken());
-//        assertEquals(user.getEmail(), findEmail);
-//    }
+    @Test
+    @DisplayName("사용자가 로그인하면 access 토큰을 발급 받는다.")
+    public void login_accessToken() {
+        // given
+        String email ="test";
+        String password = "pass";
+        User user = createAndSaveUser(email, password);
+        LoginRequest request = createLoginRequest(email, password);
+        // when
+        AuthenticationResponse response = authService.login(request);
+        // then
+        String findEmail = jwtService.extractEmail(response.getAccessToken());
+        assertEquals(user.getEmail(), findEmail);
+    }
+
+    @Test
+    @DisplayName("refresh token을 통해서 accessToken을 재발행 할 수있다.")
+    public void refreshToken_reissue() {
+        // given
+        User user = createAndSaveUser("email", "password");
+        String refreshToken = jwtService.generateRefreshToken(user);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader(HttpHeaders.AUTHORIZATION))
+                .thenReturn(String.format("%s%s", TokenType.BEARER.getType(), refreshToken));
+
+        createAndSaveRefreshToken(user, refreshToken);
+        // when
+        AuthenticationResponse response = authService.reissueToken(request);
+        // then
+        assertTrue(jwtService.isTokenValid(response.getAccessToken(), user));
+    }
+
+    @Test
+    @DisplayName("refresh token을 통해서 accessToken을 재발행시 기존 refresh 토큰을 서버에서 제거하고 재발행한다.")
+    public void refreshToken() {
+        // given
+        User user = createAndSaveUser("email", "password");
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader(HttpHeaders.AUTHORIZATION))
+                .thenReturn(String.format("%s%s", TokenType.BEARER.getType(), refreshToken));
+
+        createAndSaveRefreshToken(user, refreshToken); //기존꺼
+        // when
+        AuthenticationResponse response = authService.reissueToken(request);
+        // then
+        Optional<User> userByOldToken = tokenRepository.findUserByToken(refreshToken);
+        Optional<User> userByNewToken = tokenRepository.findUserByToken(response.getRefreshToken());
+
+        assertTrue(userByOldToken.isEmpty());
+        assertTrue(userByNewToken.isPresent());
+    }
+
+    @Test
+    @DisplayName("test")
+    public void tokenTest() {
+        User user = createAndSaveUser("test", "kkk");
+        List<String> tokens = Stream.generate(() -> jwtService.generateAccessToken(user))
+                .limit(100)
+                .distinct()
+                .collect(Collectors.toList());
+
+        System.out.println(tokens);
+        System.out.println(tokens.size());
+    }
+
+    //jwt service를 테스트할 때마다 넣어서 처리해주는 일이 생길거같은 느낌,,
+    @Test
+    @DisplayName("사용자는 로그아웃을 할 수 있다.")
+    public void logout() {
+        // given
+        String email = "email@test.com";
+        String password = "password";
+        User user = createAndSaveUser(email, password);
+        String jwt = jwtService.generateAccessToken(user);
+
+        // request Mock 처리하기
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader(HttpHeaders.AUTHORIZATION))
+                .thenReturn(String.format("%s%s", TokenType.BEARER.getType(), jwt));
+
+        LoginRequest loginRequest = createLoginRequest(email, password);
+        authService.login(loginRequest);
+        // when
+        authService.logout(request);
+        // then
+        Optional<LogoutAccessTokenFromRedis> logoutToken = logoutTokenRepository.findById(jwt);
+        Optional<RefreshToken> refreshToken = tokenRepository.findTokenByUser(user);
+
+        assertTrue(logoutToken.isPresent());
+        assertTrue(refreshToken.isEmpty());
+    }
 
     private User createAndSaveUser(String email, String password) {
         User user = User.builder()
@@ -130,5 +226,15 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
                 .email(email)
                 .password(password)
                 .build();
+    }
+
+    private RefreshToken createAndSaveRefreshToken(User user, String refreshToken) {
+        RefreshToken token = RefreshToken.builder()
+                .token(refreshToken)
+                .tokenType(TokenType.BEARER)
+                .user(user)
+                .build();
+
+        return tokenRepository.save(token);
     }
 }
