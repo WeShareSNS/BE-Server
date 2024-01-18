@@ -70,6 +70,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse login(LoginRequest request) {
+        // 처리해야될지 getUserByEmailOrThrowException 이 메서드에서 예외처리 하면 되지 않을까..?
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),

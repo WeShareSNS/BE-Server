@@ -5,7 +5,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,15 +55,28 @@ public class JwtService {
         return buildToken(user, refreshExpiration);
     }
 
+    //test를 위한 메서드를 작성하는게 맞을까...?
+    public String generateExpireTestToken(User user) {
+        return Jwts
+                .builder()
+                .setHeader(createHeader())
+                .setClaims(createClaims(user))
+                .setSubject(user.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis()))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
     private String buildToken(
             User user,
             long expiration
     ) {
+        // setSubject 먼저하고 setClaims 하면 sub 날라감
         return Jwts
                 .builder()
-                .setSubject(user.getEmail())
                 .setHeader(createHeader())
                 .setClaims(createClaims(user))
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)

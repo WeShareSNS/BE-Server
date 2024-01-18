@@ -1,20 +1,24 @@
 package com.weShare.api.v1.auth;
 
 import com.weShare.api.IntegrationTestSupport;
+import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
+import com.weShare.api.v1.token.RefreshToken;
+import com.weShare.api.v1.token.RefreshTokenRepository;
+import com.weShare.api.v1.token.jwt.JwtService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AuthenticationServiceTest extends IntegrationTestSupport {
 
@@ -24,9 +28,14 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     private AuthenticationService authService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RefreshTokenRepository tokenRepository;
+    @Autowired
+    private JwtService jwtService;
 
     @AfterEach
     void tearDown(){
+        tokenRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
     }
 
@@ -39,15 +48,14 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String password = "password";
         LocalDate birthDate = LocalDate.of(1999, 9, 27);
         JoinRequest request = createJoinRequest(email, password, birthDate);
-
         // when
         authService.join(request);
-        User findUSer = userRepository.findByEmail(email).get();
         // then
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(findUSer.getEmail(), email),
+        User findUSer = userRepository.findByEmail(email).get();
+        assertAll(
+                () -> assertEquals(findUSer.getEmail(), email),
                 () -> Assertions.assertTrue(passwordEncoder.matches(password, findUSer.getPassword())),
-                () -> Assertions.assertEquals(findUSer.getBirthDate(), birthDate)
+                () -> assertEquals(findUSer.getBirthDate(), birthDate)
         );
     }
 
@@ -68,38 +76,41 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("사용자는 로그인할 수 있다.")
-    public void login() {
+    @DisplayName("사용자가 로그인하면 refresh 토큰을 발급 받는다.")
+    public void login_refreshToken() {
         // given
         String email ="test";
         String password = "pass";
-        createAndSaveUser(email, password);
+        User user = createAndSaveUser(email, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        authService.login(request);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AuthenticationResponse response = authService.login(request);
         // then
-        System.out.println(authentication.getAuthorities());
-        System.out.println("===================");
-        System.out.println(authentication.getDetails());
-        System.out.println("===================");
-        System.out.println(authentication.getPrincipal());
-        System.out.println("===================");
-        System.out.println(authentication.getName());
-        System.out.println("===================");
-        System.out.println(authentication.getCredentials());
-//        Assertions.assertAll(
-//                () -> Assertions.assertEquals(,
-//                () -> Assertions.assertEquals()
-//        );
-
+        RefreshToken refreshToken = tokenRepository.findTokenByUser(user).get();
+        assertEquals(response.getRefreshToken(), refreshToken.getToken());
     }
+
+//    @Test
+//    @DisplayName("사용자가 로그인하면 access 토큰을 발급 받는다.")
+//    public void login_accessToken() {
+//        // given
+//        String email ="test";
+//        String password = "pass";
+//        User user = createAndSaveUser(email, password);
+//        LoginRequest request = createLoginRequest(email, password);
+//        // when
+//        AuthenticationResponse response = authService.login(request);
+//        // then
+//        String findEmail = jwtService.extractEmail(response.getAccessToken());
+//        assertEquals(user.getEmail(), findEmail);
+//    }
 
     private User createAndSaveUser(String email, String password) {
         User user = User.builder()
                 .email(email)
                 .name("not null")
-                .password(password)
+                .password(passwordEncoder.encode(password))
+                .role(Role.USER)
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .build();
 
