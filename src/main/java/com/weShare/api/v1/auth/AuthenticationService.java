@@ -70,7 +70,7 @@ public class AuthenticationService {
         return "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg";
     }
 
-    public AuthenticationResponse login(LoginRequest request) {
+    public TokenDto login(LoginRequest request) {
         // 처리해야될지 getUserByEmailOrThrowException 이 메서드에서 예외처리 하면 되지 않을까..?
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -109,14 +109,11 @@ public class AuthenticationService {
                 .build();
     }
 
-    private AuthenticationResponse createAuthenticationResponse(String refreshToken, String accessToken) {
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+    private TokenDto createAuthenticationResponse(String refreshToken, String accessToken) {
+        return new TokenDto(accessToken, refreshToken);
     }
 
-    public AuthenticationResponse reissueToken(HttpServletRequest request) {
+    public TokenDto reissueToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getType())) {
             throw new IllegalArgumentException("토큰이 존재하지 않습니다.");

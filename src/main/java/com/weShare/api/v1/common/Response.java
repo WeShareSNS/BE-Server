@@ -32,6 +32,10 @@ public class Response<T> {
     public ResponseEntity<SuccessBody<T>> success(T data) {
         return success(data, null, HttpStatus.OK);
     }
+
+    public ResponseEntity<SuccessBody<T>> success(HttpStatus status) {
+        return success(null, null, status);
+    }
     public ResponseEntity<T> success() {
         return (ResponseEntity<T>) success(null, null, HttpStatus.OK);
     }
