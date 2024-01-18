@@ -11,9 +11,11 @@ import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +24,9 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationService {
-    //멤버 변수 너무 많음 ;;;
     private final UserRepository repository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutTokenRedisRepository;
@@ -73,7 +75,7 @@ public class AuthenticationService {
                         request.getEmail(),
                         request.getPassword())
         );
-
+        log.info("auth{}",SecurityContextHolder.getContext().getAuthentication());
         User user = getUserByEmailOrThrowException(request.getEmail());
 
         String accessToken = jwtService.generateAccessToken(user);
@@ -154,6 +156,10 @@ public class AuthenticationService {
             throw new IllegalArgumentException("이미 로그아웃된 사용자 입니다.");
         }
 
+        try {
+
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+        }
         String userEmail = jwtService.extractEmail(jwt);
         saveLogoutToken(jwt);
         //refresh token 지워야함

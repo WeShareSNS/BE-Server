@@ -3,18 +3,21 @@ package com.weShare.api.v1.token.jwt;
 import com.weShare.api.v1.domain.user.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@Slf4j
 @Component
 public class JwtService {
     @Value("${application.security.jwt.secret-key}")
@@ -29,7 +32,15 @@ public class JwtService {
     private long refreshExpiration;
 
     public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (ExpiredJwtException exception) {
+            throw new IllegalStateException("Token Expired");
+        } catch (JwtException exception) {
+            throw new IllegalStateException("Token Tampered");
+        } catch (NullPointerException exception) {
+            throw new NullPointerException("Token is null");
+        }
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -84,7 +95,7 @@ public class JwtService {
 
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     // Header

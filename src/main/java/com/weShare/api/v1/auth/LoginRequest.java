@@ -4,9 +4,14 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class LoginRequest {
 
   private String email;
-  String password;
+  private String password;
+
+  @Builder
+  private LoginRequest(String email, String password) {
+    this.email = email;
+    this.password = password;
+  }
 }
