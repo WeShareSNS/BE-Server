@@ -35,19 +35,19 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public User signup(JoinRequest request) {
+    public User signup(SignupRequest request) {
         validateEmail(request);
         return repository.save(createUser(request));
     }
 
-    private void validateEmail(JoinRequest request) {
+    private void validateEmail(SignupRequest request) {
         repository.findByEmail(request.getEmail())
                 .ifPresent(user -> {
                     throw new IllegalArgumentException(String.format("%s은 가입된 이메일 입니다.", user.getEmail()));
                 });
     }
 
-    private User createUser(JoinRequest request) {
+    private User createUser(SignupRequest request) {
         return User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))

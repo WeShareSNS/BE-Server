@@ -15,7 +15,7 @@ public class AuthenticationController {
   private final AuthenticationService service;
 
   @PostMapping("/signup")
-  public ResponseEntity<User> signup(@RequestBody JoinRequest request) {
+  public ResponseEntity<User> signup(@RequestBody SignupRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED)
             .body(service.signup(request));
   }

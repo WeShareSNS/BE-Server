@@ -60,7 +60,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String email = "test@exam.com";
         String password = "password";
         LocalDate birthDate = LocalDate.of(1999, 9, 27);
-        JoinRequest request = createJoinRequest(email, password, birthDate);
+        SignupRequest request = createJoinRequest(email, password, birthDate);
         // when
         authService.signup(request);
         // then
@@ -80,7 +80,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String password = "password";
         LocalDate birthDate = LocalDate.of(1999, 9, 27);
         createAndSaveUser(email, password);
-        JoinRequest request = createJoinRequest(email, password, birthDate);
+        SignupRequest request = createJoinRequest(email, password, birthDate);
 
         // when //then
         assertThatThrownBy(() -> authService.signup(request))
@@ -195,8 +195,8 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         return userRepository.save(user);
     }
 
-    private JoinRequest createJoinRequest(String email, String password, LocalDate birthDate) {
-        return JoinRequest.builder()
+    private SignupRequest createJoinRequest(String email, String password, LocalDate birthDate) {
+        return SignupRequest.builder()
                 .email(email)
                 .password(password)
                 .birthDate(birthDate)
