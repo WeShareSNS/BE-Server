@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AuthenticationControllerTest extends IntegrationMvcTestSupport {
 
+    private static final String PREFIX_ENDPOINT = "/api/v1/auth";
+
     @Test
     @DisplayName("사용자는 로그인을 할 수 있다.")
     public void signup() throws Exception {
@@ -21,16 +23,15 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         SignupRequest request = createSignupRequest("email@asd.com", "password", LocalDate.of(1999, 9, 27));
         String content = objectMapper.writeValueAsString(request);
 
-        mockMvc.perform(post("/api/v1/auth/signup")
+        // when // then
+        mockMvc.perform(post(PREFIX_ENDPOINT + "/signup")
+
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(content().string("test"))
                 .andDo(print());
-        // when
-
-        // then
     }
 
     private SignupRequest createSignupRequest(String email, String password, LocalDate birthDate) {
@@ -40,4 +41,5 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
                 .birthDate(birthDate)
                 .build();
     }
+
 }
