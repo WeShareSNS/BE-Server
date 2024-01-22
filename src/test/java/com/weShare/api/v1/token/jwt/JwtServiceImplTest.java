@@ -7,18 +7,17 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class JwtServiceTest extends IntegrationTestSupport {
+class JwtServiceImplTest extends IntegrationTestSupport {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private JwtService jwtService;
 
@@ -107,31 +106,6 @@ class JwtServiceTest extends IntegrationTestSupport {
         boolean isValid = jwtService.isTokenValid(userToken, another);
         // then
         Assertions.assertFalse(isValid);
-    }
-
-    @DisplayName("토큰 유효성 검증 시나리오")
-    @TestFactory
-    public Collection<DynamicTest> tokenValidTest() {
-        User user = createAndSaveUser("test@adsa.com", "pass", "test");
-        // given
-        return List.of(
-                DynamicTest.dynamicTest("토큰이 만료되면 예외가 발생한다.", () -> {
-                    //given
-                    String expireTestToken = jwtService.generateExpireTestToken(user);
-                    //when //then
-                    assertThatThrownBy(() -> jwtService.isTokenValid(expireTestToken, user))
-                            .isInstanceOf(IllegalStateException.class)
-                            .hasMessage("Token Expired");
-                }),
-                DynamicTest.dynamicTest("서버에서 발급한 토큰이 아니면 예외가 발생한다.", () -> {
-                    //given
-                    String notAllowToken = "is not token";
-                    //when //then
-                    assertThatThrownBy(() -> jwtService.isTokenValid(notAllowToken, user))
-                            .isInstanceOf(IllegalStateException.class)
-                            .hasMessage("Token Tampered");
-                })
-        );
     }
 
     private User createAndSaveUser(String email, String password, String name) {

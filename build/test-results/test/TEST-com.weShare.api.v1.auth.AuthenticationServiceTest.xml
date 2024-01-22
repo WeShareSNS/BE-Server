@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weShare.api.v1.auth.AuthenticationServiceTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2024-01-18T14:22:03" hostname="hyunwoo-MacBookAir.local" time="1.593">
+<testsuite name="com.weShare.api.v1.auth.AuthenticationServiceTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2024-01-22T09:42:57" hostname="hyunwoo-MacBookAir.local" time="1.341">
   <properties/>
-  <testcase name="사용자가 로그인하면 access 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.48"/>
-  <testcase name="사용자는 로그아웃을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.418"/>
-  <testcase name="refresh 토큰을 통해서 access 토큰을 재발행시 기존 refresh 토큰을 재발행한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.116"/>
-  <testcase name="사용자는 회원가입을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.17"/>
-  <testcase name="이미 가입된 이메일인 경우 예외가 발생한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.126"/>
+  <testcase name="사용자가 로그인하면 access 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.257"/>
+  <testcase name="사용자는 로그아웃을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.4"/>
+  <testcase name="refresh 토큰을 통해서 access 토큰을 재발행시 기존 refresh 토큰을 재발행한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.107"/>
+  <testcase name="사용자는 회원가입을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.174"/>
+  <testcase name="이미 가입된 이메일인 경우 예외가 발생한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.121"/>
   <testcase name="사용자가 로그인하면 refresh 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.175"/>
-  <testcase name="refresh token을 통해서 accessToken을 재발행 할 수있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.101"/>
-  <system-out><![CDATA[2024.01.18 23:22:03.938 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationServiceTest]: AuthenticationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.18 23:22:03.939 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationServiceTest 
+  <testcase name="refresh token을 통해서 accessToken을 재발행 할 수있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.097"/>
+  <system-out><![CDATA[2024.01.22 18:42:57.045 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationServiceTest]: AuthenticationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.22 18:42:57.046 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationServiceTest 
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
-2024.01.18 23:22:04.180 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+2024.01.22 18:42:57.286 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
 Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
@@ -20,7 +20,7 @@ Hibernate: delete from refresh_token
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
-2024.01.18 23:22:04.739 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+2024.01.22 18:42:57.656 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
 Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
@@ -49,7 +49,7 @@ Hibernate: delete from refresh_token
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
-2024.01.18 23:22:05.417 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+2024.01.22 18:42:58.279 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
 Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)

@@ -28,8 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
-// jwtService를 수정하면 모든 테스트가 깨질 수 있음... 어떤식으로 설계해야 하는걸까
 class AuthenticationServiceTest extends IntegrationTestSupport {
 
     @Autowired

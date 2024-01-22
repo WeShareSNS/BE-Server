@@ -30,8 +30,4 @@ public final class CookieTokenHandler {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
-
-    public static String getKey() {
-        return KEY;
-    }
 }

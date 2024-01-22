@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weShare.api.v1.auth.AuthenticationControllerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-18T14:22:03" hostname="hyunwoo-MacBookAir.local" time="0.225">
+<testsuite name="com.weShare.api.v1.auth.AuthenticationControllerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2024-01-22T09:42:56" hostname="hyunwoo-MacBookAir.local" time="0.981">
   <properties/>
-  <testcase name="사용자는 로그인을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationControllerTest" time="0.225"/>
-  <system-out><![CDATA[2024.01.18 23:22:02.960 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationControllerTest]: AuthenticationControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.18 23:22:02.971 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationControllerTest 
+  <testcase name="사용자는 refresh 토큰을 통해서 access 토큰을 발급받을 수 있다." classname="com.weShare.api.v1.auth.AuthenticationControllerTest" time="0.504"/>
+  <testcase name="사용자는 logout할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationControllerTest" time="0.117"/>
+  <testcase name="사용자는 회원가입을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationControllerTest" time="0.108"/>
+  <testcase name="사용자는 로그인을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationControllerTest" time="0.249"/>
+  <system-out><![CDATA[2024.01.22 18:42:55.330 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationControllerTest]: AuthenticationControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.22 18:42:55.346 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationControllerTest 
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -13,28 +16,28 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.1)
 
-2024.01.18 23:22:02.985 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - Starting AuthenticationControllerTest using Java 21.0.1 with PID 3067 (started by macm1 in /Users/ryu/프로젝트/weShare) 
-2024.01.18 23:22:02.985 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - No active profile set, falling back to 1 default profile: "default" 
-2024.01.18 23:22:03.052 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
-2024.01.18 23:22:03.052 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
-2024.01.18 23:22:03.054 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces. 
-2024.01.18 23:22:03.070 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
-2024.01.18 23:22:03.070 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode. 
-2024.01.18 23:22:03.074 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository 
-2024.01.18 23:22:03.077 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 2 JPA repository interfaces. 
-2024.01.18 23:22:03.078 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
-2024.01.18 23:22:03.078 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
-2024.01.18 23:22:03.081 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.domain.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
-2024.01.18 23:22:03.081 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
-2024.01.18 23:22:03.083 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 4 ms. Found 1 Redis repository interface. 
-2024.01.18 23:22:03.128 [Test worker] INFO  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default] 
-2024.01.18 23:22:03.129 [Test worker] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled 
-2024.01.18 23:22:03.131 [Test worker] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer 
-2024.01.18 23:22:03.131 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-2 - Starting... 
-2024.01.18 23:22:03.133 [Test worker] INFO  c.z.h.p.HikariPool - HikariPool-2 - Added connection org.mariadb.jdbc.Connection@537dc661 
-2024.01.18 23:22:03.133 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-2 - Start completed. 
-2024.01.18 23:22:03.133 [Test worker] WARN  o.h.o.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default) 
-2024.01.18 23:22:03.158 [Test worker] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration) 
+2024.01.22 18:42:55.369 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - Starting AuthenticationControllerTest using Java 21.0.1 with PID 56168 (started by macm1 in /Users/ryu/프로젝트/weShare) 
+2024.01.22 18:42:55.369 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - No active profile set, falling back to 1 default profile: "default" 
+2024.01.22 18:42:55.440 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.22 18:42:55.440 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
+2024.01.22 18:42:55.441 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces. 
+2024.01.22 18:42:55.456 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.22 18:42:55.456 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode. 
+2024.01.22 18:42:55.460 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository 
+2024.01.22 18:42:55.463 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 2 JPA repository interfaces. 
+2024.01.22 18:42:55.464 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.22 18:42:55.465 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
+2024.01.22 18:42:55.467 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.domain.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
+2024.01.22 18:42:55.467 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
+2024.01.22 18:42:55.470 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 5 ms. Found 1 Redis repository interface. 
+2024.01.22 18:42:55.516 [Test worker] INFO  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default] 
+2024.01.22 18:42:55.517 [Test worker] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled 
+2024.01.22 18:42:55.518 [Test worker] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer 
+2024.01.22 18:42:55.518 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-2 - Starting... 
+2024.01.22 18:42:55.521 [Test worker] INFO  c.z.h.p.HikariPool - HikariPool-2 - Added connection org.mariadb.jdbc.Connection@72dc0d72 
+2024.01.22 18:42:55.521 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-2 - Start completed. 
+2024.01.22 18:42:55.521 [Test worker] WARN  o.h.o.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default) 
+2024.01.22 18:42:55.550 [Test worker] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration) 
 Hibernate: alter table refresh_token drop foreign key FKjtx87i0jvq2svedphegvdwcuy
 Hibernate: drop table if exists refresh_token
 Hibernate: drop table if exists users
@@ -45,12 +48,100 @@ Hibernate: alter table refresh_token add constraint UK_r4k4edos30bx9neoq81mdvwph
 Hibernate: alter table users add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email)
 Hibernate: alter table users add constraint UK_3g1j96g94xpk3lpxl2qbl985x unique (name)
 Hibernate: alter table refresh_token add constraint FKjtx87i0jvq2svedphegvdwcuy foreign key (user_id) references users (user_id)
-2024.01.18 23:22:03.528 [Test worker] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default' 
-2024.01.18 23:22:03.641 [Test worker] INFO  o.s.s.w.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7b255b15, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2165828d, org.springframework.security.web.context.SecurityContextHolderFilter@138617da, org.springframework.security.web.header.HeaderWriterFilter@4306191, org.springframework.web.filter.CorsFilter@3540d5e3, org.springframework.security.web.authentication.logout.LogoutFilter@4fbdc20, com.weShare.api.v1.config.JwtAuthenticationFilter@1b786da0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6f1f1a7d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6824c2e6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1a325aa, org.springframework.security.web.session.SessionManagementFilter@649573d0, org.springframework.security.web.access.ExceptionTranslationFilter@5cf4023d, org.springframework.security.web.access.intercept.AuthorizationFilter@5ddd3150] 
-2024.01.18 23:22:03.702 [Test worker] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet '' 
-2024.01.18 23:22:03.702 [Test worker] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet '' 
-2024.01.18 23:22:03.703 [Test worker] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms 
-2024.01.18 23:22:03.708 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - Started AuthenticationControllerTest in 0.735 seconds (process running for 4.782) 
+2024.01.22 18:42:55.894 [Test worker] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default' 
+2024.01.22 18:42:55.997 [Test worker] INFO  o.s.s.w.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4306191, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@649573d0, org.springframework.security.web.context.SecurityContextHolderFilter@43ec61f0, org.springframework.security.web.header.HeaderWriterFilter@2fcc32ae, org.springframework.web.filter.CorsFilter@138617da, org.springframework.security.web.authentication.logout.LogoutFilter@2a794780, com.weShare.api.v1.config.JwtAuthenticationFilter@4812c244, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@335d6f94, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7d4a6213, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6f1f1a7d, org.springframework.security.web.session.SessionManagementFilter@5ef53e42, org.springframework.security.web.access.ExceptionTranslationFilter@dffa7ce, org.springframework.security.web.access.intercept.AuthorizationFilter@5cf4023d] 
+2024.01.22 18:42:56.053 [Test worker] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet '' 
+2024.01.22 18:42:56.053 [Test worker] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet '' 
+2024.01.22 18:42:56.054 [Test worker] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 1 ms 
+2024.01.22 18:42:56.060 [Test worker] INFO  c.w.a.v.a.AuthenticationControllerTest - Started AuthenticationControllerTest in 0.712 seconds (process running for 4.868) 
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.token=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: update refresh_token set token=?,token_type=?,user_id=? where id=?
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/auth/reissue-token
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjoxLCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTAwMzQ3NjAsImV4cCI6OTIyMzkwNjM5NTcxfQ.ApfVTHVlWhLY3pj5Pe5WcBZwWoyPgi3A_lvcOQZ3RWU", Accept:"application/json"]
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.weShare.api.v1.auth.AuthenticationController
+           Method = com.weShare.api.v1.auth.AuthenticationController#reissueToken(HttpServletRequest, HttpServletResponse)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Set-Cookie:"Refresh-Token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjoxLCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTAzNTM4NzUsImV4cCI6OTIyMzkwOTU4Njc2fQ.ZgnGO-KVR6v3KJVCJcSRoUxoaCEygBIyUP8Q6VS84Oc; Path=/; Max-Age=604800; Expires=Mon, 29 Jan 2024 09:42:56 GMT; Secure; HttpOnly", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"accessToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjoxLCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTAzNTM1MjksImV4cCI6OTIyMzkwMzUzNTYwfQ.hMVpqVH9BEw3bZn2IYPmDziFRUgx4wBjdcFrfFLCEr0"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = [[Cookie@54236211 name = 'Refresh-Token', value = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjoxLCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTAzNTM4NzUsImV4cCI6OTIyMzkwOTU4Njc2fQ.ZgnGO-KVR6v3KJVCJcSRoUxoaCEygBIyUP8Q6VS84Oc', comment = [null], domain = [null], maxAge = 604800, path = '/', secure = true, version = 0, httpOnly = true]]
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from refresh_token rt1_0 join users u1_0 on u1_0.user_id=rt1_0.user_id where u1_0.email=?
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/auth/logout
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Authorization:"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjoyLCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTA0OTYwOTIsImV4cCI6OTIyMzkwNDk2MTI0fQ.5zTsEpzMQTAM-uaHDWPQYYI9nTa89twci_nhuRrQn3o", Accept:"application/json"]
+             Body = null
+    Session Attrs = {}
+
+Handler:
+             Type = com.weShare.api.v1.auth.AuthenticationController
+           Method = com.weShare.api.v1.auth.AuthenticationController#logout(HttpServletRequest, HttpServletResponse)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Set-Cookie:"Refresh-Token=; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = null
+             Body = 
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = [[Cookie@52bf434b name = 'Refresh-Token', value = [null], comment = [null], domain = [null], maxAge = 0, path = [null], secure = false, version = 0, httpOnly = false]]
+Hibernate: delete from refresh_token
+Hibernate: delete from users
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 
@@ -90,6 +181,53 @@ MockHttpServletResponse:
     Forwarded URL = null
    Redirected URL = null
           Cookies = []
+Hibernate: delete from refresh_token
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+2024.01.22 18:42:57.034 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authAnonymousAuthenticationToken [Principal=anonymousUser, Credentials=[PROTECTED], Authenticated=true, Details=WebAuthenticationDetails [RemoteIpAddress=127.0.0.1, SessionId=null], Granted Authorities=[ROLE_ANONYMOUS]] 
+Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
+Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
+
+MockHttpServletRequest:
+      HTTP Method = POST
+      Request URI = /api/v1/auth/login
+       Parameters = {}
+          Headers = [Content-Type:"application/json;charset=UTF-8", Accept:"application/json", Content-Length:"47"]
+             Body = {"email":"email@asd.com","password":"password"}
+    Session Attrs = {}
+
+Handler:
+             Type = com.weShare.api.v1.auth.AuthenticationController
+           Method = com.weShare.api.v1.auth.AuthenticationController#login(LoginRequest, HttpServletResponse)
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Set-Cookie:"Refresh-Token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjo0LCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTA4ODQyMTcsImV4cCI6OTIyMzkxNDg5MDE3fQ.b_Kmz_rJoroYMrI5RelZ0pYBEK8Sbly_T_n0uRyjeps; Path=/; Max-Age=604800; Expires=Mon, 29 Jan 2024 09:42:57 GMT; Secure; HttpOnly", Content-Type:"application/json", X-Content-Type-Options:"nosniff", X-XSS-Protection:"0", Cache-Control:"no-cache, no-store, max-age=0, must-revalidate", Pragma:"no-cache", Expires:"0", X-Frame-Options:"DENY"]
+     Content type = application/json
+             Body = {"accessToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjo0LCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTA4ODM2MjksImV4cCI6OTIyMzkwODgzNjYxfQ.mvbfSUmLPAg84BwPVA6iZ6D_u_Z6C-5aHEi_FXLp21w"}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = [[Cookie@38a7f7a2 name = 'Refresh-Token', value = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsImlkIjo0LCJ1c2VybmFtZSI6ImVtYWlsQGFzZC5jb20iLCJzdWIiOiJlbWFpbEBhc2QuY29tIiwiaWF0Ijo5MjIzOTA4ODQyMTcsImV4cCI6OTIyMzkxNDg5MDE3fQ.b_Kmz_rJoroYMrI5RelZ0pYBEK8Sbly_T_n0uRyjeps', comment = [null], domain = [null], maxAge = 604800, path = '/', secure = true, version = 0, httpOnly = true]]
+Hibernate: delete from refresh_token
+Hibernate: delete from users
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
