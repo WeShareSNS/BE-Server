@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weShare.api.v1.token.jwt.JwtServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2024-01-23T01:17:39" hostname="hyunwoo-MacBookAir.local" time="0.053">
+<testsuite name="com.weShare.api.v1.token.jwt.JwtServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2024-01-23T01:21:55" hostname="hyunwoo-MacBookAir.local" time="0.048">
   <properties/>
   <testcase name="토큰이 유효하면 true를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.006"/>
   <testcase name="사용자 정보를 통해서 RefreshToken을 발급받을 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.004"/>
   <testcase name="사용자 정보를 통해서 AccessToken을 발급받을 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.004"/>
-  <testcase name="토큰값이 중복되는지 체크" classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.023"/>
+  <testcase name="토큰값이 중복되는지 체크" classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.022"/>
   <testcase name="토큰을 통해서 사용자 이메일을 가져올 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.006"/>
-  <testcase name="자신의 토큰이 아니면 False를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.006"/>
-  <system-out><![CDATA[2024.01.23 10:17:39.301 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.jwt.JwtServiceImplTest]: JwtServiceImplTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.23 10:17:39.307 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.jwt.JwtServiceImplTest 
+  <testcase name="자신의 토큰이 아니면 False를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.004"/>
+  <system-out><![CDATA[2024.01.23 10:21:55.579 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.jwt.JwtServiceImplTest]: JwtServiceImplTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.23 10:21:55.588 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.jwt.JwtServiceImplTest 
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)

@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">1.097s</div>
+<div class="counter">1.088s</div>
 <p>duration</p>
 </div>
 </td>
@@ -81,43 +81,43 @@
 <tr>
 <td class="success">이미 가입된 이메일인 경우 예외가 발생한다.</td>
 <td class="success">AuthenticationServiceTest()</td>
-<td class="success">0.116s</td>
+<td class="success">0.112s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">사용자는 회원가입을 할 수 있다.</td>
 <td class="success">join()</td>
-<td class="success">0.166s</td>
+<td class="success">0.164s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">사용자가 로그인하면 access 토큰을 발급 받는다.</td>
 <td class="success">login_accessToken()</td>
-<td class="success">0.268s</td>
+<td class="success">0.270s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">사용자가 로그인하면 refresh 토큰을 발급 받는다.</td>
 <td class="success">login_refreshToken()</td>
-<td class="success">0.169s</td>
+<td class="success">0.168s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">사용자는 로그아웃을 할 수 있다.</td>
 <td class="success">logout()</td>
-<td class="success">0.185s</td>
+<td class="success">0.182s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">refresh 토큰을 통해서 access 토큰을 재발행시 기존 refresh 토큰을 재발행한다.</td>
 <td class="success">refreshToken()</td>
-<td class="success">0.099s</td>
+<td class="success">0.101s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">refresh token을 통해서 accessToken을 재발행 할 수있다.</td>
 <td class="success">refreshToken_reissue()</td>
-<td class="success">0.094s</td>
+<td class="success">0.091s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -125,11 +125,11 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2024.01.23 10:17:38.149 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationServiceTest]: AuthenticationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.23 10:17:38.150 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationServiceTest 
+<pre>2024.01.23 10:21:54.440 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationServiceTest]: AuthenticationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.23 10:21:54.440 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationServiceTest 
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
-2024.01.23 10:17:38.399 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+2024.01.23 10:21:54.678 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
 Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
@@ -137,7 +137,7 @@ Hibernate: delete from refresh_token
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
-2024.01.23 10:17:38.581 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+2024.01.23 10:21:54.870 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
 Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
@@ -166,7 +166,7 @@ Hibernate: delete from refresh_token
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
-2024.01.23 10:17:39.149 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
+2024.01.23 10:21:55.432 [Test worker] INFO  c.w.a.v.a.AuthenticationService - authnull 
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?
 Hibernate: insert into refresh_token (token,token_type,user_id) values (?,?,?)
@@ -191,7 +191,7 @@ Hibernate: delete from users
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.5</a> at 2024. 1. 23. 오전 10:17:39</p>
+<a href="http://www.gradle.org">Gradle 8.5</a> at 2024. 1. 23. 오전 10:21:55</p>
 </div>
 </div>
 </body>

@@ -15,7 +15,7 @@ public final class CookieTokenHandler {
 
     public void setCookieToken(HttpServletResponse response, String refreshToken) {
         // create a cookie
-        Cookie cookie = new Cookie(KEY,refreshToken);
+        Cookie cookie = new Cookie(KEY, refreshToken);
         // expires in 7 days
         cookie.setMaxAge(EXPIRE_TIME);
 
