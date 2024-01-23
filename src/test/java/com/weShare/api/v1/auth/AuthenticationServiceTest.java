@@ -10,12 +10,10 @@ import com.weShare.api.v1.token.TokenType;
 import com.weShare.api.v1.token.jwt.JwtService;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -25,8 +23,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class AuthenticationServiceTest extends IntegrationTestSupport {
 
@@ -122,13 +118,9 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         // given
         User user = createAndSaveUser("email", "password");
         String refreshToken = jwtService.generateRefreshToken(user);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(TokenType.BEARER.getType() + refreshToken);
-
         createAndSaveRefreshToken(user, refreshToken);
         // when
-        TokenDto response = authService.reissueToken(request);
+        TokenDto response = authService.reissueToken(refreshToken);
         // then
         assertTrue(jwtService.isTokenValid(response.accessToken(), user));
     }
@@ -140,12 +132,8 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser("email", "password");
         String refreshToken = jwtService.generateRefreshToken(user);
         createAndSaveRefreshToken(user, refreshToken);
-
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(TokenType.BEARER.getType() + refreshToken);
         // when
-        TokenDto response = authService.reissueToken(request);
+        TokenDto response = authService.reissueToken(refreshToken);
         // then
         Optional<User> userByOldToken = tokenRepository.findUserByToken(refreshToken);
         Optional<User> userByNewToken = tokenRepository.findUserByToken(response.refreshToken());
@@ -164,15 +152,10 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, password);
         String jwt = jwtService.generateAccessToken(user);
 
-        // request Mock 처리하기
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .thenReturn(TokenType.BEARER.getType() + jwt);
-
         LoginRequest loginRequest = createLoginRequest(email, password);
         authService.login(loginRequest);
         // when
-        authService.logout(request);
+        authService.logout(jwt);
         // then
         Optional<LogoutAccessTokenFromRedis> logoutToken = logoutTokenRepository.findById(jwt);
         Optional<RefreshToken> refreshToken = tokenRepository.findTokenByUser(user);

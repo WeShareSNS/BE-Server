@@ -1,5 +1,6 @@
 package com.weShare.api.v1.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.weShare.api.v1.IntegrationMvcTestSupport;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
@@ -42,7 +43,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     private JwtService jwtService;
 
     @AfterEach
-    void tearDown(){
+    void tearDown() {
         tokenRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
     }
@@ -51,12 +52,15 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     @DisplayName("사용자는 회원가입을 할 수 있다.")
     public void signup() throws Exception {
         // given
-        SignupRequest request = createSignupRequest("email@asd.com", "password", LocalDate.of(1999, 9, 27));
-        String content = objectMapper.writeValueAsString(request);
+        SignupRequest request = createSignupRequest(
+                "email@asd.com",
+                "password",
+                LocalDate.of(1999, 9, 27)
+        );
+        String content = getContent(request);
 
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/signup")
-
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -73,7 +77,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         createAndSaveUser(email, password);
 
         LoginRequest request = createLoginRequest(email, password);
-        String content = objectMapper.writeValueAsString(request);
+        String content = getContent(request);
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/login")
                         .content(content)
@@ -90,9 +94,12 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         User user = createAndSaveUser("email@asd.com", "password");
         String refreshToken = jwtService.generateRefreshToken(user);
         createAndSaveToken(user, refreshToken);
+        ReissueTokenRequest reissueTokenRequest = new ReissueTokenRequest(refreshToken);
+        String content = getContent(reissueTokenRequest);
+
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/reissue-token")
-                        .header(HttpHeaders.AUTHORIZATION, TokenType.BEARER.getType() + refreshToken)
+                        .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -157,4 +164,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         return tokenRepository.save(token);
     }
 
+    private String getContent(Object value) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(value);
+    }
 }

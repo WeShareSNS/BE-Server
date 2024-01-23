@@ -28,16 +28,17 @@ public class AuthenticationController {
   }
 
   @PostMapping("/reissue-token")
-  public ResponseEntity<AuthenticationResponse> reissueToken(HttpServletRequest request,
-                                                             HttpServletResponse response) {
-    TokenDto tokenDto = service.reissueToken(request);
+  public ResponseEntity<AuthenticationResponse> reissueToken(@RequestBody ReissueTokenRequest tokenRequest,
+                                                                          HttpServletResponse response) {
+    TokenDto tokenDto = service.reissueToken(tokenRequest.getRefreshToken());
     cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
     return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));
   }
 
   @PostMapping("/logout")
   public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
-    service.logout(request);
+    String accessToken = cookieTokenHandler.getBearerToken(request);
+    service.logout(accessToken);
     cookieTokenHandler.expireCookieToken(response);
     return ResponseEntity.ok().build();
   }

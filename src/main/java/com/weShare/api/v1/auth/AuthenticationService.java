@@ -113,12 +113,7 @@ public class AuthenticationService {
         return new TokenDto(accessToken, refreshToken);
     }
 
-    public TokenDto reissueToken(HttpServletRequest request) {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getType())) {
-            throw new IllegalArgumentException("토큰이 존재하지 않습니다.");
-        }
-        final String refreshToken = authHeader.substring(7);
+    public TokenDto reissueToken(String refreshToken) {
         User user = findUserByValidRefreshToken(refreshToken);
 
         String accessToken = jwtService.generateAccessToken(user);
@@ -142,14 +137,8 @@ public class AuthenticationService {
         return user;
     }
 
-    public void logout(HttpServletRequest request) {
+    public void logout(final String jwt) {
         // refresh token 삭제하기
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith(TokenType.BEARER.getType())) {
-            throw new IllegalArgumentException("토큰 정보가 존재하지 않습니다.");
-        }
-
-        final String jwt = authHeader.substring(7);
         if (logoutTokenRedisRepository.existsById(jwt)) {
             // 4xx대 예외를 던지는게 맞을까? 304처럼...
             // return;
