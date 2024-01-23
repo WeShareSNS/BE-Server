@@ -48,12 +48,12 @@ public class Response<T> {
     private static class FailBody<T> {
 
         private int state;
-        private String code;
+        private int code;
         private T data;
         private String[] message;
     }
 
-    private ResponseEntity<FailBody<T>> fail(T data, String code, HttpStatus status, String ...msg) {
+    private ResponseEntity<FailBody<T>> fail(T data, int code, HttpStatus status, String ...msg) {
         FailBody<T> body = FailBody.<T>builder()
                 .state(status.value())
                 .code(code)
@@ -63,11 +63,11 @@ public class Response<T> {
         return ResponseEntity.status(status).body(body);
     }
 
-    public ResponseEntity<FailBody<T>> fail(String code, HttpStatus status, String msg) {
+    public ResponseEntity<FailBody<T>> fail(int code, HttpStatus status, String msg) {
         return fail(null, code, status, msg);
     }
 
-    public ResponseEntity<FailBody<T>> fail(String code, HttpStatus status, String[] messages) {
+    public ResponseEntity<FailBody<T>> fail(int code, HttpStatus status, String[] messages) {
         return fail(null, code, status, messages);
     }
 }

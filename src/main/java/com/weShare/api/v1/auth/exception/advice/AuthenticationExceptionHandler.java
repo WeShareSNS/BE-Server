@@ -29,7 +29,7 @@ public class AuthenticationExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity illegalArgumentExceptionHandler (IllegalArgumentException e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail("BAD-REQUEST", HttpStatus.BAD_REQUEST, e.getMessage());
+        return response.fail(-4000, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -37,7 +37,7 @@ public class AuthenticationExceptionHandler {
     public ResponseEntity methodArgumentNotValidExceptionHandler (MethodArgumentNotValidException  e){
         log.error("[exceptionHandler] ex", e);
         String[] errorMessages = getDefaultErrorMessage(e);
-        return response.fail("BAD-REQUEST", HttpStatus.BAD_REQUEST, errorMessages);
+        return response.fail(-4000, HttpStatus.BAD_REQUEST, errorMessages);
     }
 
     private String[] getDefaultErrorMessage(BindException e) {
@@ -51,35 +51,35 @@ public class AuthenticationExceptionHandler {
     @ExceptionHandler(TokenTimeOutException.class)
     public ResponseEntity tokenTimeOutExceptionHandler (TokenTimeOutException  e, WebRequest request){
         log.error("[exceptionHandler] ex", e);
-        return response.fail("EXPIRE-TOKEN", HttpStatus.UNAUTHORIZED, e.getMessage());
+        return response.fail(-4011, HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity invalidTokenExceptionHandler (InvalidTokenException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail("INVALID-TOKEN", HttpStatus.UNAUTHORIZED, e.getMessage());
+        return response.fail(-4012, HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity tokenNotFoundExceptionHandler (TokenNotFoundException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail("NOT-FOUND-TOKEN", HttpStatus.UNAUTHORIZED, e.getMessage());
+        return response.fail(-4012, HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity usernameNotFoundHandler (UsernameNotFoundException e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail("U404", HttpStatus.NOT_FOUND, e.getMessage());
+        return response.fail(-4040, HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EmailDuplicateException.class)
     public ResponseEntity EmailDuplicateExceptionHandler (EmailDuplicateException e) {
         log.error("[exceptionHandler] ex", e);
-        return response.fail("409", HttpStatus.CONFLICT, e.getMessage());
+        return response.fail(-4090, HttpStatus.CONFLICT, e.getMessage());
     }
 
 
@@ -87,6 +87,6 @@ public class AuthenticationExceptionHandler {
     @ExceptionHandler
     public ResponseEntity exHandler(Exception e) {
         log.error("[exceptionHandler] ex", e);
-        return response.fail("500", HttpStatus.INTERNAL_SERVER_ERROR, "[server error] " + getDefaultErrorMessage((BindException) e));
+        return response.fail(-5000, HttpStatus.INTERNAL_SERVER_ERROR, "[server error] " + getDefaultErrorMessage((BindException) e));
     }
 }
