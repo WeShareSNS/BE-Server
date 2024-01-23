@@ -3,6 +3,7 @@ package com.weShare.api.v1.auth;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.SignupRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.common.CustomUUID;
 import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weShare.api.v1.token.exception.InvalidTokenException;
 import com.weShare.api.v1.token.exception.TokenNotFoundException;
@@ -24,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -56,7 +56,7 @@ public class AuthenticationService {
         return User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .name(getDefaultUsername())
+                .name(CustomUUID.getCustomUUID(16, ""))
                 .birthDate(birthDate)
                 .profileImg(getDefaultProfileImgURL())
                 .role(Role.USER)
@@ -66,12 +66,6 @@ public class AuthenticationService {
         if (LocalDate.now().isBefore(birthDate)) {
             throw new IllegalArgumentException("생년월일은 미래 날짜를 입력하실 수 없습니다.");
         }
-    }
-
-    private String getDefaultUsername() {
-        return UUID.randomUUID().toString()
-                .replaceAll("-", "")
-                .substring(0, 16);
     }
 
     //하드코딩 지우고 좀 고민해보기 s3에 담아서 사용할건지 db에서 사용할건지 yml로 처리할건지 프론트쪽에서 그냥 데이터 넘겨받아야될지도

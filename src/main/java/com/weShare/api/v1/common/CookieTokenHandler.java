@@ -12,6 +12,7 @@ public final class CookieTokenHandler {
 
     private static final String KEY = "Refresh-Token";
     private static final int EXPIRE_TIME = 7 * 24 * 60 * 60;
+    private static final int BEARER_HEADER_LENGTH = 7;
 
     public void setCookieToken(HttpServletResponse response, String refreshToken) {
         // create a cookie
@@ -37,7 +38,7 @@ public final class CookieTokenHandler {
     public String getBearerToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         validateBearerToken(authHeader);
-        return authHeader.substring(7);
+        return authHeader.substring(BEARER_HEADER_LENGTH);
     }
 
     private void validateBearerToken(String token) {
