@@ -1,5 +1,6 @@
-package com.weShare.api.v1.config;
+package com.weShare.api.v1.security;
 
+import com.weShare.api.v1.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 import static com.weShare.api.v1.domain.user.Permission.ADMIN_READ;
 import static com.weShare.api.v1.domain.user.Permission.ADMIN_CREATE;

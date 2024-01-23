@@ -1,6 +1,8 @@
 package com.weShare.api.v1.token.jwt.logout;
 
 import com.weShare.api.IntegrationTestSupport;
+import com.weShare.api.v1.jwt.logout.LogoutAccessTokenFromRedis;
+import com.weShare.api.v1.jwt.logout.LogoutAccessTokenRedisRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

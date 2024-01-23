@@ -1,4 +1,4 @@
-package com.weShare.api.v1.auth.exception;
+package com.weShare.api.v1.domain.user.exception;
 
 public class EmailDuplicateException extends RuntimeException{
     public EmailDuplicateException(String message) {

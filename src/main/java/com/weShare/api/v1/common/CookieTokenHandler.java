@@ -1,4 +1,4 @@
-package com.weShare.api.v1.auth;
+package com.weShare.api.v1.common;
 
 import com.weShare.api.v1.token.TokenType;
 import jakarta.servlet.http.Cookie;

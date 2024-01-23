@@ -1,15 +1,18 @@
 package com.weShare.api.v1.auth;
 
-import com.weShare.api.v1.auth.exception.EmailDuplicateException;
-import com.weShare.api.v1.auth.exception.InvalidTokenException;
-import com.weShare.api.v1.auth.exception.TokenNotFoundException;
-import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
-import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
+import com.weShare.api.v1.auth.controller.dto.LoginRequest;
+import com.weShare.api.v1.auth.controller.dto.SignupRequest;
+import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
+import com.weShare.api.v1.token.exception.InvalidTokenException;
+import com.weShare.api.v1.token.exception.TokenNotFoundException;
+import com.weShare.api.v1.jwt.logout.LogoutAccessTokenFromRedis;
+import com.weShare.api.v1.jwt.logout.LogoutAccessTokenRedisRepository;
 import com.weShare.api.v1.token.RefreshToken;
 import com.weShare.api.v1.token.TokenType;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
-import com.weShare.api.v1.token.jwt.JwtService;
+import com.weShare.api.v1.jwt.JwtService;
 import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,7 +68,6 @@ public class AuthenticationService {
         }
     }
 
-    //우선 16자리로 (중복 올라가도 사용자는 닉네임 변경할꺼같으니까)
     private String getDefaultUsername() {
         return UUID.randomUUID().toString()
                 .replaceAll("-", "")

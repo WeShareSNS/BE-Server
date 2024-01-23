@@ -3,6 +3,7 @@ package com.weShare.api.v1.token.jwt;
 import com.weShare.api.IntegrationTestSupport;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
+import com.weShare.api.v1.jwt.JwtService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 

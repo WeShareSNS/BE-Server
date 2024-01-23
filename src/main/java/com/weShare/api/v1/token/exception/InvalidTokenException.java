@@ -1,4 +1,4 @@
-package com.weShare.api.v1.auth.exception;
+package com.weShare.api.v1.token.exception;
 
 public class InvalidTokenException extends RuntimeException{
     public InvalidTokenException(String message) {

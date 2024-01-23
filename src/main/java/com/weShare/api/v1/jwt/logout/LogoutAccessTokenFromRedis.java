@@ -1,4 +1,4 @@
-package com.weShare.api.v1.token.jwt.logout;
+package com.weShare.api.v1.jwt.logout;
 
 import jakarta.persistence.Id;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.weShare.api.v1.auth;
+package com.weShare.api.v1.auth.controller.dto;
 
 
 import java.util.Objects;

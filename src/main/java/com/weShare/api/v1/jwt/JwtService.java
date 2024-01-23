@@ -1,4 +1,4 @@
-package com.weShare.api.v1.token.jwt;
+package com.weShare.api.v1.jwt;
 
 import com.weShare.api.v1.domain.user.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;

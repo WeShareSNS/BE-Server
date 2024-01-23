@@ -1,7 +1,7 @@
-package com.weShare.api.v1.config;
+package com.weShare.api.v1.security;
 
-import com.weShare.api.v1.token.jwt.JwtService;
-import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
+import com.weShare.api.v1.jwt.JwtService;
+import com.weShare.api.v1.jwt.logout.LogoutAccessTokenRedisRepository;
 import com.weShare.api.v1.token.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

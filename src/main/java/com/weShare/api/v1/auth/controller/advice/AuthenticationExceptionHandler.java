@@ -1,9 +1,9 @@
-package com.weShare.api.v1.auth.exception.advice;
+package com.weShare.api.v1.auth.controller.advice;
 
-import com.weShare.api.v1.auth.exception.EmailDuplicateException;
-import com.weShare.api.v1.auth.exception.InvalidTokenException;
-import com.weShare.api.v1.auth.exception.TokenNotFoundException;
-import com.weShare.api.v1.auth.exception.TokenTimeOutException;
+import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
+import com.weShare.api.v1.token.exception.InvalidTokenException;
+import com.weShare.api.v1.token.exception.TokenNotFoundException;
+import com.weShare.api.v1.token.exception.TokenTimeOutException;
 import com.weShare.api.v1.common.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

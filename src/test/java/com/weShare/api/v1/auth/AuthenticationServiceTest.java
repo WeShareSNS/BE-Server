@@ -1,16 +1,19 @@
 package com.weShare.api.v1.auth;
 
 import com.weShare.api.IntegrationTestSupport;
-import com.weShare.api.v1.auth.exception.EmailDuplicateException;
+import com.weShare.api.v1.auth.controller.dto.LoginRequest;
+import com.weShare.api.v1.auth.controller.dto.SignupRequest;
+import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.token.RefreshToken;
 import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.token.TokenType;
-import com.weShare.api.v1.token.jwt.JwtService;
-import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
-import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
+import com.weShare.api.v1.jwt.JwtService;
+import com.weShare.api.v1.jwt.logout.LogoutAccessTokenFromRedis;
+import com.weShare.api.v1.jwt.logout.LogoutAccessTokenRedisRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
