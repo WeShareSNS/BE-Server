@@ -1,5 +1,6 @@
 package com.weShare.api.v1.auth;
 
+import com.weShare.api.v1.auth.controller.dto.DuplicateEmailRequest;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.SignupRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
@@ -39,15 +40,19 @@ public class AuthenticationService {
     private final JwtService jwtService;
 
     public User signup(SignupRequest request) {
-        validateEmail(request);
+        validateEmail(request.getEmail());
         return repository.save(createUser(request));
     }
 
-    private void validateEmail(SignupRequest request) {
-        repository.findByEmail(request.getEmail())
+    private void validateEmail(String email) {
+        repository.findByEmail(email)
                 .ifPresent(user -> {
                     throw new EmailDuplicateException(user.getEmail() + "은 가입된 이메일 입니다.");
                 });
+    }
+
+    public void duplicateEmail(DuplicateEmailRequest request) {
+        validateEmail(request.getEmail());
     }
 
     private User createUser(SignupRequest request) {

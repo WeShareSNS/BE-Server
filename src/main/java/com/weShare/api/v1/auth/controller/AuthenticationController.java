@@ -1,10 +1,7 @@
 package com.weShare.api.v1.auth.controller;
 
 import com.weShare.api.v1.auth.*;
-import com.weShare.api.v1.auth.controller.dto.AuthenticationResponse;
-import com.weShare.api.v1.auth.controller.dto.LoginRequest;
-import com.weShare.api.v1.auth.controller.dto.SignupRequest;
-import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.auth.controller.dto.*;
 import com.weShare.api.v1.common.CookieTokenHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,6 +41,18 @@ public class AuthenticationController {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
+  @Operation(summary = "사용자 이메일 중복 확인 API", description = "사용자는 이메일을 중복확인 할 수 있습니다.")
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "사용 가능한 이메일 입니다."),
+          @ApiResponse(responseCode = "400", description = "이메일 양식을 확인해주세요"),
+          @ApiResponse(responseCode = "409", description = "사용자 이메일이 중복되었습니다.")
+  })
+  @GetMapping("/signup/duplicate-email")
+  public ResponseEntity duplicateEmail(@Valid @RequestBody DuplicateEmailRequest request) {
+    service.duplicateEmail(request);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
   @Operation(summary = "사용자 로그인 API", description = "사용자는 로그인을 할 수 있습니다.")
   @ApiResponses({
           @ApiResponse(responseCode = "200", description = "refresh 토큰은 cookie에 저장됩니다."),
@@ -64,7 +73,7 @@ public class AuthenticationController {
                   description = ""),
           @ApiResponse(responseCode = "401", description = "쿠키가 만료되어 있는지 확인해주세요"),
   })
-  @PostMapping("/reissue-token")
+  @GetMapping("/reissue-token")
   public ResponseEntity<AuthenticationResponse> reissueToken(@CookieValue("Refresh-Token") Optional<String> refreshToken,
                                                              HttpServletResponse response) {
     TokenDto tokenDto = service.reissueToken(refreshToken, new Date(System.nanoTime()));
@@ -73,12 +82,10 @@ public class AuthenticationController {
   }
 
   @Operation(security = { @SecurityRequirement(name = "bearer-key") },
-          summary = "사용자 회원가입 API", description = "사용자는 회원가입을 할 수 있습니다.")
+          summary = "사용자 로그아웃 API", description = "사용자는 로그아웃을 할 수 있습니다.")
   @ApiResponses({
           @ApiResponse(responseCode = "200",
-                  description = " 로그인 성공: 사용자의 이름은 UUID, 프로필은 기본 프로필 이미지 URL이 등록됩니다."),
-          @ApiResponse(responseCode = "400", description = "입력 파라미터를 확인해주세요"),
-          @ApiResponse(responseCode = "409", description = "사용자 이메일이 중복되었습니다.")
+                  description = "로그아웃 성공 토큰에 있는 refresh 토큰을 제거합니다."),
   })
   @PostMapping("/logout")
   public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
@@ -87,5 +94,4 @@ public class AuthenticationController {
     cookieTokenHandler.expireCookieToken(response);
     return ResponseEntity.ok().build();
   }
-
 }

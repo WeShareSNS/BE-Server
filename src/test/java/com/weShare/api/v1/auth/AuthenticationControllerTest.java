@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.weShare.api.v1.IntegrationMvcTestSupport;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.SignupRequest;
-import com.weShare.api.v1.common.CookieTokenHandler;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
@@ -28,6 +27,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,8 +46,6 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     private LogoutAccessTokenRedisRepository logoutTokenRepository;
     @Autowired
     private JwtService jwtService;
-    @Autowired
-    private CookieTokenHandler cookieTokenHandler;
 
     @AfterEach
     void tearDown() {
@@ -103,7 +101,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveToken(user, refreshToken);
         // when // then
-        mockMvc.perform(post(PREFIX_ENDPOINT + "/reissue-token")
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/reissue-token")
                         .cookie(new Cookie(cookieName, refreshToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

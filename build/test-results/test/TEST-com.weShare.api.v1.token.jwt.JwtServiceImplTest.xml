@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weShare.api.v1.token.jwt.JwtServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2024-01-23T12:37:18" hostname="hyunwoo-MacBookAir.local" time="0.075">
+<testsuite name="com.weShare.api.v1.token.jwt.JwtServiceImplTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2024-01-23T13:20:48" hostname="hyunwoo-MacBookAir.local" time="0.1">
   <properties/>
-  <testcase name="토큰이 유효하면 true를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.01"/>
-  <testcase name="사용자 정보를 통해서 RefreshToken을 발급받을 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.006"/>
-  <testcase name="사용자 정보를 통해서 AccessToken을 발급받을 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.009"/>
-  <testcase name="토큰값이 중복되는지 체크" classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.027"/>
-  <testcase name="토큰을 통해서 사용자 이메일을 가져올 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.011"/>
-  <testcase name="자신의 토큰이 아니면 False를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.01"/>
-  <system-out><![CDATA[2024.01.23 21:37:18.080 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.jwt.JwtServiceImplTest]: JwtServiceImplTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.23 21:37:18.087 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.jwt.JwtServiceImplTest 
+  <testcase name="유효하지 않은 토큰이면 False를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.007"/>
+  <testcase name="토큰이 유효하면 true를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.006"/>
+  <testcase name="사용자 정보를 통해서 RefreshToken을 발급받을 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.004"/>
+  <testcase name="만료된 토큰으로 이메일을 조회시 예외가 발생한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.007"/>
+  <testcase name="토큰이 유효하지 않으면 예외가 발생한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.007"/>
+  <testcase name="사용자 정보를 통해서 AccessToken을 발급받을 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.005"/>
+  <testcase name="유효하지 않은 토큰으로 이메일을 조회시 예외가 발생한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.003"/>
+  <testcase name="토큰값은 중복되지 않는다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.023"/>
+  <testcase name="만료된 토큰이면 False를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.005"/>
+  <testcase name="유효하지 않은 토큰으로 남은시간을 조회시 예외가 발생한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.003"/>
+  <testcase name="토큰을 통해서 사용자 이메일을 가져올 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.007"/>
+  <testcase name="만료된 토큰으로 남은시간을 조회시 예외가 발생한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.005"/>
+  <testcase name="토큰의 남은 시간을 알 수 있다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.004"/>
+  <testcase name="자신의 토큰이 아니면 False를 반환한다." classname="com.weShare.api.v1.token.jwt.JwtServiceImplTest" time="0.007"/>
+  <system-out><![CDATA[2024.01.23 22:20:48.298 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.token.jwt.JwtServiceImplTest]: JwtServiceImplTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.23 22:20:48.306 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.token.jwt.JwtServiceImplTest 
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
@@ -16,9 +24,23 @@ Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: delete from users
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: delete from users
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
+Hibernate: delete from users
+Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: delete from users
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
