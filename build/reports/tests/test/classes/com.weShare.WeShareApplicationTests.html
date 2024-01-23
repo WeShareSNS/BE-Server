@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.338s</div>
+<div class="counter">0.353s</div>
 <p>duration</p>
 </div>
 </td>
@@ -82,7 +82,7 @@
 </thead>
 <tr>
 <td class="success">contextLoads()</td>
-<td class="success">0.338s</td>
+<td class="success">0.353s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -90,8 +90,8 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2024.01.23 18:03:17.731 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.WeShareApplicationTests]: WeShareApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.23 18:03:17.797 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.WeShareApplicationTests 
+<pre>2024.01.23 21:37:09.650 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.WeShareApplicationTests]: WeShareApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.23 21:37:09.708 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.WeShareApplicationTests 
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -101,30 +101,30 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.1)
 
-2024.01.23 18:03:17.991 [background-preinit] INFO  o.h.v.i.u.Version - HV000001: Hibernate Validator 8.0.1.Final 
-2024.01.23 18:03:18.001 [Test worker] INFO  c.w.WeShareApplicationTests - Starting WeShareApplicationTests using Java 21.0.1 with PID 70990 (started by macm1 in /Users/ryu/프로젝트/weShare) 
-2024.01.23 18:03:18.001 [Test worker] INFO  c.w.WeShareApplicationTests - No active profile set, falling back to 1 default profile: &quot;default&quot; 
-2024.01.23 18:03:18.362 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
-2024.01.23 18:03:18.363 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
-2024.01.23 18:03:18.376 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 4 ms. Found 0 Redis repository interfaces. 
-2024.01.23 18:03:18.524 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
-2024.01.23 18:03:18.524 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode. 
-2024.01.23 18:03:18.599 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository 
-2024.01.23 18:03:18.609 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 83 ms. Found 2 JPA repository interfaces. 
-2024.01.23 18:03:18.617 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
-2024.01.23 18:03:18.617 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
-2024.01.23 18:03:18.621 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.domain.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
-2024.01.23 18:03:18.622 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
-2024.01.23 18:03:18.625 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 8 ms. Found 1 Redis repository interface. 
-2024.01.23 18:03:18.916 [Test worker] INFO  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default] 
-2024.01.23 18:03:18.953 [Test worker] INFO  o.h.Version - HHH000412: Hibernate ORM core version 6.4.1.Final 
-2024.01.23 18:03:18.970 [Test worker] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled 
-2024.01.23 18:03:19.095 [Test worker] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer 
-2024.01.23 18:03:19.111 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-1 - Starting... 
-2024.01.23 18:03:19.161 [Test worker] INFO  c.z.h.p.HikariPool - HikariPool-1 - Added connection org.mariadb.jdbc.Connection@1d7f7962 
-2024.01.23 18:03:19.163 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-1 - Start completed. 
-2024.01.23 18:03:19.180 [Test worker] WARN  o.h.o.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default) 
-2024.01.23 18:03:19.658 [Test worker] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration) 
+2024.01.23 21:37:09.903 [background-preinit] INFO  o.h.v.i.u.Version - HV000001: Hibernate Validator 8.0.1.Final 
+2024.01.23 21:37:09.914 [Test worker] INFO  c.w.WeShareApplicationTests - Starting WeShareApplicationTests using Java 21.0.1 with PID 74257 (started by macm1 in /Users/ryu/프로젝트/weShare) 
+2024.01.23 21:37:09.915 [Test worker] INFO  c.w.WeShareApplicationTests - No active profile set, falling back to 1 default profile: &quot;default&quot; 
+2024.01.23 21:37:10.262 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.23 21:37:10.263 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
+2024.01.23 21:37:10.274 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 0 Redis repository interfaces. 
+2024.01.23 21:37:10.420 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.23 21:37:10.421 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode. 
+2024.01.23 21:37:10.494 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.jwt.logout.LogoutAccessTokenRedisRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository 
+2024.01.23 21:37:10.507 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 84 ms. Found 2 JPA repository interfaces. 
+2024.01.23 21:37:10.514 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode 
+2024.01.23 21:37:10.514 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode. 
+2024.01.23 21:37:10.518 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.domain.user.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
+2024.01.23 21:37:10.519 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.weShare.api.v1.token.RefreshTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository 
+2024.01.23 21:37:10.522 [Test worker] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 7 ms. Found 1 Redis repository interface. 
+2024.01.23 21:37:10.806 [Test worker] INFO  o.h.j.i.u.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default] 
+2024.01.23 21:37:10.842 [Test worker] INFO  o.h.Version - HHH000412: Hibernate ORM core version 6.4.1.Final 
+2024.01.23 21:37:10.860 [Test worker] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled 
+2024.01.23 21:37:10.983 [Test worker] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer 
+2024.01.23 21:37:10.999 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-1 - Starting... 
+2024.01.23 21:37:11.060 [Test worker] INFO  c.z.h.p.HikariPool - HikariPool-1 - Added connection org.mariadb.jdbc.Connection@6c1bebca 
+2024.01.23 21:37:11.061 [Test worker] INFO  c.z.h.HikariDataSource - HikariPool-1 - Start completed. 
+2024.01.23 21:37:11.078 [Test worker] WARN  o.h.o.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default) 
+2024.01.23 21:37:11.559 [Test worker] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration) 
 Hibernate: alter table refresh_token drop foreign key FKjtx87i0jvq2svedphegvdwcuy
 Hibernate: drop table if exists refresh_token
 Hibernate: drop table if exists users
@@ -135,10 +135,10 @@ Hibernate: alter table refresh_token add constraint UK_r4k4edos30bx9neoq81mdvwph
 Hibernate: alter table users add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email)
 Hibernate: alter table users add constraint UK_3g1j96g94xpk3lpxl2qbl985x unique (name)
 Hibernate: alter table refresh_token add constraint FKjtx87i0jvq2svedphegvdwcuy foreign key (user_id) references users (user_id)
-2024.01.23 18:03:20.053 [Test worker] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default' 
-2024.01.23 18:03:20.253 [Test worker] INFO  o.s.d.j.r.q.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used. 
-2024.01.23 18:03:20.968 [Test worker] INFO  o.s.s.w.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@36af93ca, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5d7807b0, org.springframework.security.web.context.SecurityContextHolderFilter@14426256, org.springframework.security.web.header.HeaderWriterFilter@250988e5, org.springframework.web.filter.CorsFilter@75b994f7, org.springframework.security.web.authentication.logout.LogoutFilter@688e2e8d, com.weShare.api.v1.config.JwtAuthenticationFilter@49d4a2cf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@370c9681, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@419fc1d6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@42675041, org.springframework.security.web.session.SessionManagementFilter@1502cd38, org.springframework.security.web.access.ExceptionTranslationFilter@5ce1b67b, org.springframework.security.web.access.intercept.AuthorizationFilter@2a882681] 
-2024.01.23 18:03:21.207 [Test worker] INFO  c.w.WeShareApplicationTests - Started WeShareApplicationTests in 3.335 seconds (process running for 4.007) 
+2024.01.23 21:37:11.983 [Test worker] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default' 
+2024.01.23 21:37:12.187 [Test worker] INFO  o.s.d.j.r.q.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used. 
+2024.01.23 21:37:12.879 [Test worker] INFO  o.s.s.w.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@34f636a5, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5d55eb7a, org.springframework.security.web.context.SecurityContextHolderFilter@6846e4e8, org.springframework.security.web.header.HeaderWriterFilter@4fad5e7, org.springframework.web.filter.CorsFilter@1ae11dd3, org.springframework.security.web.authentication.logout.LogoutFilter@1502cd38, com.weShare.api.v1.security.JwtAuthenticationFilter@526ae1fc, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4db8b888, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2e67df05, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@79ae2d13, org.springframework.security.web.session.SessionManagementFilter@665f19d, org.springframework.security.web.access.ExceptionTranslationFilter@224855fe, org.springframework.security.web.access.intercept.AuthorizationFilter@69c00140] 
+2024.01.23 21:37:13.147 [Test worker] INFO  c.w.WeShareApplicationTests - Started WeShareApplicationTests in 3.362 seconds (process running for 4.007) 
 </pre>
 </span>
 </div>
@@ -160,7 +160,7 @@ WARNING: Dynamic loading of agents will be disallowed by default in a future rel
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.5</a> at 2024. 1. 23. 오후 6:03:24</p>
+<a href="http://www.gradle.org">Gradle 8.5</a> at 2024. 1. 23. 오후 9:37:18</p>
 </div>
 </div>
 </body>

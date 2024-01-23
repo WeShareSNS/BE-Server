@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -73,11 +74,11 @@ public class AuthenticationService {
         return "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg";
     }
 
-    public TokenDto login(LoginRequest request) {
+    public TokenDto login(LoginRequest request, Date issuedAt) {
         User user = getUserByEmailOrThrowException(request.getEmail());
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String accessToken = jwtService.generateAccessToken(user, issuedAt);
+        String refreshToken = jwtService.generateRefreshToken(user, issuedAt);
         reissueRefreshTokenByUser(user, refreshToken);
         return new TokenDto(accessToken, refreshToken);
     }
@@ -105,12 +106,12 @@ public class AuthenticationService {
                 .build();
     }
 
-    public TokenDto reissueToken(Optional<String> token) {
+    public TokenDto reissueToken(Optional<String> token, Date issuedAt) {
         String refreshToken = validateToken(token);
         User user = findUserByValidRefreshToken(refreshToken);
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String reissueToken = jwtService.generateRefreshToken(user);
+        String accessToken = jwtService.generateAccessToken(user, issuedAt);
+        String reissueToken = jwtService.generateRefreshToken(user, issuedAt);
         reissueRefreshTokenByUser(user, reissueToken);
         return new TokenDto(accessToken, reissueToken);
     }

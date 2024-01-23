@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -94,7 +95,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        TokenDto response = authService.login(request);
+        TokenDto response = authService.login(request, new Date(System.nanoTime()));
         // then
         RefreshToken refreshToken = tokenRepository.findTokenByUser(user).get();
         assertEquals(response.refreshToken(), refreshToken.getToken());
@@ -109,7 +110,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        TokenDto response = authService.login(request);
+        TokenDto response = authService.login(request, new Date(System.nanoTime()));
         // then
         String findEmail = jwtService.extractEmail(response.accessToken());
         assertEquals(user.getEmail(), findEmail);
@@ -120,10 +121,10 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     public void refreshToken_reissue() {
         // given
         User user = createAndSaveUser("email", "password");
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveRefreshToken(user, refreshToken);
         // when
-        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken));
+        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken), new Date(System.nanoTime()));
         // then
         assertTrue(jwtService.isTokenValid(response.accessToken(), user));
     }
@@ -133,10 +134,10 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     public void refreshToken() {
         // given
         User user = createAndSaveUser("email", "password");
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveRefreshToken(user, refreshToken);
         // when
-        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken));
+        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken), new Date(System.nanoTime()));
         // then
         Optional<User> userByOldToken = tokenRepository.findUserByToken(refreshToken);
         Optional<User> userByNewToken = tokenRepository.findUserByToken(response.refreshToken());
@@ -153,10 +154,10 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String email = "email@test.com";
         String password = "password";
         User user = createAndSaveUser(email, password);
-        String jwt = jwtService.generateAccessToken(user);
+        String jwt = jwtService.generateAccessToken(user, new Date(System.nanoTime()));
 
         LoginRequest loginRequest = createLoginRequest(email, password);
-        authService.login(loginRequest);
+        authService.login(loginRequest, new Date(System.nanoTime()));
         // when
         authService.logout(jwt);
         // then

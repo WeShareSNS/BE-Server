@@ -50,23 +50,23 @@ public class JwtServiceImpl implements JwtService{
     }
 
     @Override
-    public String generateAccessToken(User user) {
-        return buildToken(user, accessExpiration);
+    public String generateAccessToken(User user, Date issuedAt) {
+        return buildToken(user, issuedAt, accessExpiration);
     }
 
     @Override
-    public String generateRefreshToken(User user) {
-        return buildToken(user, refreshExpiration);
+    public String generateRefreshToken(User user, Date issuedAt) {
+        return buildToken(user, issuedAt, refreshExpiration);
     }
 
-    private String buildToken(User user, long expiration) {
+    private String buildToken(User user, Date issuedAt, long expiration) {
         return Jwts
                 .builder()
                 .setHeader(createHeader())
                 .setClaims(createClaims(user))
                 .setSubject(user.getEmail())
-                .setIssuedAt(new Date(System.nanoTime()))
-                .setExpiration(new Date(System.nanoTime() + expiration))
+                .setIssuedAt(issuedAt)
+                .setExpiration(new Date(issuedAt.getTime() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -81,6 +81,7 @@ public class JwtServiceImpl implements JwtService{
         }
     }
 
+    @Override
     public void validateToken(String token, User user) {
         String email = extractEmail(token);
         if (!((email.equals(user.getUsername())) && !isTokenExpired(token))) {
@@ -98,8 +99,14 @@ public class JwtServiceImpl implements JwtService{
 
     @Override
     public long getExpireTimeFromToken(String token){
-        final Claims claims = extractAllClaims(token);
-        return claims.getExpiration().getTime();
+        try {
+            final Claims claims = extractAllClaims(token);
+            return claims.getExpiration().getTime();
+        } catch (ExpiredJwtException exception) {
+            throw new TokenTimeOutException("만료된 토큰 입니다.");
+        } catch (JwtException | NullPointerException exception ) {
+            throw new InvalidTokenException("토큰이 유효하지 않습니다.");
+        }
     }
 
     private Claims extractAllClaims(String token) {
@@ -111,21 +118,19 @@ public class JwtServiceImpl implements JwtService{
                 .getBody();
     }
 
-    protected Key getSignInKey() {
+    private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Header
-    protected Map<String, Object> createHeader() {
+    private Map<String, Object> createHeader() {
         Map<String, Object> header = new HashMap<>();
         header.put("typ", "JWT");
         header.put("alg", "HS256"); // 해시 256 암호화
         return header;
     }
 
-    // Payload
-    protected Map<String, Object> createClaims(User user) {
+    private Map<String, Object> createClaims(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
         claims.put("username", user.getUsername());

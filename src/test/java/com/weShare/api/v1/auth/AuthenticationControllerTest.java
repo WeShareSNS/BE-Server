@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -99,7 +100,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         // given
         String cookieName = "Refresh-Token";
         User user = createAndSaveUser("email@asd.com", "password");
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveToken(user, refreshToken);
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/reissue-token")
@@ -118,7 +119,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     public void logout() throws Exception {
         // given
         User user = createAndSaveUser("email@asd.com", "password");
-        String accessToken = jwtService.generateAccessToken(user);
+        String accessToken = jwtService.generateAccessToken(user, new Date(System.nanoTime()));
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/logout")
                         .header(HttpHeaders.AUTHORIZATION, TokenType.BEARER.getType() + accessToken)

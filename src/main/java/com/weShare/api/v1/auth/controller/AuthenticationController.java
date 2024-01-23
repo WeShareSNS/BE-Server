@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Tag(name = "auth-controller", description = "사용자 인증을 위한 컨트롤러")
@@ -51,7 +52,7 @@ public class AuthenticationController {
   })
   @PostMapping("/login")
   public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
-    TokenDto tokenDto = service.login(request);
+    TokenDto tokenDto = service.login(request, new Date(System.nanoTime()));
     cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
     return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));
   }
@@ -66,7 +67,7 @@ public class AuthenticationController {
   @PostMapping("/reissue-token")
   public ResponseEntity<AuthenticationResponse> reissueToken(@CookieValue("Refresh-Token") Optional<String> refreshToken,
                                                              HttpServletResponse response) {
-    TokenDto tokenDto = service.reissueToken(refreshToken);
+    TokenDto tokenDto = service.reissueToken(refreshToken, new Date(System.nanoTime()));
     cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
     return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));
   }
