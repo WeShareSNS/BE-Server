@@ -1,6 +1,7 @@
 package com.weShare.api.v1.auth;
 
 import com.weShare.api.v1.auth.exception.EmailDuplicateException;
+import com.weShare.api.v1.auth.exception.InvalidTokenException;
 import com.weShare.api.v1.auth.exception.TokenNotFoundException;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
@@ -18,7 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -107,13 +110,20 @@ public class AuthenticationService {
                 .build();
     }
 
-    public TokenDto reissueToken(String refreshToken) {
+    public TokenDto reissueToken(Optional<String> token) {
+        String refreshToken = validateToken(token);
         User user = findUserByValidRefreshToken(refreshToken);
 
         String accessToken = jwtService.generateAccessToken(user);
         String reissueToken = jwtService.generateRefreshToken(user);
         reissueRefreshTokenByUser(user, reissueToken);
         return new TokenDto(accessToken, reissueToken);
+    }
+
+    private static String validateToken(Optional<String> token) {
+        return token.orElseThrow(() -> {
+            throw new InvalidTokenException("토큰이 존재하지 않습니다.");
+        });
     }
 
     private User findUserByValidRefreshToken(String refreshToken) {

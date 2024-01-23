@@ -54,8 +54,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         // given
         String email = "test@exam.com";
         String password = "password";
-        LocalDate birthDate = LocalDate.of(1999, 9, 27);
-        SignupRequest request = createJoinRequest(email, password, birthDate);
+        SignupRequest request = createJoinRequest(email, password, "1999-09-27");
         // when
         authService.signup(request);
         // then
@@ -63,7 +62,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         assertAll(
                 () -> assertEquals(findUSer.getEmail(), email),
                 () -> assertTrue(passwordEncoder.matches(password, findUSer.getPassword())),
-                () -> assertEquals(findUSer.getBirthDate(), birthDate)
+                () -> assertEquals(findUSer.getBirthDate(), LocalDate.parse(request.getBirthDate()))
         );
     }
 
@@ -73,7 +72,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         // given
         String email = "test@exam.com";
         String password = "password";
-        LocalDate birthDate = LocalDate.of(1999, 9, 27);
+        String birthDate = "1999-09-27";
         createAndSaveUser(email, password);
         SignupRequest request = createJoinRequest(email, password, birthDate);
 
@@ -121,7 +120,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String refreshToken = jwtService.generateRefreshToken(user);
         createAndSaveRefreshToken(user, refreshToken);
         // when
-        TokenDto response = authService.reissueToken(refreshToken);
+        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken));
         // then
         assertTrue(jwtService.isTokenValid(response.accessToken(), user));
     }
@@ -134,7 +133,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String refreshToken = jwtService.generateRefreshToken(user);
         createAndSaveRefreshToken(user, refreshToken);
         // when
-        TokenDto response = authService.reissueToken(refreshToken);
+        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken));
         // then
         Optional<User> userByOldToken = tokenRepository.findUserByToken(refreshToken);
         Optional<User> userByNewToken = tokenRepository.findUserByToken(response.refreshToken());
@@ -177,7 +176,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         return userRepository.save(user);
     }
 
-    private SignupRequest createJoinRequest(String email, String password, LocalDate birthDate) {
+    private SignupRequest createJoinRequest(String email, String password, String birthDate) {
         return SignupRequest.builder()
                 .email(email)
                 .password(password)

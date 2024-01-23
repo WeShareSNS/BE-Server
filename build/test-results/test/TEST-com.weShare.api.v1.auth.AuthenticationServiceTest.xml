@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weShare.api.v1.auth.AuthenticationServiceTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2024-01-23T06:46:42" hostname="hyunwoo-MacBookAir.local" time="0.821">
+<testsuite name="com.weShare.api.v1.auth.AuthenticationServiceTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2024-01-23T09:03:23" hostname="hyunwoo-MacBookAir.local" time="0.802">
   <properties/>
-  <testcase name="사용자가 로그인하면 access 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.109"/>
-  <testcase name="사용자는 로그아웃을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.124"/>
-  <testcase name="refresh 토큰을 통해서 access 토큰을 재발행시 refresh 토큰을 재발행한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.101"/>
-  <testcase name="사용자는 회원가입을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.177"/>
-  <testcase name="이미 가입된 이메일인 경우 예외가 발생한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.117"/>
-  <testcase name="사용자가 로그인하면 refresh 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.091"/>
-  <testcase name="refresh token을 통해서 accessToken을 재발행 할 수있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.097"/>
-  <system-out><![CDATA[2024.01.23 15:46:42.604 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationServiceTest]: AuthenticationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
-2024.01.23 15:46:42.604 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationServiceTest 
+  <testcase name="사용자가 로그인하면 access 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.103"/>
+  <testcase name="사용자는 로그아웃을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.109"/>
+  <testcase name="refresh 토큰을 통해서 access 토큰을 재발행시 refresh 토큰을 재발행한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.097"/>
+  <testcase name="사용자는 회원가입을 할 수 있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.183"/>
+  <testcase name="이미 가입된 이메일인 경우 예외가 발생한다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.114"/>
+  <testcase name="사용자가 로그인하면 refresh 토큰을 발급 받는다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.093"/>
+  <testcase name="refresh token을 통해서 accessToken을 재발행 할 수있다." classname="com.weShare.api.v1.auth.AuthenticationServiceTest" time="0.096"/>
+  <system-out><![CDATA[2024.01.23 18:03:23.188 [Test worker] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weShare.api.v1.auth.AuthenticationServiceTest]: AuthenticationServiceTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration. 
+2024.01.23 18:03:23.188 [Test worker] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weShare.WeShareApplication for test class com.weShare.api.v1.auth.AuthenticationServiceTest 
 Hibernate: insert into users (birth_date,email,name,password,profile_img,role) values (?,?,?,?,?,?)
 Hibernate: select u1_0.user_id,u1_0.birth_date,u1_0.email,u1_0.name,u1_0.password,u1_0.profile_img,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select rt1_0.id,rt1_0.token,rt1_0.token_type,rt1_0.user_id from refresh_token rt1_0 join users u1_0 on rt1_0.user_id=u1_0.user_id where rt1_0.user_id=?

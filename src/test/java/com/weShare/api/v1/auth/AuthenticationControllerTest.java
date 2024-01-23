@@ -11,6 +11,7 @@ import com.weShare.api.v1.token.TokenType;
 import com.weShare.api.v1.token.jwt.JwtService;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenFromRedis;
 import com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepository;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -41,6 +42,8 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     private LogoutAccessTokenRedisRepository logoutTokenRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private CookieTokenHandler cookieTokenHandler;
 
     @AfterEach
     void tearDown() {
@@ -55,7 +58,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         SignupRequest request = createSignupRequest(
                 "email@asd.com",
                 "password",
-                LocalDate.of(1999, 9, 27)
+                "1999-09-27"
         );
         String content = getContent(request);
 
@@ -91,15 +94,13 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     @DisplayName("사용자는 refresh 토큰을 통해서 access 토큰을 발급받을 수 있다.")
     public void reissueToken() throws Exception {
         // given
+        String cookieName = "Refresh-Token";
         User user = createAndSaveUser("email@asd.com", "password");
         String refreshToken = jwtService.generateRefreshToken(user);
         createAndSaveToken(user, refreshToken);
-        ReissueTokenRequest reissueTokenRequest = new ReissueTokenRequest(refreshToken);
-        String content = getContent(reissueTokenRequest);
-
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/reissue-token")
-                        .content(content)
+                        .cookie(new Cookie(cookieName, refreshToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -127,7 +128,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         Assertions.assertTrue(logoutToken.isPresent());
     }
 
-    private SignupRequest createSignupRequest(String email, String password, LocalDate birthDate) {
+    private SignupRequest createSignupRequest(String email, String password, String birthDate) {
         return SignupRequest.builder()
                 .email(email)
                 .password(password)

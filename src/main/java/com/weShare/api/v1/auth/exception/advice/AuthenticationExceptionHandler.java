@@ -1,6 +1,7 @@
 package com.weShare.api.v1.auth.exception.advice;
 
 import com.weShare.api.v1.auth.exception.EmailDuplicateException;
+import com.weShare.api.v1.auth.exception.InvalidTokenException;
 import com.weShare.api.v1.auth.exception.TokenNotFoundException;
 import com.weShare.api.v1.auth.exception.TokenTimeOutException;
 import com.weShare.api.v1.common.Response;
