@@ -2,6 +2,7 @@ package com.weShare.api.v1.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.weShare.api.v1.IntegrationMvcTestSupport;
+import com.weShare.api.v1.auth.controller.dto.DuplicateEmailRequest;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.SignupRequest;
 import com.weShare.api.v1.domain.user.Role;
@@ -70,6 +71,59 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("사용자 이메일 중복시 409를 반환한다.")
+    public void duplicateEmailConflict() throws Exception {
+        // given
+        String email = "email@asd.com";
+        String password = "password";
+        createAndSaveUser(email, password);
+        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
+        String content = getContent(request);
+
+        // when // then
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("사용자 이메일이 중복 되지 않았는지 확인할 수 있다.")
+    public void duplicateEmailOk() throws Exception {
+        // given
+        String email = "email@asd.com";
+        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
+        String content = getContent(request);
+
+        // when // then
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("사용자가 이메일 양식을 지키지 않으면 401을 반환한다.")
+    public void duplicateEmailBadRequest() throws Exception {
+        // given
+        String email = "email";
+        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
+        String content = getContent(request);
+
+        // when // then
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

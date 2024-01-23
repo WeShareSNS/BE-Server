@@ -1,6 +1,7 @@
 package com.weShare.api.v1.auth;
 
 import com.weShare.api.IntegrationTestSupport;
+import com.weShare.api.v1.auth.controller.dto.DuplicateEmailRequest;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.SignupRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
@@ -68,6 +69,20 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
                 () -> assertTrue(passwordEncoder.matches(password, findUSer.getPassword())),
                 () -> assertEquals(findUSer.getBirthDate(), LocalDate.parse(request.getBirthDate()))
         );
+    }
+
+    @Test
+    @DisplayName("이메일이 중복되면 예외가 발생한다.")
+    public void duplicateEmail() {
+        // given
+        String email = "email@asd.com";
+        String password = "password";
+        createAndSaveUser(email, password);
+        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
+        // when // then
+        assertThatThrownBy(() -> authService.duplicateEmail(request))
+                .isInstanceOf(EmailDuplicateException.class)
+                .hasMessage(email + "은 가입된 이메일 입니다.");
     }
 
     @Test
