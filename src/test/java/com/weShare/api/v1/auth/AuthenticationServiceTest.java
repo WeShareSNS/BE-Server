@@ -1,6 +1,7 @@
 package com.weShare.api.v1.auth;
 
 import com.weShare.api.IntegrationTestSupport;
+import com.weShare.api.v1.auth.exception.EmailDuplicateException;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
@@ -78,7 +79,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
 
         // when //then
         assertThatThrownBy(() -> authService.signup(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(EmailDuplicateException.class)
                 .hasMessage(String.format("%s은 가입된 이메일 입니다.", email));
     }
 
@@ -126,7 +127,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("refresh 토큰을 통해서 access 토큰을 재발행시 기존 refresh 토큰을 재발행한다.")
+    @DisplayName("refresh 토큰을 통해서 access 토큰을 재발행시 refresh 토큰을 재발행한다.")
     public void refreshToken() {
         // given
         User user = createAndSaveUser("email", "password");

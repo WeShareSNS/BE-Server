@@ -9,5 +9,7 @@ public interface JwtService {
     String generateRefreshToken(User user);
     boolean isTokenValid(String token, UserDetails userDetails);
 
+    void validateToken(String token, User user);
+
     long getExpireTimeFromToken(String token);
 }
