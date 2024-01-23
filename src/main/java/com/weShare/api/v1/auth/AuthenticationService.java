@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -44,14 +45,22 @@ public class AuthenticationService {
     }
 
     private User createUser(SignupRequest request) {
+        LocalDate birthDate = LocalDate.parse(request.getBirthDate());
+        validateDate(birthDate);
+
         return User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(getDefaultUsername())
-                .birthDate(request.getBirthDate())
+                .birthDate(birthDate)
                 .profileImg(getDefaultProfileImgURL())
                 .role(Role.USER)
                 .build();
+    }
+    private void validateDate(LocalDate birthDate) {
+        if (LocalDate.now().isBefore(birthDate)) {
+            throw new IllegalArgumentException("생년월일은 미래 날짜를 입력하실 수 없습니다.");
+        }
     }
 
     //우선 16자리로 (중복 올라가도 사용자는 닉네임 변경할꺼같으니까)

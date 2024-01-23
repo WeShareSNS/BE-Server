@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class Response<T> {
 
@@ -48,10 +50,10 @@ public class Response<T> {
         private int state;
         private String code;
         private T data;
-        private String message;
+        private String[] message;
     }
 
-    public ResponseEntity<FailBody<T>> fail(T data, String code, String msg, HttpStatus status) {
+    private ResponseEntity<FailBody<T>> fail(T data, String code, HttpStatus status, String ...msg) {
         FailBody<T> body = FailBody.<T>builder()
                 .state(status.value())
                 .code(code)
@@ -61,7 +63,11 @@ public class Response<T> {
         return ResponseEntity.status(status).body(body);
     }
 
-    public ResponseEntity<FailBody<T>> fail(String code, String msg, HttpStatus status) {
-        return fail(null, code, msg, status);
+    public ResponseEntity<FailBody<T>> fail(String code, HttpStatus status, String msg) {
+        return fail(null, code, status, msg);
+    }
+
+    public ResponseEntity<FailBody<T>> fail(String code, HttpStatus status, String[] messages) {
+        return fail(null, code, status, messages);
     }
 }

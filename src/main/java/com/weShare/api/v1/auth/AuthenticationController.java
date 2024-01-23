@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,10 @@ public class AuthenticationController {
           @ApiResponse(responseCode = "200",
                   description = " 로그인 성공: 사용자의 이름은 UUID, 프로필은 기본 프로필 이미지 URL이 등록됩니다."),
           @ApiResponse(responseCode = "400", description = "입력 파라미터를 확인해주세요"),
-          @ApiResponse(responseCode = "401", description = ""),
-          @ApiResponse(responseCode = "403", description = ""),
-          @ApiResponse(responseCode = "404", description = "USER NOT FOUND"),
-          @ApiResponse(responseCode = "500", description = ""),
+          @ApiResponse(responseCode = "409", description = "사용자 이메일이 중복되었습니다.")
   })
   @PostMapping("/signup")
-  public ResponseEntity signup(@RequestBody SignupRequest request) {
+  public ResponseEntity signup(@Valid @RequestBody SignupRequest request) {
     service.signup(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
