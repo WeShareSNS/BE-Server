@@ -59,7 +59,7 @@ public class AuthenticationController {
           @ApiResponse(responseCode = "400", description = "http body를 확인해주세요"),
           @ApiResponse(responseCode = "404", description = "이메일을 확인해 주세요")
   })
-  @PostMapping("/login")
+  @PostMapping("/signin")
   public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
     TokenDto tokenDto = service.login(request, new Date(System.nanoTime()));
     cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
