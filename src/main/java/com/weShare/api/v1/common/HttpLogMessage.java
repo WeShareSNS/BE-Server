@@ -15,6 +15,7 @@ public final class HttpLogMessage {
 
     //HTTP 헤더 필드는 HTTP 프록시 또는 로드 밸런서를 통해 웹 서버 에 연결하는 클라이언트의 원래 IP 주소를 식별하는 일반적인 방법입니다 .
     private static final String X_FORWARDED_FOR_HEADER_NAME = "X-FORWARDED-FOR";
+    private static final String DEFAULT_CHARACTERS_ENCODING = "UTF-8";
     private String httpMethod;
     private String requestUri;
     private HttpStatus httpStatus;
@@ -90,9 +91,19 @@ public final class HttpLogMessage {
             ContentCachingResponseWrapper responseWrapper,
             double elapsedTime
     ) throws IOException {
+        requestWrapper.setCharacterEncoding(DEFAULT_CHARACTERS_ENCODING);
+        responseWrapper.setCharacterEncoding(DEFAULT_CHARACTERS_ENCODING);
+        return new HttpLogMessage(requestWrapper, responseWrapper, elapsedTime);
+    }
 
-        requestWrapper.setCharacterEncoding("UTF-8");
-        responseWrapper.setCharacterEncoding("UTF-8");
+    public static HttpLogMessage createInstance(
+            ContentCachingRequestWrapper requestWrapper,
+            ContentCachingResponseWrapper responseWrapper,
+            double elapsedTime,
+            String encoding
+    ) throws IOException {
+        requestWrapper.setCharacterEncoding(encoding);
+        responseWrapper.setCharacterEncoding(encoding);
         return new HttpLogMessage(requestWrapper, responseWrapper, elapsedTime);
     }
 

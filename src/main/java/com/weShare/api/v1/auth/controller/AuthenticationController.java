@@ -36,8 +36,8 @@ public class AuthenticationController {
           @ApiResponse(responseCode = "409", description = "사용자 이메일이 중복되었습니다.")
   })
   @PostMapping("/signup")
-  public ResponseEntity signup(@Valid @RequestBody SignupRequest request) {
-    service.signup(request);
+  public ResponseEntity join(@Valid @RequestBody SignupRequest request) {
+    service.join(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

@@ -39,7 +39,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public User signup(SignupRequest request) {
+    public User join(SignupRequest request) {
         validateEmail(request.getEmail());
         return repository.save(createUser(request));
     }

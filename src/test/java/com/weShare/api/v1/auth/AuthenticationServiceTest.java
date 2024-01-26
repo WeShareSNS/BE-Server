@@ -61,7 +61,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String password = "password";
         SignupRequest request = createJoinRequest(email, password, "1999-09-27");
         // when
-        authService.signup(request);
+        authService.join(request);
         // then
         User findUSer = userRepository.findByEmail(email).get();
         assertAll(
@@ -96,7 +96,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         SignupRequest request = createJoinRequest(email, password, birthDate);
 
         // when //then
-        assertThatThrownBy(() -> authService.signup(request))
+        assertThatThrownBy(() -> authService.join(request))
                 .isInstanceOf(EmailDuplicateException.class)
                 .hasMessage(String.format("%s은 가입된 이메일 입니다.", email));
     }
