@@ -1,25 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN" monitorInterval="30">
-
+<Configuration>
     <Properties>
-        <Property name="filename">logs/${ctx:some.key:-default.log}</Property>
+        <!-- 로그 파일 디렉토리 경로 -->
+        <Property name="LOG_FILE_PATH">logs</Property>
+        <!-- 로그 파일 이름 -->
+        <property name="LOG_FILE_NAME" value="${LOG_FILE_PATH}/app.log"/>
+        <!-- 로그 파일 패턴 -->
+        <property name="LOG_FILE_PATTERN" value="${LOG_FILE_PATH}/app_%d{yyyy-MM-dd}_%i.log.gz"/>
+        <!-- 로그 패턴 -->
+        <property name="LOG_PATTERN"
+                  value="[%equals{%X{request_id}}{}{startup}] %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Properties>
 
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%equals{%X{request_id}}{}{startup}] %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        <Console name="STDOUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
-        <File name="File" fileName="${filename}">
-            <PatternLayout>
-                <pattern>%d %p %C{1.} [%t] %m%n</pattern>
-            </PatternLayout>
-        </File>
+
+        <RollingFile
+                name="RollingFile"
+                fileName="${LOG_FILE_NAME}"
+                filePattern="${LOG_FILE_PATTERN}">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="256 MB"/>
+            </Policies>
+            <!--            최대 쌓이는 로그 수-->
+            <DefaultRolloverStrategy max="100">
+                <Delete basePath="logs">
+                    <IfFileName glob="app_*.log.gz"/>
+                    <!--                    1주일-->
+                    <IfLastModified age="P7D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
     </Appenders>
 
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
+            <SpringProfile name="!prod">
+                <AppenderRef ref="STDOUT"/>
+            </SpringProfile>
+            <AppenderRef ref="RollingFile"/>
         </Root>
     </Loggers>
 </Configuration>

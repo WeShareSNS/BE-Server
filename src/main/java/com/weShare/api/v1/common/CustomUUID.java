@@ -15,6 +15,11 @@ public final class CustomUUID {
                 .substring(DEFAULT_START_NUMBER, length);
     }
 
+    public static String getCustomUUID(int length) {
+        return getRandomUUID()
+                .substring(DEFAULT_START_NUMBER, length);
+    }
+
     private static String getRandomUUID() {
         return UUID.randomUUID().toString();
     }
