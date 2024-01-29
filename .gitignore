@@ -1,6 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/macos,eclipse,java,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,eclipse,java,intellij
 
+#log
+/logs
+*.log
+app_*.log.gz
+
 ### Eclipse ###
 .metadata
 bin/
