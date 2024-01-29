@@ -15,6 +15,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 import static com.weShare.api.v1.domain.user.Permission.ADMIN_READ;
 import static com.weShare.api.v1.domain.user.Permission.ADMIN_CREATE;
 import static com.weShare.api.v1.domain.user.Permission.ADMIN_UPDATE;
@@ -35,7 +37,9 @@ import static org.springframework.http.HttpMethod.DELETE;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private static final String[] ALLOWED_URLS = {"/api/v1/auth/**",
+    private static final String[] ALLOWED_URLS = {
+            "/api/v1/auth/**",
+            "/favicon.ico",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",

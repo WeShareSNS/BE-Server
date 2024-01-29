@@ -32,9 +32,10 @@ public class User implements UserDetails {
     @Column(name = "profile_img")
     private String profileImg;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)

@@ -10,8 +10,5 @@ public class WeShareApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WeShareApplication.class, args);
-		while (true) {
-			log.info("Test");
-		}
 	}
 }
