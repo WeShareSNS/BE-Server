@@ -1,8 +1,7 @@
-package com.weShare.api.v1.auth.login;
+package com.weShare.api.v1.auth.login.policy;
 
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
-import com.weShare.api.v1.auth.login.policy.AuthLoginPolicy;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;
@@ -18,11 +17,12 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 
+import static com.weShare.api.v1.domain.Social.DEFAULT;
+
 @Service
 @RequiredArgsConstructor
 public class DefaultLoginPolicy implements AuthLoginPolicy {
 
-    private static final String PROVIDER_NAME = "default";
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -55,7 +55,7 @@ public class DefaultLoginPolicy implements AuthLoginPolicy {
 
     @Override
     public boolean isIdentityProvider(String providerName) {
-        return PROVIDER_NAME.equals(providerName);
+        return DEFAULT.getProviderName().equals(providerName);
     }
 
     private void reissueRefreshTokenByUser(User user, String refreshToken) {

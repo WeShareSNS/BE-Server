@@ -4,8 +4,10 @@ import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
 import com.weShare.api.v1.auth.login.ResponseAuthToken;
 import com.weShare.api.v1.common.CustomUUID;
+import com.weShare.api.v1.domain.Social;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
+import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;
 import com.weShare.api.v1.token.RefreshToken;
@@ -14,10 +16,11 @@ import com.weShare.api.v1.token.TokenType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -32,42 +35,65 @@ public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPol
         ResponseAuthToken token = getToken(request.getCode());
         String responseBody = getResponseBody(token.accessToken());
         User authUser = getAuthUser(responseBody);
-        //사용자 회원가입 되어 있으면 로그인처리 (다른 auth에서 같은 이메일을 사용할 수 있음...)
-        saveAuthUser(authUser);
+        saveCheckAuthUser(authUser);
         TokenDto tokenDto = getTokenDto(authUser, issuedAt);
         reissueRefreshTokenByUser(authUser, tokenDto.refreshToken());
         return tokenDto;
     }
 
     abstract protected ResponseAuthToken getToken(String code);
+
     abstract protected String getResponseBody(String accessToken);
 
     abstract protected User getAuthUser(String responseBody);
 
-    private User saveAuthUser(User user) {
-        return userRepository.save(user);
+    private void saveCheckAuthUser(User authUser) {
+        if (!isDuplicateUser(authUser)) {
+            userRepository.save(authUser);
+        }
     }
 
-    protected User createAuthUser(String email, String profileImg, LocalDate birthDate) {
+    protected User createAuthUser(String email, String profileImg, LocalDate birthDate, Social social) {
         return User.builder()
                 .email(email)
                 .name(CustomUUID.getCustomUUID(16, ""))
                 .profileImg(profileImg)
                 .role(Role.USER)
+                .social(social)
                 .password(CustomUUID.getCustomUUID(16, ""))
                 .birthDate(birthDate)
                 .build();
     }
 
-    protected User createAuthUser(String email, String profileImg) {
+    protected User createAuthUser(String email, String profileImg, Social social) {
         return User.builder()
                 .email(email)
                 .name(CustomUUID.getCustomUUID(16, ""))
                 .profileImg(profileImg)
                 .role(Role.USER)
+                .social(social)
                 .password(CustomUUID.getCustomUUID(16, ""))
                 .build();
     }
+
+    private boolean isDuplicateUser(User newUser) {
+        Optional<User> existingUserOptional = userRepository.findByEmail(newUser.getEmail());
+
+        if (existingUserOptional.isPresent()) {
+            User existingUser = existingUserOptional.get();
+            if (areSocialProvidersEqual(newUser, existingUser)) {
+                return true;
+            }
+            throw new EmailDuplicateException(newUser.getEmail() + "은 기존 사용자이거나 다른 소셜 로그인으로 가입된 회원입니다.");
+        }
+        return false;
+    }
+
+    private boolean areSocialProvidersEqual(User newUser, User existingUser) {
+        // 소셜 정보가 같으면 true, 다르면 false 반환
+        return Objects.equals(newUser.getSocial(), existingUser.getSocial());
+    }
+
 
     private void reissueRefreshTokenByUser(User user, String refreshToken) {
         RefreshToken token = refreshTokenRepository.findTokenByUser(user)

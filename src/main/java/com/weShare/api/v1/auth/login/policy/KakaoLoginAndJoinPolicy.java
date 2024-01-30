@@ -18,11 +18,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import static com.weShare.api.v1.domain.Social.KAKAO;
+
 
 @Log4j2
 public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
-
-    private static final String PROVIDER_NAME = "kakao";
 
     public KakaoLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
         super(evn, userRepository, refreshTokenRepository, jwtService);
@@ -30,7 +30,7 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
 
     @Override
     public boolean isIdentityProvider(String providerName) {
-        return PROVIDER_NAME.equals(providerName);
+        return KAKAO.getProviderName().equals(providerName);
     }
 
     @Override
@@ -85,6 +85,6 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
         JsonElement element = JsonParser.parseString(responseBody);
         String profileImg = element.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image").getAsString();
         String email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
-        return createAuthUser(email, profileImg);
+        return createAuthUser(email, profileImg, KAKAO);
     }
 }

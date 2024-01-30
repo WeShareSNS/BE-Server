@@ -1,5 +1,6 @@
 package com.weShare.api.v1.domain.user.entity;
 
+import com.weShare.api.v1.domain.Social;
 import com.weShare.api.v1.domain.user.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -41,14 +42,25 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private Social social;
+
     @Builder
-    private User(String email, String name, String profileImg, LocalDate birthDate, String password, Role role) {
+    private User(
+            String email, String name,
+            String profileImg,
+            LocalDate birthDate,
+            String password,
+            Role role,
+            Social social
+    ) {
         this.email = email;
         this.name = name;
         this.profileImg = profileImg;
         this.birthDate = birthDate;
         this.password = password;
         this.role = role;
+        this.social = social;
     }
 
     @Override

@@ -1,10 +1,7 @@
 package com.weShare.api.v1.config;
 
 import com.weShare.api.v1.auth.login.*;
-import com.weShare.api.v1.auth.login.policy.AuthLoginPolicy;
-import com.weShare.api.v1.auth.login.policy.GoogleLoginAndJoinPolicy;
-import com.weShare.api.v1.auth.login.policy.KakaoLoginAndJoinPolicy;
-import com.weShare.api.v1.auth.login.policy.NaverLoginAndJoinPolicy;
+import com.weShare.api.v1.auth.login.policy.*;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;
 import com.weShare.api.v1.token.RefreshTokenRepository;

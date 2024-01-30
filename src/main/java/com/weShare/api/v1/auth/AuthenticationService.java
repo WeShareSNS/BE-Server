@@ -6,6 +6,7 @@ import com.weShare.api.v1.auth.controller.dto.SignupRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
 import com.weShare.api.v1.auth.login.AuthLoginService;
 import com.weShare.api.v1.common.CustomUUID;
+import com.weShare.api.v1.domain.Social;
 import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weShare.api.v1.token.exception.InvalidTokenException;
 import com.weShare.api.v1.token.exception.TokenNotFoundException;
@@ -71,6 +72,7 @@ public class AuthenticationService {
                 .birthDate(birthDate)
                 .profileImg(getDefaultProfileImgURL())
                 .role(Role.USER)
+                .social(Social.DEFAULT)
                 .build();
     }
     private void validateDate(LocalDate birthDate) {

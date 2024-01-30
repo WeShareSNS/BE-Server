@@ -17,10 +17,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import static com.weShare.api.v1.domain.Social.GOOGLE;
+
 
 public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
-
-    private static final String PROVIDER_NAME = "google";
 
     public GoogleLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
         super(evn, userRepository, refreshTokenRepository, jwtService);
@@ -28,7 +28,7 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
 
     @Override
     public boolean isIdentityProvider(String providerName) {
-        return PROVIDER_NAME.equals(providerName);
+        return GOOGLE.getProviderName().equals(providerName);
     }
 
     @Override
@@ -77,6 +77,6 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
         JsonElement element = JsonParser.parseString(responseBody);
         String email = element.getAsJsonObject().get("email").getAsString();
         String profileImg = element.getAsJsonObject().get("picture").getAsString();
-        return createAuthUser(email, profileImg);
+        return createAuthUser(email, profileImg, GOOGLE);
     }
 }

@@ -20,9 +20,9 @@ import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
 
-public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
+import static com.weShare.api.v1.domain.Social.NAVER;
 
-    private static final String PROVIDER_NAME = "naver";
+public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
     public NaverLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
         super(evn, userRepository, refreshTokenRepository, jwtService);
@@ -30,7 +30,7 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
 
     @Override
     public boolean isIdentityProvider(String providerName) {
-        return PROVIDER_NAME.equals(providerName);
+        return NAVER.getProviderName().equals(providerName);
     }
 
     @Override
@@ -88,6 +88,6 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
         String year = element.getAsJsonObject().get("response").getAsJsonObject().get("birthyear").getAsString();
         String date = element.getAsJsonObject().get("response").getAsJsonObject().get("birthday").getAsString();
         LocalDate birthDate = LocalDate.parse(String.format("%s-%s", year, date));
-        return createAuthUser(email, profileImg, birthDate);
+        return createAuthUser(email, profileImg, birthDate, NAVER);
     }
 }
