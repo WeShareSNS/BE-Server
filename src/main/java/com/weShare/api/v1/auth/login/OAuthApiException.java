@@ -1,4 +1,4 @@
-package com.weShare.api.v1.auth.kakao;
+package com.weShare.api.v1.auth.login;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;

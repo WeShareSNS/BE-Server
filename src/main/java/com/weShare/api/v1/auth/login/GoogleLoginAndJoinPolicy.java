@@ -1,41 +1,48 @@
-package com.weShare.api.v1.auth.google;
+package com.weShare.api.v1.auth.login;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.weShare.api.v1.auth.kakao.OAuthApiException;
-import com.weShare.api.v1.auth.kakao.ResponseAuthToken;
-import com.weShare.api.v1.auth.kakao.ResponseAuthUser;
-import com.weShare.api.v1.common.CustomUUID;
-import com.weShare.api.v1.domain.user.Role;
+import com.weShare.api.v1.auth.controller.dto.LoginRequest;
+import com.weShare.api.v1.auth.controller.dto.TokenDto;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
+import com.weShare.api.v1.jwt.JwtService;
+import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.token.TokenType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-import java.time.LocalDate;
+import java.util.Date;
 
-@Service
-@Slf4j
-@Transactional
-@Component
-@RequiredArgsConstructor
-public class AuthGoogleService {
+public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
-    private final Environment evn;
-    private final UserRepository userRepository;
+    private static final String PROVIDER_NAME = "google";
 
-    public ResponseAuthToken getGoogleToken(String code) {
+    public GoogleLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
+        super(evn, userRepository, refreshTokenRepository, jwtService);
+    }
+
+    @Override
+    public TokenDto login(LoginRequest request, Date issuedAt) {
+        ResponseAuthToken token = getToken(request.getCode());
+        String responseBody = getResponseBody(token.accessToken());
+        User authUser = getAuthUser(responseBody);
+        TokenDto tokenDto = getTokenDto(authUser, issuedAt);
+        reissueRefreshTokenByUser(authUser, tokenDto.refreshToken());
+        return tokenDto;
+    }
+
+    @Override
+    public boolean isIdentityProvider(String providerName) {
+        return PROVIDER_NAME.equals(providerName);
+    }
+
+    private ResponseAuthToken getToken(String code) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.google.token-uri");
         MultiValueMap<String, String> body = getTokenRequestParam(code);
         RestClient restClient = RestClient.create(reqURL);
@@ -61,35 +68,23 @@ public class AuthGoogleService {
         return body;
     }
 
-    public ResponseAuthUser getGoogleUser(String accessToken) {
-        log.info("token={}", accessToken);
+    private String getResponseBody(String accessToken) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.google.user-info-uri");
 
         RestClient restClient = RestClient.create(reqURL);
-        String responseBody = restClient.get()
+        return restClient.get()
                 .header(HttpHeaders.AUTHORIZATION, TokenType.BEARER.getType() + accessToken)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, rep) -> {
                     throw new OAuthApiException(rep.getStatusCode(), rep.getHeaders());
                 })
                 .body(String.class);
-
-        return ResponseAuthUser.from(craeteAuthUser(responseBody));
     }
 
-    private User craeteAuthUser(String responseBody) {
+    private User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
-        log.info("reall result={}",element);
         String email = element.getAsJsonObject().get("email").getAsString();
         String profileImg = element.getAsJsonObject().get("picture").getAsString();
-
-        User user = User.builder()
-                .email(email)
-                .name(CustomUUID.getCustomUUID(16, ""))
-                .profileImg(profileImg)
-                .role(Role.USER)
-                .password(CustomUUID.getCustomUUID(16, ""))
-                .build();
-        return userRepository.save(user);
+        return createAuthUser(email, profileImg);
     }
 }

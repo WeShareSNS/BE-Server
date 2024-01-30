@@ -1,7 +1,7 @@
 package com.weShare.api.v1.auth.controller;
 
-import com.weShare.api.v1.auth.*;
 import com.weShare.api.v1.auth.controller.dto.*;
+import com.weShare.api.v1.auth.login.AuthenticationService;
 import com.weShare.api.v1.common.CookieTokenHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
 
   private final AuthenticationService service;
@@ -60,7 +62,9 @@ public class AuthenticationController {
           @ApiResponse(responseCode = "404", description = "이메일을 확인해 주세요")
   })
   @PostMapping("/signin")
-  public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+  public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody(required = false) LoginRequest request,
+                                                      HttpServletResponse response) {
+    log.info("data={}", request);
     TokenDto tokenDto = service.login(request, new Date(System.nanoTime()));
     cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
     return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));

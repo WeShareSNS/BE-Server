@@ -1,34 +1,50 @@
-package com.weShare.api.v1.auth.kakao;
+package com.weShare.api.v1.auth.login;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.weShare.api.v1.common.CustomUUID;
-import com.weShare.api.v1.domain.user.Role;
+import com.weShare.api.v1.auth.controller.dto.LoginRequest;
+import com.weShare.api.v1.auth.controller.dto.TokenDto;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
+import com.weShare.api.v1.jwt.JwtService;
+import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.token.TokenType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.env.Environment;
-import org.springframework.http.*;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-@Service
-@Slf4j
-@Component
-@RequiredArgsConstructor
-@Transactional
-public class AuthKaKaoService {
+import java.util.Date;
 
-    private final Environment evn;
-    private final UserRepository userRepository;
+@Log4j2
+public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
-    public ResponseAuthToken getKakaoToken(String code) {
+    private static final String PROVIDER_NAME = "kakao";
+
+    public KakaoLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
+        super(evn, userRepository, refreshTokenRepository, jwtService);
+    }
+
+    @Override
+    public TokenDto login(LoginRequest request, Date issuedAt) {
+        ResponseAuthToken token = getToken(request.getCode());
+        String responseBody = getResponseBody(token.accessToken());
+        User authUser = getAuthUser(responseBody);
+        TokenDto tokenDto = getTokenDto(authUser, issuedAt);
+        reissueRefreshTokenByUser(authUser, tokenDto.refreshToken());
+        return tokenDto;
+    }
+
+    @Override
+    public boolean isIdentityProvider(String providerName) {
+        return PROVIDER_NAME.equals(providerName);
+    }
+
+    private ResponseAuthToken getToken(String code) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.kakao.token-uri");
         MultiValueMap<String, String> body = getTokenRequestParam(code);
         RestClient restClient = RestClient.create(reqURL);
@@ -54,11 +70,11 @@ public class AuthKaKaoService {
         return body;
     }
 
-    public ResponseAuthUser getKakaoUser(String accessToken) {
+    private String getResponseBody(String accessToken) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.kakao.user-info-uri");
 
         RestClient restClient = RestClient.create(reqURL);
-        String responseBody = restClient.post()
+        return restClient.post()
                 .headers(
                         httpHeaders -> {
                             httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
@@ -70,24 +86,13 @@ public class AuthKaKaoService {
                 })
                 .toEntity(String.class)
                 .getBody();
-
-        return ResponseAuthUser.from(craeteAuthUser(responseBody));
     }
 
-    private User craeteAuthUser(String responseBody) {
+    private User getAuthUser(String responseBody) {
+        log.info("result={}", responseBody);
         JsonElement element = JsonParser.parseString(responseBody);
-        String profileImg = element.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image_url").getAsString();
-//        String profileImg = element.getAsJsonObject().get("properties").getAsJsonObject().get("thumbnail_image").getAsString();
+        String profileImg = element.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image").getAsString();
         String email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
-
-        User user = User.builder()
-                .email(email)
-                .name(CustomUUID.getCustomUUID(16, ""))
-                .profileImg(profileImg)
-                .role(Role.USER)
-                .password(CustomUUID.getCustomUUID(16, ""))
-                .build();
-        return userRepository.save(user);
+        return createAuthUser(email, profileImg);
     }
-
 }

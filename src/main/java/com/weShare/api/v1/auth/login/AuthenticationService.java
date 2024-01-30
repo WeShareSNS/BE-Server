@@ -1,4 +1,4 @@
-package com.weShare.api.v1.auth;
+package com.weShare.api.v1.auth.login;
 
 import com.weShare.api.v1.auth.controller.dto.DuplicateEmailRequest;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
@@ -19,7 +19,6 @@ import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +37,7 @@ public class AuthenticationService {
     private final LogoutAccessTokenRedisRepository logoutTokenRedisRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthLoginService loginService;
 
     public User join(SignupRequest request) {
         validateEmail(request.getEmail());
@@ -53,6 +53,10 @@ public class AuthenticationService {
 
     public void duplicateEmail(DuplicateEmailRequest request) {
         validateEmail(request.getEmail());
+    }
+    
+    public TokenDto login(LoginRequest request, Date issuedAt) {
+        return loginService.login(request, issuedAt);
     }
 
     private User createUser(SignupRequest request) {
@@ -77,22 +81,6 @@ public class AuthenticationService {
     //하드코딩 지우고 좀 고민해보기 s3에 담아서 사용할건지 db에서 사용할건지 yml로 처리할건지 프론트쪽에서 그냥 데이터 넘겨받아야될지도
     private String getDefaultProfileImgURL() {
         return "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg";
-    }
-
-    public TokenDto login(LoginRequest request, Date issuedAt) {
-        User user = getUserByEmailOrThrowException(request.getEmail());
-
-        String accessToken = jwtService.generateAccessToken(user, issuedAt);
-        String refreshToken = jwtService.generateRefreshToken(user, issuedAt);
-        reissueRefreshTokenByUser(user, refreshToken);
-        return new TokenDto(accessToken, refreshToken);
-    }
-
-    private User getUserByEmailOrThrowException(String email) {
-        return repository.findByEmail(email)
-                .orElseThrow(() -> {
-                    throw new UsernameNotFoundException(email + "의 사용자를 찾을 수 없습니다.");
-                });
     }
 
     private void reissueRefreshTokenByUser(User user, String refreshToken) {

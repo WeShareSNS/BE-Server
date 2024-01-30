@@ -1,41 +1,51 @@
-package com.weShare.api.v1.auth.naver;
+package com.weShare.api.v1.auth.login;
+
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.weShare.api.v1.auth.kakao.OAuthApiException;
-import com.weShare.api.v1.auth.kakao.ResponseAuthUser;
-import com.weShare.api.v1.auth.kakao.ResponseAuthToken;
-import com.weShare.api.v1.common.CustomUUID;
-import com.weShare.api.v1.domain.user.Role;
+import com.weShare.api.v1.auth.controller.dto.LoginRequest;
+import com.weShare.api.v1.auth.controller.dto.TokenDto;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
+import com.weShare.api.v1.jwt.JwtService;
+import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.token.TokenType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
+import java.util.Date;
 
-@Service
-@Slf4j
-@Transactional
-@Component
-@RequiredArgsConstructor
-public class AuthNaverService {
+public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
-    private final Environment evn;
-    private final UserRepository userRepository;
+    private static final String PROVIDER_NAME = "naver";
 
-    public ResponseAuthToken getNaverToken(String code) {
+    public NaverLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
+        super(evn, userRepository, refreshTokenRepository, jwtService);
+    }
+
+    @Override
+    public TokenDto login(LoginRequest request, Date issuedAt) {
+        ResponseAuthToken token = getToken(request.getCode());
+        String responseBody = getResponseBody(token.accessToken());
+        User authUser = getAuthUser(responseBody);
+        TokenDto tokenDto = getTokenDto(authUser, issuedAt);
+        reissueRefreshTokenByUser(authUser, tokenDto.refreshToken());
+        return tokenDto;
+    }
+
+    @Override
+    public boolean isIdentityProvider(String providerName) {
+        return PROVIDER_NAME.equals(providerName);
+    }
+
+    private ResponseAuthToken getToken(String code) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.naver.token-uri");
         MultiValueMap<String, String> body = getTokenRequestParam(code);
         RestClient restClient = RestClient.create(reqURL);
@@ -62,12 +72,11 @@ public class AuthNaverService {
         return body;
     }
 
-    public ResponseAuthUser getNaverUser(String accessToken) {
-        log.info("token={}", accessToken);
+    private String getResponseBody(String accessToken) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.naver.user-info-uri");
 
         RestClient restClient = RestClient.create(reqURL);
-        String responseBody = restClient.post()
+        return restClient.post()
                 .headers(
                         httpHeaders -> {
                             httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
@@ -79,25 +88,15 @@ public class AuthNaverService {
                 })
                 .toEntity(String.class)
                 .getBody();
-
-        return ResponseAuthUser.from(craeteAuthUser(responseBody));
     }
 
-    private User craeteAuthUser(String responseBody) {
+    private User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
         String profileImg = element.getAsJsonObject().get("response").getAsJsonObject().get("profile_image").getAsString();
         String email = element.getAsJsonObject().get("response").getAsJsonObject().get("email").getAsString();
         String year = element.getAsJsonObject().get("response").getAsJsonObject().get("birthyear").getAsString();
         String date = element.getAsJsonObject().get("response").getAsJsonObject().get("birthday").getAsString();
-
-        User user = User.builder()
-                .email(email)
-                .name(CustomUUID.getCustomUUID(16, ""))
-                .profileImg(profileImg)
-                .role(Role.USER)
-                .password(CustomUUID.getCustomUUID(16, ""))
-                .birthDate(LocalDate.parse(String.format("%s-%s", year, date)))
-                .build();
-        return userRepository.save(user);
+        LocalDate birthDate = LocalDate.parse(String.format("%s-%s", year, date));
+        return createAuthUser(email, profileImg, birthDate);
     }
 }
