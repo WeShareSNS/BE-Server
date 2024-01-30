@@ -4,11 +4,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
-public class AuthKakaoApiException extends ResponseStatusException {
+public class OAuthApiException extends ResponseStatusException {
     private final HttpHeaders headers;
 
-    public AuthKakaoApiException(HttpStatusCode status, HttpHeaders headers) {
-        super(status, "Kakao API request failed");
+    public OAuthApiException(HttpStatusCode status, HttpHeaders headers) {
+        super(status, "API request failed");
         this.headers = headers;
     }
 
