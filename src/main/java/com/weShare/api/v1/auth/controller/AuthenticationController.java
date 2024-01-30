@@ -1,7 +1,7 @@
 package com.weShare.api.v1.auth.controller;
 
 import com.weShare.api.v1.auth.controller.dto.*;
-import com.weShare.api.v1.auth.login.AuthenticationService;
+import com.weShare.api.v1.auth.AuthenticationService;
 import com.weShare.api.v1.common.CookieTokenHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

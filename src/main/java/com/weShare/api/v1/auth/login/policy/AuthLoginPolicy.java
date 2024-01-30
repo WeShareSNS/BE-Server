@@ -1,4 +1,4 @@
-package com.weShare.api.v1.auth.login;
+package com.weShare.api.v1.auth.login.policy;
 
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;

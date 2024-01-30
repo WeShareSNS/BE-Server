@@ -2,6 +2,7 @@ package com.weShare.api.v1.auth.login;
 
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.auth.login.policy.AuthLoginPolicy;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;

@@ -1,6 +1,8 @@
-package com.weShare.api.v1.auth.login;
+package com.weShare.api.v1.auth.login.policy;
 
+import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.auth.login.ResponseAuthToken;
 import com.weShare.api.v1.common.CustomUUID;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
@@ -25,19 +27,28 @@ public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPol
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
 
-    @Transactional
+    @Override
+    public TokenDto login(LoginRequest request, Date issuedAt) {
+        ResponseAuthToken token = getToken(request.getCode());
+        String responseBody = getResponseBody(token.accessToken());
+        User authUser = getAuthUser(responseBody);
+        //사용자 회원가입 되어 있으면 로그인처리 (다른 auth에서 같은 이메일을 사용할 수 있음...)
+        saveAuthUser(authUser);
+        TokenDto tokenDto = getTokenDto(authUser, issuedAt);
+        reissueRefreshTokenByUser(authUser, tokenDto.refreshToken());
+        return tokenDto;
+    }
+
+    abstract protected ResponseAuthToken getToken(String code);
+    abstract protected String getResponseBody(String accessToken);
+
+    abstract protected User getAuthUser(String responseBody);
+
+    private User saveAuthUser(User user) {
+        return userRepository.save(user);
+    }
+
     protected User createAuthUser(String email, String profileImg, LocalDate birthDate) {
-        User user = createUserWithBirthDate(email, profileImg, birthDate);
-        return userRepository.save(user);
-    }
-
-    @Transactional
-    protected User createAuthUser(String email, String profileImg) {
-        User user = createUserWithoutBirthDate(email, profileImg);
-        return userRepository.save(user);
-    }
-
-    private User createUserWithBirthDate(String email, String profileImg, LocalDate birthDate) {
         return User.builder()
                 .email(email)
                 .name(CustomUUID.getCustomUUID(16, ""))
@@ -48,7 +59,7 @@ public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPol
                 .build();
     }
 
-    private User createUserWithoutBirthDate(String email, String profileImg) {
+    protected User createAuthUser(String email, String profileImg) {
         return User.builder()
                 .email(email)
                 .name(CustomUUID.getCustomUUID(16, ""))
@@ -58,7 +69,7 @@ public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPol
                 .build();
     }
 
-    protected void reissueRefreshTokenByUser(User user, String refreshToken) {
+    private void reissueRefreshTokenByUser(User user, String refreshToken) {
         RefreshToken token = refreshTokenRepository.findTokenByUser(user)
                 .orElse(createRefreshTokenWithUser(user, refreshToken));
 
@@ -74,7 +85,7 @@ public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPol
                 .build();
     }
 
-    protected TokenDto getTokenDto(User user, Date issuedAt) {
+    private TokenDto getTokenDto(User user, Date issuedAt) {
         String accessToken = jwtService.generateAccessToken(user, issuedAt);
         String refreshToken = jwtService.generateRefreshToken(user, issuedAt);
         return new TokenDto(accessToken, refreshToken);

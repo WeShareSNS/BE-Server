@@ -1,5 +1,6 @@
 package com.weShare.api.v1.auth.controller.advice;
 
+import com.weShare.api.v1.auth.login.OAuthApiException;
 import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weShare.api.v1.token.exception.InvalidTokenException;
 import com.weShare.api.v1.token.exception.TokenNotFoundException;
@@ -30,6 +31,13 @@ public class AuthenticationExceptionHandler {
     public ResponseEntity illegalArgumentExceptionHandler (IllegalArgumentException e){
         log.error("[exceptionHandler] ex", e);
         return response.fail(-4000, HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(OAuthApiException.class)
+    public ResponseEntity oAuthApiExceptionHandler (OAuthApiException e){
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(-4001, HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

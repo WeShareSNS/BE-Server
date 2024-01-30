@@ -1,9 +1,9 @@
-package com.weShare.api.v1.auth.login;
+package com.weShare.api.v1.auth.login.policy;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.weShare.api.v1.auth.controller.dto.LoginRequest;
-import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.auth.login.OAuthApiException;
+import com.weShare.api.v1.auth.login.ResponseAuthToken;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;
@@ -17,7 +17,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-import java.util.Date;
 
 public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
@@ -28,21 +27,12 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
     }
 
     @Override
-    public TokenDto login(LoginRequest request, Date issuedAt) {
-        ResponseAuthToken token = getToken(request.getCode());
-        String responseBody = getResponseBody(token.accessToken());
-        User authUser = getAuthUser(responseBody);
-        TokenDto tokenDto = getTokenDto(authUser, issuedAt);
-        reissueRefreshTokenByUser(authUser, tokenDto.refreshToken());
-        return tokenDto;
-    }
-
-    @Override
     public boolean isIdentityProvider(String providerName) {
         return PROVIDER_NAME.equals(providerName);
     }
 
-    private ResponseAuthToken getToken(String code) {
+    @Override
+    protected ResponseAuthToken getToken(String code) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.google.token-uri");
         MultiValueMap<String, String> body = getTokenRequestParam(code);
         RestClient restClient = RestClient.create(reqURL);
@@ -68,7 +58,8 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
         return body;
     }
 
-    private String getResponseBody(String accessToken) {
+    @Override
+    protected String getResponseBody(String accessToken) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.google.user-info-uri");
 
         RestClient restClient = RestClient.create(reqURL);
@@ -81,7 +72,8 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
                 .body(String.class);
     }
 
-    private User getAuthUser(String responseBody) {
+    @Override
+    protected User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
         String email = element.getAsJsonObject().get("email").getAsString();
         String profileImg = element.getAsJsonObject().get("picture").getAsString();

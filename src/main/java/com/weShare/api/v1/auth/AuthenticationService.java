@@ -1,9 +1,10 @@
-package com.weShare.api.v1.auth.login;
+package com.weShare.api.v1.auth;
 
 import com.weShare.api.v1.auth.controller.dto.DuplicateEmailRequest;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.SignupRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.auth.login.AuthLoginService;
 import com.weShare.api.v1.common.CustomUUID;
 import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weShare.api.v1.token.exception.InvalidTokenException;

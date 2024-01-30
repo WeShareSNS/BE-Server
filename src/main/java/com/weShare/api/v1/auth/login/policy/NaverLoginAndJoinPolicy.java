@@ -1,10 +1,10 @@
-package com.weShare.api.v1.auth.login;
+package com.weShare.api.v1.auth.login.policy;
 
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.weShare.api.v1.auth.controller.dto.LoginRequest;
-import com.weShare.api.v1.auth.controller.dto.TokenDto;
+import com.weShare.api.v1.auth.login.OAuthApiException;
+import com.weShare.api.v1.auth.login.ResponseAuthToken;
 import com.weShare.api.v1.domain.user.entity.User;
 import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;
@@ -14,13 +14,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
@@ -31,21 +29,12 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     }
 
     @Override
-    public TokenDto login(LoginRequest request, Date issuedAt) {
-        ResponseAuthToken token = getToken(request.getCode());
-        String responseBody = getResponseBody(token.accessToken());
-        User authUser = getAuthUser(responseBody);
-        TokenDto tokenDto = getTokenDto(authUser, issuedAt);
-        reissueRefreshTokenByUser(authUser, tokenDto.refreshToken());
-        return tokenDto;
-    }
-
-    @Override
     public boolean isIdentityProvider(String providerName) {
         return PROVIDER_NAME.equals(providerName);
     }
 
-    private ResponseAuthToken getToken(String code) {
+    @Override
+    protected ResponseAuthToken getToken(String code) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.naver.token-uri");
         MultiValueMap<String, String> body = getTokenRequestParam(code);
         RestClient restClient = RestClient.create(reqURL);
@@ -72,7 +61,8 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
         return body;
     }
 
-    private String getResponseBody(String accessToken) {
+    @Override
+    protected String getResponseBody(String accessToken) {
         String reqURL = evn.getProperty("spring.security.oauth2.client.provider.naver.user-info-uri");
 
         RestClient restClient = RestClient.create(reqURL);
@@ -90,7 +80,8 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
                 .getBody();
     }
 
-    private User getAuthUser(String responseBody) {
+    @Override
+    protected User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
         String profileImg = element.getAsJsonObject().get("response").getAsJsonObject().get("profile_image").getAsString();
         String email = element.getAsJsonObject().get("response").getAsJsonObject().get("email").getAsString();

@@ -5,7 +5,6 @@ import com.weShare.api.v1.auth.controller.dto.DuplicateEmailRequest;
 import com.weShare.api.v1.auth.controller.dto.LoginRequest;
 import com.weShare.api.v1.auth.controller.dto.SignupRequest;
 import com.weShare.api.v1.auth.controller.dto.TokenDto;
-import com.weShare.api.v1.auth.login.AuthenticationService;
 import com.weShare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weShare.api.v1.domain.user.Role;
 import com.weShare.api.v1.domain.user.entity.User;
