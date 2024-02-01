@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import static com.weShare.api.v1.auth.controller.AuthErrorCode.*;
+
 @Slf4j
 @RestControllerAdvice(basePackages = "com.weShare.api.v1.auth")
 @RequiredArgsConstructor
@@ -30,14 +32,14 @@ public class AuthenticationExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity illegalArgumentExceptionHandler (IllegalArgumentException e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(-4000, HttpStatus.BAD_REQUEST, e.getMessage());
+        return response.fail(BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(OAuthApiException.class)
     public ResponseEntity oAuthApiExceptionHandler (OAuthApiException e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(-4001, HttpStatus.BAD_REQUEST, e.getMessage());
+        return response.fail(AUTH_LOGIN_BAD_REQUEST.getCode(), HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -45,7 +47,7 @@ public class AuthenticationExceptionHandler {
     public ResponseEntity methodArgumentNotValidExceptionHandler (MethodArgumentNotValidException  e){
         log.error("[exceptionHandler] ex", e);
         String[] errorMessages = getDefaultErrorMessage(e);
-        return response.fail(-4000, HttpStatus.BAD_REQUEST, errorMessages);
+        return response.fail(PARAMETER_BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, errorMessages);
     }
 
     private String[] getDefaultErrorMessage(BindException e) {
@@ -59,35 +61,35 @@ public class AuthenticationExceptionHandler {
     @ExceptionHandler(TokenTimeOutException.class)
     public ResponseEntity tokenTimeOutExceptionHandler (TokenTimeOutException  e, WebRequest request){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(-4011, HttpStatus.UNAUTHORIZED, e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity invalidTokenExceptionHandler (InvalidTokenException  e){
-        log.error("[exceptionHandler] ex", e);
-        return response.fail(-4012, HttpStatus.UNAUTHORIZED, e.getMessage());
+        return response.fail(TOKEN_TIME_OUT_ERROR.getCode(), HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity tokenNotFoundExceptionHandler (TokenNotFoundException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(-4012, HttpStatus.UNAUTHORIZED, e.getMessage());
+        return response.fail(TOKEN_NOT_FOUND_ERROR.getCode(), HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity invalidTokenExceptionHandler (InvalidTokenException  e){
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(INVALID_TOKEN_ERROR.getCode(), HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity usernameNotFoundHandler (UsernameNotFoundException e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(-4040, HttpStatus.NOT_FOUND, e.getMessage());
+        return response.fail(USER_NOT_FOUND_ERROR.getCode(), HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EmailDuplicateException.class)
     public ResponseEntity EmailDuplicateExceptionHandler (EmailDuplicateException e) {
         log.error("[exceptionHandler] ex", e);
-        return response.fail(-4090, HttpStatus.CONFLICT, e.getMessage());
+        return response.fail(EMAIL_DUPLICATE_ERROR.getCode(), HttpStatus.CONFLICT, e.getMessage());
     }
 
 
@@ -95,6 +97,6 @@ public class AuthenticationExceptionHandler {
     @ExceptionHandler
     public ResponseEntity exHandler(Exception e) {
         log.error("[exceptionHandler] ex", e);
-        return response.fail(-5000, HttpStatus.INTERNAL_SERVER_ERROR, "[server error] " + getDefaultErrorMessage((BindException) e));
+        return response.fail(SERVER_ERROR.getCode(), HttpStatus.INTERNAL_SERVER_ERROR, "[server error] " + getDefaultErrorMessage((BindException) e));
     }
 }
