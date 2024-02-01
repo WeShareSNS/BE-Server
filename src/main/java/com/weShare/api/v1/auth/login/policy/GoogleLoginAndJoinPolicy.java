@@ -9,21 +9,35 @@ import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;
 import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.token.TokenType;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import static com.weShare.api.v1.domain.Social.GOOGLE;
 
-
+@Component
 public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
-    public GoogleLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
-        super(evn, userRepository, refreshTokenRepository, jwtService);
+    @Value("${spring.security.oauth2.client.provider.google.token-uri}")
+    private String tokenUrl;
+    @Value("${spring.security.oauth2.client.registration.google.authorization-grant-type}")
+    private String grantType;
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+    private String clientSecret;
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String redirectUri;
+    @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
+    private String userInfoUri;
+
+    public GoogleLoginAndJoinPolicy(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
+        super(userRepository, refreshTokenRepository, jwtService);
     }
 
     @Override
@@ -33,7 +47,7 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
 
     @Override
     protected ResponseAuthToken getToken(String code) {
-        String reqURL = evn.getProperty("spring.security.oauth2.client.provider.google.token-uri");
+        String reqURL = tokenUrl;
         MultiValueMap<String, String> body = getTokenRequestParam(code);
         RestClient restClient = RestClient.create(reqURL);
 
@@ -50,17 +64,17 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
 
     private MultiValueMap<String, String> getTokenRequestParam(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap();
-        body.add("grant_type", evn.getProperty("spring.security.oauth2.client.registration.google.authorization-grant-type"));
-        body.add("client_id", evn.getProperty("spring.security.oauth2.client.registration.google.client-id"));
-        body.add("client_secret", evn.getProperty("spring.security.oauth2.client.registration.google.client-secret"));
-        body.add("redirect_uri", evn.getProperty("spring.security.oauth2.client.registration.google.redirect-uri"));
+        body.add("grant_type", grantType);
+        body.add("client_id", clientId);
+        body.add("client_secret", clientSecret);
+        body.add("redirect_uri", redirectUri);
         body.add("code", code);
         return body;
     }
 
     @Override
     protected String getResponseBody(String accessToken) {
-        String reqURL = evn.getProperty("spring.security.oauth2.client.provider.google.user-info-uri");
+        String reqURL = userInfoUri;
 
         RestClient restClient = RestClient.create(reqURL);
         return restClient.get()

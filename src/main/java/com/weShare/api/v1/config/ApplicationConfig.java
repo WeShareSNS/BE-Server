@@ -8,7 +8,6 @@ import com.weShare.api.v1.token.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -25,6 +24,9 @@ import java.util.List;
 public class ApplicationConfig {
 
     private final UserDetailsService userDetailsService;
+    private final GoogleLoginAndJoinPolicy googleLoginAndJoinPolicy;
+    private final KakaoLoginAndJoinPolicy kakaoLoginAndJoinPolicy;
+    private final NaverLoginAndJoinPolicy naverLoginAndJoinPolicy;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -48,23 +50,21 @@ public class ApplicationConfig {
     public AuthLoginService authLoginService(
             UserRepository userRepository,
             RefreshTokenRepository refreshTokenRepository,
-            JwtService jwtService,
-            Environment environment
+            JwtService jwtService
     ) {
-        return new AuthLoginService(getLoginPolicies(userRepository, refreshTokenRepository, jwtService, environment));
+        return new AuthLoginService(getLoginPolicies(userRepository, refreshTokenRepository, jwtService));
     }
 
     private List<AuthLoginPolicy> getLoginPolicies(
             UserRepository userRepository,
             RefreshTokenRepository refreshTokenRepository,
-            JwtService jwtService,
-            Environment environment
+            JwtService jwtService
     ) {
         return Arrays.asList(
                 new DefaultLoginPolicy(userRepository, passwordEncoder(), refreshTokenRepository, jwtService),
-                new KakaoLoginAndJoinPolicy(environment, userRepository, refreshTokenRepository, jwtService),
-                new NaverLoginAndJoinPolicy(environment, userRepository, refreshTokenRepository, jwtService),
-                new GoogleLoginAndJoinPolicy(environment, userRepository, refreshTokenRepository, jwtService)
+                kakaoLoginAndJoinPolicy,
+                googleLoginAndJoinPolicy,
+                naverLoginAndJoinPolicy
         );
     }
 

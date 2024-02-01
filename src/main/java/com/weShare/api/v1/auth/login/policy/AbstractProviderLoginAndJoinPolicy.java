@@ -14,7 +14,6 @@ import com.weShare.api.v1.token.RefreshToken;
 import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.token.TokenType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPolicy {
-    protected final Environment evn;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;

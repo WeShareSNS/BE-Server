@@ -9,11 +9,11 @@ import com.weShare.api.v1.domain.user.repository.UserRepository;
 import com.weShare.api.v1.jwt.JwtService;
 import com.weShare.api.v1.token.RefreshTokenRepository;
 import com.weShare.api.v1.token.TokenType;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
@@ -21,11 +21,28 @@ import org.springframework.web.client.RestClient;
 import static com.weShare.api.v1.domain.Social.KAKAO;
 
 
-@Log4j2
+@Component
 public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
 
-    public KakaoLoginAndJoinPolicy(Environment evn, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
-        super(evn, userRepository, refreshTokenRepository, jwtService);
+    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
+    private String tokenUrl;
+    @Value("${spring.security.oauth2.client.registration.kakao.authorization-grant-type}")
+    private String grantType;
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    private String clientSecret;
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String redirectUri;
+    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
+    private String userInfoUri;
+
+    public KakaoLoginAndJoinPolicy(
+            UserRepository userRepository,
+            RefreshTokenRepository refreshTokenRepository,
+            JwtService jwtService
+    ) {
+        super(userRepository, refreshTokenRepository, jwtService);
     }
 
     @Override
@@ -35,7 +52,7 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
 
     @Override
     protected ResponseAuthToken getToken(String code) {
-        String reqURL = evn.getProperty("spring.security.oauth2.client.provider.kakao.token-uri");
+        String reqURL = tokenUrl;
         MultiValueMap<String, String> body = getTokenRequestParam(code);
         RestClient restClient = RestClient.create(reqURL);
 
@@ -52,17 +69,17 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
 
     private MultiValueMap<String, String> getTokenRequestParam(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-        body.add("grant_type", evn.getProperty("spring.security.oauth2.client.registration.kakao.authorization-grant-type"));
-        body.add("client_id", evn.getProperty("spring.security.oauth2.client.registration.kakao.client-id"));
-        body.add("client_secret", evn.getProperty("spring.security.oauth2.client.registration.kakao.client-secret"));
-        body.add("redirect_uri", evn.getProperty("spring.security.oauth2.client.registration.kakao.redirect-uri"));
+        body.add("grant_type", grantType);
+        body.add("client_id", clientId);
+        body.add("client_secret", clientSecret);
+        body.add("redirect_uri", redirectUri);
         body.add("code", code);
         return body;
     }
 
     @Override
     protected String getResponseBody(String accessToken) {
-        String reqURL = evn.getProperty("spring.security.oauth2.client.provider.kakao.user-info-uri");
+        String reqURL = userInfoUri;
 
         RestClient restClient = RestClient.create(reqURL);
         return restClient.post()
@@ -81,7 +98,6 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
 
     @Override
     protected User getAuthUser(String responseBody) {
-        log.info("result={}", responseBody);
         JsonElement element = JsonParser.parseString(responseBody);
         String profileImg = element.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image").getAsString();
         String email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
