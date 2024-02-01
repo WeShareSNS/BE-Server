@@ -79,7 +79,7 @@ public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPol
 
         if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
-            if (areSocialProvidersEqual(newUser, existingUser)) {
+            if (areSocialProvidersEqual(newUser.getSocial(), existingUser.getSocial())) {
                 return true;
             }
             throw new EmailDuplicateException(newUser.getEmail() + "은 기존 사용자이거나 다른 소셜 로그인으로 가입된 회원입니다.");
@@ -87,11 +87,10 @@ public abstract class AbstractProviderLoginAndJoinPolicy implements AuthLoginPol
         return false;
     }
 
-    private boolean areSocialProvidersEqual(User newUser, User existingUser) {
+    private boolean areSocialProvidersEqual(Social newUserSocial, Social existingUserSocial) {
         // 소셜 정보가 같으면 true, 다르면 false 반환
-        return Objects.equals(newUser.getSocial(), existingUser.getSocial());
+        return newUserSocial == existingUserSocial;
     }
-
 
     private void reissueRefreshTokenByUser(User user, String refreshToken) {
         RefreshToken token = refreshTokenRepository.findTokenByUser(user)
