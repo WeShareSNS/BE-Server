@@ -10,8 +10,5 @@ public interface JwtService {
     String generateAccessToken(User user, Date issuedAt);
     String generateRefreshToken(User user, Date issuedAt);
     boolean isTokenValid(String token, UserDetails userDetails);
-
-    void validateToken(String token, User user);
-
     long getExpireTimeFromToken(String token);
 }

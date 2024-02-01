@@ -199,18 +199,6 @@ class JwtServiceImplTest extends IntegrationTestSupport {
                 .hasMessage("토큰이 유효하지 않습니다.");
     }
 
-    @Test
-    @DisplayName("토큰이 유효하지 않으면 예외가 발생한다.")
-    public void validateToken() {
-        // given
-        String invalidToken = "invalid test token";
-        User user = createAndSaveUser("email@ggg.com", "pass", "kk");
-        // when // then
-        assertThatThrownBy(() -> jwtService.validateToken(invalidToken, user))
-                .isInstanceOf(InvalidTokenException.class)
-                .hasMessage("토큰이 유효하지 않습니다.");
-    }
-
     private User createAndSaveUser(String email, String password, String name) {
         User user = User.builder()
                 .email(email)

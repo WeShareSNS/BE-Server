@@ -37,13 +37,13 @@ public final class CookieTokenHandler {
 
     public String getBearerToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        validateBearerToken(authHeader);
+        if (hasInvalidBearerTokenFormat(authHeader)) {
+            throw new IllegalArgumentException("토큰 정보가 존재하지 않습니다.");
+        }
         return authHeader.substring(BEARER_HEADER_LENGTH);
     }
 
-    private void validateBearerToken(String token) {
-        if (token == null || !token.startsWith(TokenType.BEARER.getType())) {
-            throw new IllegalArgumentException("토큰 정보가 존재하지 않습니다.");
-        }
+    private boolean hasInvalidBearerTokenFormat(String token) {
+        return token == null || !token.startsWith(TokenType.BEARER.getType());
     }
 }

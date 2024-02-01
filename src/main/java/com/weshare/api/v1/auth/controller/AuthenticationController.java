@@ -51,7 +51,7 @@ public class AuthenticationController {
   })
   @GetMapping("/signup/duplicate-email")
   public ResponseEntity duplicateEmail(@Valid @RequestBody DuplicateEmailRequest request) {
-    service.duplicateEmail(request);
+    service.checkDuplicateEmailForSignup(request);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 

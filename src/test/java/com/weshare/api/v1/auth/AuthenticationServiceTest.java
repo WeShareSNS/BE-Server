@@ -80,7 +80,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         createAndSaveUser(email, password);
         DuplicateEmailRequest request = new DuplicateEmailRequest(email);
         // when // then
-        assertThatThrownBy(() -> authService.duplicateEmail(request))
+        assertThatThrownBy(() -> authService.checkDuplicateEmailForSignup(request))
                 .isInstanceOf(EmailDuplicateException.class)
                 .hasMessage(email + "은 가입된 이메일 입니다.");
     }

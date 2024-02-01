@@ -32,7 +32,9 @@ public class DefaultLoginPolicy implements AuthLoginPolicy {
     @Override
     public TokenDto login(LoginRequest request, Date issuedAt) {
         User user = getUserByEmailOrThrowException(request.getEmail());
-        validatePassword(request, user);
+        if (isPasswordMatching(request, user)) {
+            throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
+        }
         String accessToken = jwtService.generateAccessToken(user, issuedAt);
         String refreshToken = jwtService.generateRefreshToken(user, issuedAt);
         reissueRefreshTokenByUser(user, refreshToken);
@@ -46,11 +48,8 @@ public class DefaultLoginPolicy implements AuthLoginPolicy {
                 });
     }
 
-    private void validatePassword(LoginRequest request, User user) {
-        Assert.isTrue(
-                passwordEncoder.matches(request.getPassword(), user.getPassword()),
-                "사용자 정보가 올바르지 않습니다."
-        );
+    private boolean isPasswordMatching(LoginRequest request, User user) {
+        return passwordEncoder.matches(request.getPassword(), user.getPassword());
     }
 
     @Override
