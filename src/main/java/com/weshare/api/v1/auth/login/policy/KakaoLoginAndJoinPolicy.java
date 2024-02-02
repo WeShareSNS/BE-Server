@@ -53,12 +53,12 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     @Override
     protected ResponseAuthToken getToken(String code) {
         String reqURL = tokenUrl;
-        MultiValueMap<String, String> body = getTokenRequestParam(code);
+        var requestBody = getTokenRequestBody(code);
         RestClient restClient = RestClient.create(reqURL);
 
         return restClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(body)
+                .body(requestBody)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     throw new OAuthApiException(response.getStatusCode(), response.getHeaders());
@@ -67,8 +67,8 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
                 .getBody();
     }
 
-    private MultiValueMap<String, String> getTokenRequestParam(String code) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+    private MultiValueMap<String, String> getTokenRequestBody(String code) {
+        var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", grantType);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
@@ -99,8 +99,8 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     @Override
     protected User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
-        String profileImg = element.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image").getAsString();
-        String email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+        var profileImg = element.getAsJsonObject().get("properties").getAsJsonObject().get("profile_image").getAsString();
+        var email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
         return createAuthUser(email, profileImg, KAKAO);
     }
 }

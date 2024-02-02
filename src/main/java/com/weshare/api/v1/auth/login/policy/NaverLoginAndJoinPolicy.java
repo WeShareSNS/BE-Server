@@ -36,7 +36,7 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     private String clientSecret;
     @Value("${spring.security.oauth2.client.registration.naver.redirect-uri}")
     private String redirectUri;
-    @Value("%${spring.security.oauth2.client.registration.naver.state}")
+    @Value("${spring.security.oauth2.client.registration.naver.state}")
     private String state;
     @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
     private String userInfoUri;
@@ -52,13 +52,13 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
 
     @Override
     protected ResponseAuthToken getToken(String code) {
-        String reqURL = tokenUrl;
-        MultiValueMap<String, String> body = getTokenRequestParam(code);
-        RestClient restClient = RestClient.create(reqURL);
+        String requestTokenUrl = tokenUrl;
+        var requestBody = getTokenRequestBody(code);
+        RestClient restClient = RestClient.create(requestTokenUrl);
 
         return restClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(body)
+                .body(requestBody)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     throw new OAuthApiException(response.getStatusCode(), response.getHeaders());
@@ -67,8 +67,8 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
                 .getBody();
     }
 
-    private MultiValueMap<String, String> getTokenRequestParam(String code) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap();
+    private MultiValueMap<String, String> getTokenRequestBody(String code) {
+        var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", grantType);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
@@ -100,11 +100,11 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     @Override
     protected User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
-        String profileImg = element.getAsJsonObject().get("response").getAsJsonObject().get("profile_image").getAsString();
-        String email = element.getAsJsonObject().get("response").getAsJsonObject().get("email").getAsString();
-        String year = element.getAsJsonObject().get("response").getAsJsonObject().get("birthyear").getAsString();
-        String date = element.getAsJsonObject().get("response").getAsJsonObject().get("birthday").getAsString();
-        LocalDate birthDate = LocalDate.parse(String.format("%s-%s", year, date));
+        var profileImg = element.getAsJsonObject().get("response").getAsJsonObject().get("profile_image").getAsString();
+        var email = element.getAsJsonObject().get("response").getAsJsonObject().get("email").getAsString();
+        var year = element.getAsJsonObject().get("response").getAsJsonObject().get("birthyear").getAsString();
+        var date = element.getAsJsonObject().get("response").getAsJsonObject().get("birthday").getAsString();
+        var birthDate = LocalDate.parse(String.format("%s-%s", year, date));
         return createAuthUser(email, profileImg, birthDate, NAVER);
     }
 }

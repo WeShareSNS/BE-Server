@@ -47,13 +47,13 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
 
     @Override
     protected ResponseAuthToken getToken(String code) {
-        String reqURL = tokenUrl;
-        MultiValueMap<String, String> body = getTokenRequestParam(code);
-        RestClient restClient = RestClient.create(reqURL);
+        String requestTokenUrl = tokenUrl;
+        var requestBody = getTokenRequestBody(code);
+        RestClient restClient = RestClient.create(requestTokenUrl);
 
         return restClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(body)
+                .body(requestBody)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     throw new OAuthApiException(response.getStatusCode(), response.getHeaders());
@@ -62,8 +62,8 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
                 .getBody();
     }
 
-    private MultiValueMap<String, String> getTokenRequestParam(String code) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap();
+    private MultiValueMap<String, String> getTokenRequestBody(String code) {
+        var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", grantType);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
@@ -89,8 +89,8 @@ public class GoogleLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy
     @Override
     protected User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
-        String email = element.getAsJsonObject().get("email").getAsString();
-        String profileImg = element.getAsJsonObject().get("picture").getAsString();
+        var email = element.getAsJsonObject().get("email").getAsString();
+        var profileImg = element.getAsJsonObject().get("picture").getAsString();
         return createAuthUser(email, profileImg, GOOGLE);
     }
 }
