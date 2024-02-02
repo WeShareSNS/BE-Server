@@ -1,9 +1,6 @@
 package com.weshare.api.v1.controller.auth.dto;
 
-import java.util.Objects;
+import jakarta.validation.constraints.NotNull;
 
-public record AuthenticationResponse (String accessToken) {
-    public AuthenticationResponse {
-        Objects.requireNonNull(accessToken);
-    }
+public record AuthenticationResponse (@NotNull String accessToken) {
 }

@@ -56,7 +56,7 @@ public class AuthenticationService {
     }
 
     public void checkDuplicateEmailForSignup(DuplicateEmailRequest request) {
-        String email = request.getEmail();
+        String email = request.email();
         if (isDuplicateEmail(email)) {
             throw new EmailDuplicateException(email + "은 가입된 이메일 입니다.");
         }

@@ -1,5 +1,7 @@
 package com.weshare.api.v1.controller.auth;
 
+import lombok.Getter;
+
 public enum AuthErrorCode {
 
     BAD_REQUEST_ERROR(-4000),
@@ -12,13 +14,10 @@ public enum AuthErrorCode {
     EMAIL_DUPLICATE_ERROR(-4090),
     SERVER_ERROR(-5000);
 
-    private int code;
+    @Getter
+    private final int code;
 
     AuthErrorCode(int code) {
         this.code = code;
-    }
-
-    public int getCode() {
-        return code;
     }
 }
