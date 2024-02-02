@@ -2,8 +2,8 @@ package com.weshare.api.v1.token;
 
 import com.weshare.api.IntegrationTestSupport;
 import com.weshare.api.v1.domain.user.Role;
-import com.weshare.api.v1.domain.user.entity.User;
-import com.weshare.api.v1.domain.user.repository.UserRepository;
+import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.repository.user.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

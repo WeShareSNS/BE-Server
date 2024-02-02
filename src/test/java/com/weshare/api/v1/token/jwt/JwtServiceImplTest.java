@@ -1,9 +1,8 @@
 package com.weshare.api.v1.token.jwt;
 
 import com.weshare.api.IntegrationTestSupport;
-import com.weshare.api.v1.domain.user.entity.User;
-import com.weshare.api.v1.domain.user.repository.UserRepository;
-import com.weshare.api.v1.jwt.JwtService;
+import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.repository.user.UserRepository;
 import com.weshare.api.v1.token.exception.InvalidTokenException;
 import com.weshare.api.v1.token.exception.TokenTimeOutException;
 import org.assertj.core.util.DateUtil;

@@ -1,6 +1,6 @@
 package com.weshare.api.v1.token;
 
-import com.weshare.api.v1.domain.user.entity.User;
+import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 

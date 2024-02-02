@@ -1,9 +1,9 @@
 package com.weshare.api.v1.config;
 
-import com.weshare.api.v1.auth.login.*;
-import com.weshare.api.v1.auth.login.policy.*;
-import com.weshare.api.v1.domain.user.repository.UserRepository;
-import com.weshare.api.v1.jwt.JwtService;
+import com.weshare.api.v1.repository.user.UserRepository;
+import com.weshare.api.v1.token.jwt.JwtService;
+import com.weshare.api.v1.service.auth.login.AuthLoginService;
+import com.weshare.api.v1.service.auth.login.policy.*;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
