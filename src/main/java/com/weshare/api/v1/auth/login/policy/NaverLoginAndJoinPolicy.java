@@ -53,7 +53,7 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     @Override
     protected ResponseAuthToken getToken(String code) {
         String requestTokenUrl = tokenUrl;
-        var requestBody = getTokenRequestBody(code);
+        MultiValueMap<String, String> requestBody = getTokenRequestBody(code);
         RestClient restClient = RestClient.create(requestTokenUrl);
 
         return restClient.post()

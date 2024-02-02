@@ -53,7 +53,7 @@ public class KakaoLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     @Override
     protected ResponseAuthToken getToken(String code) {
         String reqURL = tokenUrl;
-        var requestBody = getTokenRequestBody(code);
+        MultiValueMap<String, String> requestBody = getTokenRequestBody(code);
         RestClient restClient = RestClient.create(reqURL);
 
         return restClient.post()
