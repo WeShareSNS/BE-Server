@@ -46,7 +46,8 @@ public class WebSecurityConfig {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"};
+            "/swagger-ui.html",
+            "/error"};
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
