@@ -20,13 +20,13 @@
 <tr>
 <td>
 <div class="infoBox" id="tests">
-<div class="counter">35</div>
+<div class="counter">34</div>
 <p>tests</p>
 </div>
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">0</div>
+<div class="counter">12</div>
 <p>failures</p>
 </div>
 </td>
@@ -38,7 +38,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">2.237s</div>
+<div class="counter">3.531s</div>
 <p>duration</p>
 </div>
 </td>
@@ -47,8 +47,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox success" id="successRate">
-<div class="percent">100%</div>
+<div class="infoBox failures" id="successRate">
+<div class="percent">64%</div>
 <p>successful</p>
 </div>
 </td>
@@ -58,13 +58,69 @@
 <div id="tabs">
 <ul class="tabLinks">
 <li>
-<a href="#tab0">Packages</a>
+<a href="#tab0">Failed tests</a>
 </li>
 <li>
-<a href="#tab1">Classes</a>
+<a href="#tab1">Packages</a>
+</li>
+<li>
+<a href="#tab2">Classes</a>
 </li>
 </ul>
 <div id="tab0" class="tab">
+<h2>Failed tests</h2>
+<ul class="linkList">
+<li>
+<a href="classes/com.weshare.api.v1.controller.auth.AuthenticationControllerTest.html">AuthenticationControllerTest</a>.
+<a href="classes/com.weshare.api.v1.controller.auth.AuthenticationControllerTest.html#duplicateEmailConflict()">사용자 이메일 중복시 409를 반환한다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.controller.auth.AuthenticationControllerTest.html">AuthenticationControllerTest</a>.
+<a href="classes/com.weshare.api.v1.controller.auth.AuthenticationControllerTest.html#login()">사용자는 로그인을 할 수 있다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.controller.auth.AuthenticationControllerTest.html">AuthenticationControllerTest</a>.
+<a href="classes/com.weshare.api.v1.controller.auth.AuthenticationControllerTest.html#reissueToken()">사용자는 refresh 토큰을 통해서 access 토큰을 발급받을 수 있다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.repository.user.UserRepositoryTest.html">UserRepositoryTest</a>.
+<a href="classes/com.weshare.api.v1.repository.user.UserRepositoryTest.html#UserRepositoryTest()">사용자를 이메일로 조회할 수 있다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html">AuthenticationServiceTest</a>.
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html#login_accessToken()">사용자가 로그인하면 access 토큰을 발급 받는다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html">AuthenticationServiceTest</a>.
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html#login_refreshToken()">사용자가 로그인하면 refresh 토큰을 발급 받는다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html">AuthenticationServiceTest</a>.
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html#logout()">사용자는 로그아웃을 할 수 있다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html">AuthenticationServiceTest</a>.
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html#refreshToken()">refresh 토큰을 통해서 access 토큰을 재발행시 refresh 토큰을 재발행한다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html">AuthenticationServiceTest</a>.
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html#refreshToken_reissue()">refresh token을 통해서 accessToken을 재발행 할 수있다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest.html">RefreshRefreshTokenRepositoryTest</a>.
+<a href="classes/com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest.html#findTokenByUser()">사용자가 가지고 있는 토큰을 조회할 수 있다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest.html">RefreshRefreshTokenRepositoryTest</a>.
+<a href="classes/com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest.html#findTokenByUserEmail()">사용자 email을 통해서 토큰을 조회할 수 있다.</a>
+</li>
+<li>
+<a href="classes/com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest.html">RefreshRefreshTokenRepositoryTest</a>.
+<a href="classes/com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest.html#findUserByToken()">refresh token을 사용해서 사용자를 조회할 수 있다.</a>
+</li>
+</ul>
+</div>
+<div id="tab1" class="tab">
 <h2>Packages</h2>
 <table>
 <thead>
@@ -80,68 +136,78 @@
 <tbody>
 <tr>
 <td class="success">
-<a href="packages/com.weShare.html">com.weShare</a>
+<a href="packages/com.weshare.html">com.weshare</a>
 </td>
 <td>1</td>
 <td>0</td>
 <td>0</td>
-<td>0.331s</td>
+<td>0.405s</td>
 <td class="success">100%</td>
 </tr>
 <tr>
-<td class="success">
-<a href="packages/com.weShare.api.v1.auth.html">com.weShare.api.v1.auth</a>
+<td class="failures">
+<a href="packages/com.weshare.api.v1.controller.auth.html">com.weshare.api.v1.controller.auth</a>
 </td>
-<td>15</td>
-<td>0</td>
-<td>0</td>
-<td>1.775s</td>
-<td class="success">100%</td>
-</tr>
-<tr>
-<td class="success">
-<a href="packages/com.weShare.api.v1.domain.user.repository.html">com.weShare.api.v1.domain.user.repository</a>
-</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0.006s</td>
-<td class="success">100%</td>
-</tr>
-<tr>
-<td class="success">
-<a href="packages/com.weShare.api.v1.token.html">com.weShare.api.v1.token</a>
-</td>
+<td>7</td>
 <td>3</td>
 <td>0</td>
-<td>0</td>
-<td>0.024s</td>
-<td class="success">100%</td>
+<td>1.351s</td>
+<td class="failures">57%</td>
 </tr>
 <tr>
-<td class="success">
-<a href="packages/com.weShare.api.v1.token.jwt.html">com.weShare.api.v1.token.jwt</a>
+<td class="failures">
+<a href="packages/com.weshare.api.v1.repository.user.html">com.weshare.api.v1.repository.user</a>
 </td>
-<td>14</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0.012s</td>
+<td class="failures">0%</td>
+</tr>
+<tr>
+<td class="failures">
+<a href="packages/com.weshare.api.v1.service.auth.html">com.weshare.api.v1.service.auth</a>
+</td>
+<td>8</td>
+<td>5</td>
+<td>0</td>
+<td>1.615s</td>
+<td class="failures">37%</td>
+</tr>
+<tr>
+<td class="failures">
+<a href="packages/com.weshare.api.v1.token.html">com.weshare.api.v1.token</a>
+</td>
+<td>3</td>
+<td>3</td>
+<td>0</td>
+<td>0.023s</td>
+<td class="failures">0%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="packages/com.weshare.api.v1.token.jwt.html">com.weshare.api.v1.token.jwt</a>
+</td>
+<td>13</td>
 <td>0</td>
 <td>0</td>
-<td>0.083s</td>
+<td>0.116s</td>
 <td class="success">100%</td>
 </tr>
 <tr>
 <td class="success">
-<a href="packages/com.weShare.api.v1.token.jwt.logout.html">com.weShare.api.v1.token.jwt.logout</a>
+<a href="packages/com.weshare.api.v1.token.logout.html">com.weshare.api.v1.token.logout</a>
 </td>
 <td>1</td>
 <td>0</td>
 <td>0</td>
-<td>0.018s</td>
+<td>0.009s</td>
 <td class="success">100%</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="tab1" class="tab">
+<div id="tab2" class="tab">
 <h2>Classes</h2>
 <table>
 <thead>
@@ -157,72 +223,72 @@
 <tbody>
 <tr>
 <td class="success">
-<a href="classes/com.weShare.WeShareApplicationTests.html">com.weShare.WeShareApplicationTests</a>
+<a href="classes/com.weshare.WeShareApplicationTests.html">com.weshare.WeShareApplicationTests</a>
 </td>
 <td>1</td>
 <td>0</td>
 <td>0</td>
-<td>0.331s</td>
+<td>0.405s</td>
 <td class="success">100%</td>
 </tr>
 <tr>
-<td class="success">
-<a href="classes/com.weShare.api.v1.auth.AuthenticationControllerTest.html">com.weShare.api.v1.auth.AuthenticationControllerTest</a>
+<td class="failures">
+<a href="classes/com.weshare.api.v1.controller.auth.AuthenticationControllerTest.html">com.weshare.api.v1.controller.auth.AuthenticationControllerTest</a>
 </td>
 <td>7</td>
-<td>0</td>
-<td>0</td>
-<td>0.936s</td>
-<td class="success">100%</td>
-</tr>
-<tr>
-<td class="success">
-<a href="classes/com.weShare.api.v1.auth.AuthenticationServiceTest.html">com.weShare.api.v1.auth.AuthenticationServiceTest</a>
-</td>
-<td>8</td>
-<td>0</td>
-<td>0</td>
-<td>0.839s</td>
-<td class="success">100%</td>
-</tr>
-<tr>
-<td class="success">
-<a href="classes/com.weShare.api.v1.domain.user.repository.UserRepositoryTest.html">com.weShare.api.v1.domain.user.repository.UserRepositoryTest</a>
-</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0.006s</td>
-<td class="success">100%</td>
-</tr>
-<tr>
-<td class="success">
-<a href="classes/com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest.html">com.weShare.api.v1.token.RefreshRefreshTokenRepositoryTest</a>
-</td>
 <td>3</td>
 <td>0</td>
-<td>0</td>
-<td>0.024s</td>
-<td class="success">100%</td>
+<td>1.351s</td>
+<td class="failures">57%</td>
 </tr>
 <tr>
-<td class="success">
-<a href="classes/com.weShare.api.v1.token.jwt.JwtServiceImplTest.html">com.weShare.api.v1.token.jwt.JwtServiceImplTest</a>
+<td class="failures">
+<a href="classes/com.weshare.api.v1.repository.user.UserRepositoryTest.html">com.weshare.api.v1.repository.user.UserRepositoryTest</a>
 </td>
-<td>14</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0.012s</td>
+<td class="failures">0%</td>
+</tr>
+<tr>
+<td class="failures">
+<a href="classes/com.weshare.api.v1.service.auth.AuthenticationServiceTest.html">com.weshare.api.v1.service.auth.AuthenticationServiceTest</a>
+</td>
+<td>8</td>
+<td>5</td>
+<td>0</td>
+<td>1.615s</td>
+<td class="failures">37%</td>
+</tr>
+<tr>
+<td class="failures">
+<a href="classes/com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest.html">com.weshare.api.v1.token.RefreshRefreshTokenRepositoryTest</a>
+</td>
+<td>3</td>
+<td>3</td>
+<td>0</td>
+<td>0.023s</td>
+<td class="failures">0%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="classes/com.weshare.api.v1.token.jwt.JwtServiceImplTest.html">com.weshare.api.v1.token.jwt.JwtServiceImplTest</a>
+</td>
+<td>13</td>
 <td>0</td>
 <td>0</td>
-<td>0.083s</td>
+<td>0.116s</td>
 <td class="success">100%</td>
 </tr>
 <tr>
 <td class="success">
-<a href="classes/com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest.html">com.weShare.api.v1.token.jwt.logout.LogoutAccessTokenRedisRepositoryTest</a>
+<a href="classes/com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepositoryTest.html">com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepositoryTest</a>
 </td>
 <td>1</td>
 <td>0</td>
 <td>0</td>
-<td>0.018s</td>
+<td>0.009s</td>
 <td class="success">100%</td>
 </tr>
 </tbody>
@@ -236,7 +302,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.5</a> at 2024. 1. 23. 오후 10:57:46</p>
+<a href="http://www.gradle.org">Gradle 8.5</a> at 2024. 2. 5. 오후 9:56:37</p>
 </div>
 </div>
 </body>
