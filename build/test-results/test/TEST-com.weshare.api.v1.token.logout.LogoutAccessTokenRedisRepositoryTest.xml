@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepositoryTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-02-05T12:56:37" hostname="hyunwoo-MacBookAir.local" time="0.009">
-  <properties/>
-  <testcase name="accessToken가 존재하는지 확인할 수 있다." classname="com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepositoryTest" time="0.009"/>
-  <system-out><![CDATA[[startup] 21:56:37.449 [Test worker] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepositoryTest]: LogoutAccessTokenRedisRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-[startup] 21:56:37.463 [Test worker] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.weshare.WeShareApplication for test class com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepositoryTest
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
