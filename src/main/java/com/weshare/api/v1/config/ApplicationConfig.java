@@ -20,13 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-@RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final UserDetailsService userDetailsService;
-    private final GoogleLoginAndJoinPolicy googleLoginAndJoinPolicy;
-    private final KakaoLoginAndJoinPolicy kakaoLoginAndJoinPolicy;
-    private final NaverLoginAndJoinPolicy naverLoginAndJoinPolicy;
+
+    public ApplicationConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -44,28 +44,6 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthLoginService authLoginService(
-            UserRepository userRepository,
-            RefreshTokenRepository refreshTokenRepository,
-            JwtService jwtService
-    ) {
-        return new AuthLoginService(getLoginPolicies(userRepository, refreshTokenRepository, jwtService));
-    }
-
-    private List<AuthLoginPolicy> getLoginPolicies(
-            UserRepository userRepository,
-            RefreshTokenRepository refreshTokenRepository,
-            JwtService jwtService
-    ) {
-        return Arrays.asList(
-                new DefaultLoginPolicy(userRepository, passwordEncoder(), refreshTokenRepository, jwtService),
-                kakaoLoginAndJoinPolicy,
-                googleLoginAndJoinPolicy,
-                naverLoginAndJoinPolicy
-        );
     }
 
 }
