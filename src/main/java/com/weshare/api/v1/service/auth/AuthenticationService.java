@@ -45,6 +45,7 @@ public class AuthenticationService {
 
     public User join(SignupRequest request) {
         String email = request.getEmail();
+        // 프론트 -> 서버로 넘어온 회원 가입 정보에서 email을 검증한다.
         if (isDuplicateEmail(email)) {
             throw new EmailDuplicateException(email + "은 가입된 이메일 입니다.");
         }
@@ -55,6 +56,7 @@ public class AuthenticationService {
         return repository.findByEmail(email).isPresent();
     }
 
+    // 회원 가입시 사용자는 사용할 수 있는 이메일인지 확인할 수 있다.
     public void checkDuplicateEmailForSignup(DuplicateEmailRequest request) {
         String email = request.email();
         if (isDuplicateEmail(email)) {
@@ -122,7 +124,7 @@ public class AuthenticationService {
                     throw new TokenNotFoundException("Refresh Token이 존재하지 않습니다.");
                 });
 
-        if (jwtService.isTokenValid(refreshToken, user)) {
+        if (!jwtService.isTokenValid(refreshToken, user)) {
             throw new InvalidTokenException("토큰이 유효하지 않습니다.");
         }
         return user;

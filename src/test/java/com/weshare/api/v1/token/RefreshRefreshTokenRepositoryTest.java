@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -20,6 +21,8 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
 
     @Autowired
     private RefreshTokenRepository tokenRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @AfterEach
     void tearDown(){
@@ -31,7 +34,7 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
     @DisplayName("사용자가 가지고 있는 토큰을 조회할 수 있다.")
     public void findTokenByUser() {
         // given
-        User user = createAndSaveUser("admin@test.com", "hw", Role.USER);
+        User user = createAndSaveUser("admin@test.com", "password");
         RefreshToken refreshToken = createAndSaveToken(user, "token");
         // when
         RefreshToken findToken = tokenRepository.findTokenByUser(user).get();
@@ -50,7 +53,7 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
     @DisplayName("refresh token을 사용해서 사용자를 조회할 수 있다.")
     public void findUserByToken() {
         // given
-        User user = createAndSaveUser("admin@test.com", "hw", Role.USER);
+        User user = createAndSaveUser("admin@test.com", "hw");
         createAndSaveToken(user, "token");
         // when
         User findUser = tokenRepository.findUserByToken("token").get();
@@ -66,7 +69,7 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
     @DisplayName("사용자 email을 통해서 토큰을 조회할 수 있다.")
     public void findTokenByUserEmail() {
         // given
-        User user = createAndSaveUser("admin@test.com", "hw", Role.USER);
+        User user = createAndSaveUser("admin@test.com", "hw");
         RefreshToken token = createAndSaveToken(user, "token");
         // when
         RefreshToken refreshToken = tokenRepository.findTokenByUserEmail("admin@test.com").get();
@@ -81,12 +84,13 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
         );
     }
 
-    private User createAndSaveUser(String email, String name, Role role) {
+    private User createAndSaveUser(String email, String password) {
         User user = User.builder()
                 .email(email)
-                .name(name)
-                .role(role)
+                .password(passwordEncoder.encode(password))
+                .name("name")
                 .birthDate(LocalDate.of(1999, 9, 27))
+                .role(Role.USER)
                 .build();
 
         return userRepository.save(user);

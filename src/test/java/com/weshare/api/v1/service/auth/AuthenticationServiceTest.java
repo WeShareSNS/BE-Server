@@ -9,7 +9,6 @@ import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
-import com.weshare.api.v1.service.auth.AuthenticationService;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.token.TokenType;
@@ -106,8 +105,8 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     @DisplayName("사용자가 로그인하면 refresh 토큰을 발급 받는다.")
     public void login_refreshToken() {
         // given
-        String email ="test";
-        String password = "pass";
+        String email = "test@exam.com";
+        String password = "password";
         User user = createAndSaveUser(email, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
@@ -121,8 +120,8 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     @DisplayName("사용자가 로그인하면 access 토큰을 발급 받는다.")
     public void login_accessToken() {
         // given
-        String email ="test";
-        String password = "pass";
+        String email ="test@naver.com";
+        String password = "password";
         User user = createAndSaveUser(email, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
@@ -136,7 +135,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     @DisplayName("refresh token을 통해서 accessToken을 재발행 할 수있다.")
     public void refreshToken_reissue() {
         // given
-        User user = createAndSaveUser("email", "password");
+        User user = createAndSaveUser("email@naver.com", "password");
         String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveRefreshToken(user, refreshToken);
         // when
@@ -149,7 +148,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     @DisplayName("refresh 토큰을 통해서 access 토큰을 재발행시 refresh 토큰을 재발행한다.")
     public void refreshToken() {
         // given
-        User user = createAndSaveUser("email", "password");
+        User user = createAndSaveUser("email@naver.com", "password");
         String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveRefreshToken(user, refreshToken);
         // when

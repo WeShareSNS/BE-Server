@@ -45,6 +45,7 @@ class UserRepositoryTest extends IntegrationTestSupport {
         User user = User.builder()
                 .email(email)
                 .name(name)
+                .password("12345678")
                 .role(role)
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .build();

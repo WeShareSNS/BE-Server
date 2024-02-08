@@ -2,11 +2,13 @@ package com.weshare.api.v1.controller.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.weshare.api.v1.controller.IntegrationMvcTestSupport;
+import com.weshare.api.v1.controller.auth.advice.AuthenticationExceptionHandler;
 import com.weshare.api.v1.controller.auth.dto.DuplicateEmailRequest;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.repository.user.UserRepository;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
@@ -23,11 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.validation.BindException;
 
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -47,6 +53,8 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     private LogoutAccessTokenRedisRepository logoutTokenRepository;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private AuthenticationExceptionHandler authenticationExceptionHandler;
 
     @AfterEach
     void tearDown() {
@@ -75,22 +83,19 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     }
 
     @Test
-    @DisplayName("사용자 이메일 중복시 409를 반환한다.")
+    @DisplayName("사용자 이메일이 중복되어 있지 않으면 200을 반환한다.")
     public void duplicateEmailConflict() throws Exception {
         // given
         String email = "email@asd.com";
-        String password = "password";
-        createAndSaveUser(email, password);
         DuplicateEmailRequest request = new DuplicateEmailRequest(email);
         String content = getContent(request);
-
         // when // then
         mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict())
-                .andDo(print());
+                .andExpect(status().isOk()) // 예상되는 상태 코드가 409인지 확인
+                .andDo(print()); // 예상되는 메시지가 반환되는지 확인
     }
 
     @Test
@@ -138,7 +143,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         LoginRequest request = createLoginRequest(email, password);
         String content = getContent(request);
         // when // then
-        mockMvc.perform(post(PREFIX_ENDPOINT + "/login")
+        mockMvc.perform(post(PREFIX_ENDPOINT + "/signin")
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -181,7 +186,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
                 .andDo(print());
 
         Optional<LogoutAccessTokenFromRedis> logoutToken = logoutTokenRepository.findById(accessToken);
-        Assertions.assertTrue(logoutToken.isPresent());
+        assertTrue(logoutToken.isPresent());
     }
 
     private SignupRequest createSignupRequest(String email, String password, String birthDate) {

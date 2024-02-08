@@ -31,7 +31,7 @@ public class DefaultLoginPolicy implements AuthLoginPolicy {
     @Override
     public TokenDto login(LoginRequest request, Date issuedAt) {
         User user = getUserByEmailOrThrowException(request.getEmail());
-        if (isPasswordMatching(request, user)) {
+        if (!isPasswordMatching(request, user)) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
         }
         String accessToken = jwtService.generateAccessToken(user, issuedAt);
