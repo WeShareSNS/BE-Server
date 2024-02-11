@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
-public class AuthGoogleController {
+public class AuthProviderController {
 
-    @GetMapping("/callback/google")
-    public String test(@RequestParam String code){
-        log.info(code);
-        return code;
+    @GetMapping("/callback")
+    public void callback(@RequestParam String code){
+        log.info("code={}", code);
     }
 }

@@ -37,7 +37,7 @@ public class ExternalAuthProviderLoginAndJoinService {
     }
 
     @Transactional
-    public Optional<TokenDto> issueTokenOrRegisterUser(
+    protected Optional<TokenDto> issueTokenOrRegisterUser(
             @NotNull User authUser,
             Date issuedAt
     ) {

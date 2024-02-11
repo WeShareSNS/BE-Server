@@ -1,6 +1,7 @@
 package com.weshare.api.v1.controller;
 
 import com.weshare.api.v1.common.Response;
+import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -43,6 +44,13 @@ public class ExceptionAdvisor {
                         fieldError.getDefaultMessage() + " 입력된 값: [" +
                         fieldError.getRejectedValue() + "]")
                 .collect(Collectors.joining());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(EmailDuplicateException.class)
+    public ResponseEntity EmailDuplicateExceptionHandler (EmailDuplicateException e) {
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(EMAIL_DUPLICATE_ERROR.getCode(), HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -60,11 +60,4 @@ public class AuthenticationExceptionHandler {
         log.error("[exceptionHandler] ex", e);
         return response.fail(USER_NOT_FOUND_ERROR.getCode(), HttpStatus.NOT_FOUND, e.getMessage());
     }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(EmailDuplicateException.class)
-    public ResponseEntity EmailDuplicateExceptionHandler (EmailDuplicateException e) {
-        log.error("[exceptionHandler] ex", e);
-        return response.fail(EMAIL_DUPLICATE_ERROR.getCode(), HttpStatus.CONFLICT, e.getMessage());
-    }
 }
