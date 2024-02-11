@@ -1,7 +1,6 @@
 package com.weshare.api.v1.token;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.weshare.api.v1.domain.user.QUser;
 import com.weshare.api.v1.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

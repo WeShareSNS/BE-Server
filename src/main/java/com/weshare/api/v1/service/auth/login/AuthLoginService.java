@@ -2,38 +2,38 @@ package com.weshare.api.v1.service.auth.login;
 
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
-import com.weshare.api.v1.service.auth.login.policy.AuthLoginPolicy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthLoginService {
-    private final List<AuthLoginPolicy> loginPolicies;
 
-    public AuthLoginService(List<AuthLoginPolicy> loginPolicies) {
-        this.loginPolicies = loginPolicies;
-    }
+    private static final String DEFAULT_PROVIDER_SERVICE_NAME ="default";
 
-    public TokenDto login (LoginRequest request, Date issuedAt) {
+    private final ExternalAuthProviderLoginAndJoinService authProviderLoginAndJoinService;
+    private final DefaultLoginService defaultLoginService;
+
+    public Optional<TokenDto> login(LoginRequest request, Date issuedAt) {
         String providerName = getIdentityProviderName(request);
-        AuthLoginPolicy loginPolicy = getLoginPolicyByProviderName(providerName);
-        return loginPolicy.login(request, issuedAt);
-    }
-
-    private AuthLoginPolicy getLoginPolicyByProviderName(String providerName) {
-        return loginPolicies.stream()
-                .filter(policy -> policy.isIdentityProvider(providerName))
-                .findAny()
-                .orElseThrow(() -> {
-                    throw new IllegalStateException("해당하는 인가서버가 없습니다.");
-                });
+        if (DEFAULT_PROVIDER_SERVICE_NAME.equals(providerName)) {
+            return defaultLoginService.login(
+                    request.getEmail(),
+                    request.getPassword(),
+                    issuedAt);
+        }
+        return authProviderLoginAndJoinService.login(
+                providerName,
+                request.getCode(),
+                issuedAt
+        );
     }
 
     private String getIdentityProviderName(LoginRequest request) {
         return Optional.ofNullable(request.getIdentityProvider())
-                .orElse("default");
+                .orElse(DEFAULT_PROVIDER_SERVICE_NAME);
     }
 }

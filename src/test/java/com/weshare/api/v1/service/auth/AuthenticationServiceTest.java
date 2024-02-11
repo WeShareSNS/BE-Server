@@ -110,10 +110,10 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        TokenDto response = authService.login(request, new Date(System.nanoTime()));
+        Optional<TokenDto> response = authService.login(request, new Date(System.nanoTime()));
         // then
         RefreshToken refreshToken = tokenRepository.findTokenByUser(user).get();
-        assertEquals(response.refreshToken(), refreshToken.getToken());
+        assertEquals(response.get().refreshToken(), refreshToken.getToken());
     }
 
     @Test
@@ -125,9 +125,9 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        TokenDto response = authService.login(request, new Date(System.nanoTime()));
+        Optional<TokenDto> response = authService.login(request, new Date(System.nanoTime()));
         // then
-        String findEmail = jwtService.extractEmail(response.accessToken());
+        String findEmail = jwtService.extractEmail(response.get().accessToken());
         assertEquals(user.getEmail(), findEmail);
     }
 

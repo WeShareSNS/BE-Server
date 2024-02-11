@@ -1,13 +1,13 @@
-package com.weshare.api.v1.service.auth.login.policy;
+package com.weshare.api.v1.service.auth.login;
 
-import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
-import com.weshare.api.v1.token.jwt.JwtService;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.token.TokenType;
+import com.weshare.api.v1.token.jwt.JwtService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,12 +15,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-
-import static com.weshare.api.v1.domain.user.Social.DEFAULT;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class DefaultLoginPolicy implements AuthLoginPolicy {
+public class DefaultLoginService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
@@ -28,16 +27,19 @@ public class DefaultLoginPolicy implements AuthLoginPolicy {
     private final JwtService jwtService;
 
     @Transactional
-    @Override
-    public TokenDto login(LoginRequest request, Date issuedAt) {
-        User user = getUserByEmailOrThrowException(request.getEmail());
-        if (!isPasswordMatching(request, user)) {
+    public Optional<TokenDto> login(
+            @NotNull String email,
+            @NotNull String password,
+            @NotNull Date issuedAt
+    ) {
+        User user = getUserByEmailOrThrowException(email);
+        if (!isPasswordMatching(password, user.getPassword())) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
         }
         String accessToken = jwtService.generateAccessToken(user, issuedAt);
         String refreshToken = jwtService.generateRefreshToken(user, issuedAt);
         reissueRefreshTokenByUser(user, refreshToken);
-        return new TokenDto(accessToken, refreshToken);
+        return Optional.of(new TokenDto(accessToken, refreshToken));
     }
 
     private User getUserByEmailOrThrowException(String email) {
@@ -47,13 +49,8 @@ public class DefaultLoginPolicy implements AuthLoginPolicy {
                 });
     }
 
-    private boolean isPasswordMatching(LoginRequest request, User user) {
-        return passwordEncoder.matches(request.getPassword(), user.getPassword());
-    }
-
-    @Override
-    public boolean isIdentityProvider(String providerName) {
-        return DEFAULT.getProviderName().equals(providerName);
+    private boolean isPasswordMatching(String requestPassword, String existingUserPassword) {
+        return passwordEncoder.matches(requestPassword, existingUserPassword);
     }
 
     private void reissueRefreshTokenByUser(User user, String refreshToken) {

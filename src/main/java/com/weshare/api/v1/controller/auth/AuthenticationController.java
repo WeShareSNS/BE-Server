@@ -58,6 +58,7 @@ public class AuthenticationController {
   @Operation(summary = "사용자 로그인 API", description = "사용자는 로그인을 할 수 있습니다.")
   @ApiResponses({
           @ApiResponse(responseCode = "200", description = "refresh 토큰은 cookie에 저장됩니다."),
+          @ApiResponse(responseCode = "201", description = "간편 로그인 사용자가 신규 유저인 경우 회원가입 처리합니다."),
           @ApiResponse(responseCode = "400", description = "http body를 확인해주세요"),
           @ApiResponse(responseCode = "404", description = "이메일을 확인해 주세요")
   })
@@ -65,7 +66,11 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody(required = false) LoginRequest request,
                                                       HttpServletResponse response) {
     log.info("data={}", request);
-    TokenDto tokenDto = service.login(request, new Date(System.nanoTime()));
+    Optional<TokenDto> tokenDtoOptional = service.login(request, new Date(System.nanoTime()));
+    if (tokenDtoOptional.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+    TokenDto tokenDto = tokenDtoOptional.get();
     cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
     return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));
   }

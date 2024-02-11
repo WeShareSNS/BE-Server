@@ -1,4 +1,4 @@
-package com.weshare.api.v1.service.auth.login;
+package com.weshare.api.v1.service.auth.login.policy;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

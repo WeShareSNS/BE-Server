@@ -64,7 +64,7 @@ public class AuthenticationService {
         }
     }
 
-    public TokenDto login(LoginRequest request, Date issuedAt) {
+    public Optional<TokenDto> login(LoginRequest request, Date issuedAt) {
         return loginService.login(request, issuedAt);
     }
 

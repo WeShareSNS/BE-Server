@@ -3,12 +3,11 @@ package com.weshare.api.v1.service.auth.login.policy;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.weshare.api.v1.service.auth.login.OAuthApiException;
-import com.weshare.api.v1.service.auth.login.ResponseAuthToken;
+import com.weshare.api.v1.common.CustomUUID;
+import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
-import com.weshare.api.v1.repository.user.UserRepository;
-import com.weshare.api.v1.token.jwt.JwtService;
-import com.weshare.api.v1.token.RefreshTokenRepository;
+import com.weshare.api.v1.service.auth.login.OAuthApiException;
 import com.weshare.api.v1.token.TokenType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +23,7 @@ import java.time.LocalDate;
 import static com.weshare.api.v1.domain.user.Social.NAVER;
 
 @Component
-public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy {
+public class NaverLoginAndJoinProvider implements ExternalProvider {
 
     @Value("${spring.security.oauth2.client.provider.naver.token-uri}")
     private String tokenUrl;
@@ -41,17 +40,13 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
     private String userInfoUri;
 
-    public NaverLoginAndJoinPolicy(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtService jwtService) {
-        super(userRepository, refreshTokenRepository, jwtService);
-    }
-
     @Override
     public boolean isIdentityProvider(String providerName) {
         return NAVER.getProviderName().equals(providerName);
     }
 
     @Override
-    protected ResponseAuthToken getToken(String code) {
+    public ResponseAuthToken getToken(String code) {
         String requestTokenUrl = tokenUrl;
         MultiValueMap<String, String> requestBody = getTokenRequestBody(code);
         RestClient restClient = RestClient.create(requestTokenUrl);
@@ -79,7 +74,7 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     }
 
     @Override
-    protected String getResponseBody(String accessToken) {
+    public String getResponseBody(String accessToken) {
         String reqURL = userInfoUri;
 
         RestClient restClient = RestClient.create(reqURL);
@@ -98,7 +93,7 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
     }
 
     @Override
-    protected User getAuthUser(String responseBody) {
+    public User getAuthUser(String responseBody) {
         JsonElement element = JsonParser.parseString(responseBody);
         var profileImg = element.getAsJsonObject().get("response").getAsJsonObject().get("profile_image").getAsString();
         var email = element.getAsJsonObject().get("response").getAsJsonObject().get("email").getAsString();
@@ -106,5 +101,17 @@ public class NaverLoginAndJoinPolicy extends AbstractProviderLoginAndJoinPolicy 
         var date = element.getAsJsonObject().get("response").getAsJsonObject().get("birthday").getAsString();
         var birthDate = LocalDate.parse(String.format("%s-%s", year, date));
         return createAuthUser(email, profileImg, birthDate, NAVER);
+    }
+
+    private User createAuthUser(String email, String profileImg, LocalDate birthDate, Social social) {
+        return User.builder()
+                .email(email)
+                .name(CustomUUID.getCustomUUID(16, ""))
+                .profileImg(profileImg)
+                .role(Role.USER)
+                .social(social)
+                .password(CustomUUID.getCustomUUID(16, ""))
+                .birthDate(birthDate)
+                .build();
     }
 }
