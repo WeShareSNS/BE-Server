@@ -10,10 +10,10 @@ import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.token.TokenType;
 import com.weshare.api.v1.token.jwt.JwtService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -27,18 +27,25 @@ public class ExternalAuthProviderLoginAndJoinService {
     private final AuthProvider authProvider;
 
     public Optional<TokenDto> login(
-            @NotNull String providerName,
-            @NotNull String code,
-            @NotNull Date issuedAt
+            String providerName,
+            String code,
+            Date issuedAt
     ) {
         //외부 api는 transaction 내부에서 처리하지 말기
+        if (!checkNonBlankValues(providerName, code)) {
+            throw new IllegalStateException("providerName 혹은 code 값을 확인해주세요");
+        }
         User authUser = authProvider.getAuthUserByExternalProvider(providerName, code);
         return issueTokenOrRegisterUser(authUser, issuedAt);
     }
 
+    private boolean checkNonBlankValues(String providerName, String code) {
+        return StringUtils.hasText(providerName) && StringUtils.hasText(code);
+    }
+
     @Transactional
     protected Optional<TokenDto> issueTokenOrRegisterUser(
-            @NotNull User authUser,
+            User authUser,
             Date issuedAt
     ) {
         Optional<User> findUser = userRepository.findByEmail(authUser.getEmail());

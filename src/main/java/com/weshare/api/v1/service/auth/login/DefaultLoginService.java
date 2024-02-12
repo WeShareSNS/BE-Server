@@ -7,12 +7,12 @@ import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.token.TokenType;
 import com.weshare.api.v1.token.jwt.JwtService;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -28,10 +28,13 @@ public class DefaultLoginService {
 
     @Transactional
     public Optional<TokenDto> login(
-            @NotNull String email,
-            @NotNull String password,
-            @NotNull Date issuedAt
+            String email,
+            String password,
+            Date issuedAt
     ) {
+        if (!checkNonBlankValues(email, password)) {
+            throw new IllegalStateException("email 혹은 password 값을 확인해주세요");
+        }
         User user = getUserByEmailOrThrowException(email);
         if (!isPasswordMatching(password, user.getPassword())) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
@@ -40,6 +43,10 @@ public class DefaultLoginService {
         String refreshToken = jwtService.generateRefreshToken(user, issuedAt);
         reissueRefreshTokenByUser(user, refreshToken);
         return Optional.of(new TokenDto(accessToken, refreshToken));
+    }
+
+    private boolean checkNonBlankValues(String email, String password) {
+        return StringUtils.hasText(email) && StringUtils.hasText(password);
     }
 
     private User getUserByEmailOrThrowException(String email) {

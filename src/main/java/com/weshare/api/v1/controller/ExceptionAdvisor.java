@@ -1,7 +1,7 @@
 package com.weshare.api.v1.controller;
 
 import com.weshare.api.v1.common.Response;
-import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
+import com.weshare.api.v1.controller.auth.AuthErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
-import static com.weshare.api.v1.controller.auth.AuthErrorCode.*;
+import static com.weshare.api.v1.controller.auth.AuthErrorCode.PARAMETER_BAD_REQUEST_ERROR;
+import static com.weshare.api.v1.controller.auth.AuthErrorCode.SERVER_ERROR;
+
 
 @Slf4j
 @RestControllerAdvice
@@ -26,14 +28,21 @@ public class ExceptionAdvisor {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity illegalArgumentExceptionHandler (IllegalArgumentException e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, e.getMessage());
+        return response.fail(AuthErrorCode.BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity illegalStateExceptionHandler (IllegalStateException e){
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(AuthErrorCode.BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity methodArgumentNotValidExceptionHandler (MethodArgumentNotValidException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(PARAMETER_BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, getDefaultErrorMessage(e));
+        return response.fail(AuthErrorCode.PARAMETER_BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, getDefaultErrorMessage(e));
     }
 
     private String getDefaultErrorMessage(BindException e) {
@@ -44,13 +53,6 @@ public class ExceptionAdvisor {
                         fieldError.getDefaultMessage() + " 입력된 값: [" +
                         fieldError.getRejectedValue() + "]")
                 .collect(Collectors.joining());
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(EmailDuplicateException.class)
-    public ResponseEntity EmailDuplicateExceptionHandler (EmailDuplicateException e) {
-        log.error("[exceptionHandler] ex", e);
-        return response.fail(EMAIL_DUPLICATE_ERROR.getCode(), HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
