@@ -1,6 +1,5 @@
 package com.weshare.api.v1.config.social;
 
-import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("spring.security.oauth2.client")
@@ -67,7 +66,6 @@ public class GoogleLoginProperties {
     }
 
     private static class Registration {
-        @Getter
         private final Google google;
 
         public Registration(Google google) {
@@ -90,8 +88,8 @@ public class GoogleLoginProperties {
             return google.redirectUri;
         }
 
-        @Getter
         private static class Google {
+
             private final String authorizationGrantType;
             private final String clientId;
             private final String clientSecret;

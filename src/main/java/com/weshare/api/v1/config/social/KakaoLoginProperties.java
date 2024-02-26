@@ -1,6 +1,5 @@
 package com.weshare.api.v1.config.social;
 
-import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("spring.security.oauth2.client")
@@ -67,7 +66,6 @@ public class KakaoLoginProperties {
     }
 
     private static class Registration {
-        @Getter
         private final Kakao kakao;
 
         public Registration(Kakao kakao) {
@@ -90,7 +88,6 @@ public class KakaoLoginProperties {
             return kakao.redirectUri;
         }
 
-        @Getter
         private static class Kakao {
             private final String authorizationGrantType;
             private final String clientId;

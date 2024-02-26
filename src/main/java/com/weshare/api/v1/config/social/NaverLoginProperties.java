@@ -1,6 +1,5 @@
 package com.weshare.api.v1.config.social;
 
-import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("spring.security.oauth2.client")
@@ -71,7 +70,6 @@ public class NaverLoginProperties {
     }
 
     private static class Registration {
-        @Getter
         private final Naver naver;
 
         public Registration(Naver naver) {
@@ -98,7 +96,6 @@ public class NaverLoginProperties {
             return naver.state;
         }
 
-        @Getter
         private static class Naver {
             private final String authorizationGrantType;
             private final String clientId;
