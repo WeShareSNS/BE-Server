@@ -1,4 +1,4 @@
-package com.weshare.api.v1.service.auth.login.policy;
+package com.weshare.api.v1.service.auth.login.provider.naver;
 
 
 import com.google.gson.JsonElement;
@@ -8,6 +8,8 @@ import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.auth.login.OAuthApiException;
+import com.weshare.api.v1.service.auth.login.provider.ExternalProvider;
+import com.weshare.api.v1.service.auth.login.provider.ResponseAuthToken;
 import com.weshare.api.v1.token.TokenType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

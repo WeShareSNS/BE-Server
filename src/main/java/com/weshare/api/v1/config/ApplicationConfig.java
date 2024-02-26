@@ -1,11 +1,5 @@
 package com.weshare.api.v1.config;
 
-import com.weshare.api.v1.repository.user.UserRepository;
-import com.weshare.api.v1.token.jwt.JwtService;
-import com.weshare.api.v1.service.auth.login.AuthLoginService;
-import com.weshare.api.v1.service.auth.login.policy.*;
-import com.weshare.api.v1.token.RefreshTokenRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,9 +9,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class ApplicationConfig {

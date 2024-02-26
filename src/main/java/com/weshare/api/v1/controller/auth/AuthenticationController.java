@@ -39,6 +39,7 @@ public class AuthenticationController {
   })
   @PostMapping("/signup")
   public ResponseEntity join(@Valid @RequestBody SignupRequest request) {
+
     service.join(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }

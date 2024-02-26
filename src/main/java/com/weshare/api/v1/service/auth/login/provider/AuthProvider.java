@@ -1,4 +1,4 @@
-package com.weshare.api.v1.service.auth.login.policy;
+package com.weshare.api.v1.service.auth.login.provider;
 
 import com.weshare.api.v1.domain.user.User;
 

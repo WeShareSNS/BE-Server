@@ -5,7 +5,7 @@ import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.repository.user.UserRepository;
-import com.weshare.api.v1.service.auth.login.policy.AuthProvider;
+import com.weshare.api.v1.service.auth.login.provider.AuthProvider;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.token.TokenType;
