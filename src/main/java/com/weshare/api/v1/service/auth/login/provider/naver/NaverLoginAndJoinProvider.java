@@ -11,13 +11,10 @@ import com.weshare.api.v1.service.auth.login.OAuthApiException;
 import com.weshare.api.v1.service.auth.login.provider.ExternalProvider;
 import com.weshare.api.v1.service.auth.login.provider.ResponseAuthToken;
 import com.weshare.api.v1.token.TokenType;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
@@ -27,20 +24,11 @@ import static com.weshare.api.v1.domain.user.Social.NAVER;
 @Component
 public class NaverLoginAndJoinProvider implements ExternalProvider {
 
-    @Value("${spring.security.oauth2.client.provider.naver.token-uri}")
-    private String tokenUrl;
-    @Value("${spring.security.oauth2.client.registration.naver.authorization-grant-type}")
-    private String grantType;
-    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
-    private String clientId;
-    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
-    private String clientSecret;
-    @Value("${spring.security.oauth2.client.registration.naver.redirect-uri}")
-    private String redirectUri;
-    @Value("${spring.security.oauth2.client.registration.naver.state}")
-    private String state;
-    @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}")
-    private String userInfoUri;
+    private final NaverOAuthHelper naverOAuthHelper;
+
+    public NaverLoginAndJoinProvider(NaverOAuthHelper naverOAuthHelper) {
+        this.naverOAuthHelper = naverOAuthHelper;
+    }
 
     @Override
     public boolean isIdentityProvider(String providerName) {
@@ -49,9 +37,9 @@ public class NaverLoginAndJoinProvider implements ExternalProvider {
 
     @Override
     public ResponseAuthToken getToken(String code) {
-        String requestTokenUrl = tokenUrl;
-        MultiValueMap<String, String> requestBody = getTokenRequestBody(code);
-        RestClient restClient = RestClient.create(requestTokenUrl);
+        String tokenUrl = naverOAuthHelper.getTokenUrl();
+        var requestBody = naverOAuthHelper.getTokenRequestBody(code);
+        RestClient restClient = RestClient.create(tokenUrl);
 
         return restClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -64,22 +52,11 @@ public class NaverLoginAndJoinProvider implements ExternalProvider {
                 .getBody();
     }
 
-    private MultiValueMap<String, String> getTokenRequestBody(String code) {
-        var body = new LinkedMultiValueMap<String, String>();
-        body.add("grant_type", grantType);
-        body.add("client_id", clientId);
-        body.add("client_secret", clientSecret);
-        body.add("redirect_uri", redirectUri);
-        body.add("state", state);
-        body.add("code", code);
-        return body;
-    }
-
     @Override
     public String getResponseBody(String accessToken) {
-        String reqURL = userInfoUri;
+        String userInfoUri = naverOAuthHelper.getUserInfoUri();
+        RestClient restClient = RestClient.create(userInfoUri);
 
-        RestClient restClient = RestClient.create(reqURL);
         return restClient.post()
                 .headers(
                         httpHeaders -> {

@@ -1,8 +1,8 @@
 package com.weshare.api.v1.service.auth.login.provider.kakao;
 
 import lombok.Builder;
-
-import java.util.List;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 public class KakaoOAuthHelper {
     private final String tokenUrl;
@@ -22,14 +22,21 @@ public class KakaoOAuthHelper {
         this.userInfoUri = userInfoUri;
     }
 
-    public List<String> getProvider() {
-        return List.of(
-                tokenUrl,
-                grantType,
-                clientId,
-                clientSecret,
-                redirectUri,
-                userInfoUri
-        );
+    public MultiValueMap<String, String> getTokenRequestBody(String code) {
+        var body = new LinkedMultiValueMap<String, String>();
+        body.add("grant_type", grantType);
+        body.add("client_id", clientId);
+        body.add("client_secret", clientSecret);
+        body.add("redirect_uri", redirectUri);
+        body.add("code", code);
+        return body;
+    }
+
+    public String getTokenUrl() {
+        return tokenUrl;
+    }
+
+    public String getUserInfoUri() {
+        return userInfoUri;
     }
 }

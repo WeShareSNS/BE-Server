@@ -8,7 +8,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties({KakaoLoginProperties.class, NaverLoginProperties.class, GoogleLoginProperties.class})
+@EnableConfigurationProperties({
+        KakaoLoginProperties.class,
+        NaverLoginProperties.class,
+        GoogleLoginProperties.class
+})
 public class SocialLoginConfiguration {
     private final KakaoLoginProperties kakaoLoginProperties;
     private final NaverLoginProperties naverLoginProperties;
