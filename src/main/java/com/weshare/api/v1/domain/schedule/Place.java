@@ -2,10 +2,7 @@ package com.weshare.api.v1.domain.schedule;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalTime;
 
@@ -13,17 +10,25 @@ import java.time.LocalTime;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Place {
+
     private LocalTime time;
     private String memo;
-    private int expense;
+
+    @Embedded
+    private Money expense;
+
     @Embedded
     private Location location;
 
     @Builder
-    private Place(LocalTime time, String memo, int expense, Location location) {
+    private Place(LocalTime time, String memo, long expense, Location location) {
         this.time = time;
         this.memo = memo;
-        this.expense = expense;
+        this.expense = new Money(expense);
         this.location = location;
+    }
+
+    public long getExpense() {
+        return expense.getValue();
     }
 }

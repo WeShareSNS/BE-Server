@@ -32,4 +32,10 @@ public class Day {
         this.places = places;
         this.travelDate = travelDate;
     }
+
+    public long getTotalDayExpense() {
+        return places.stream()
+                .mapToLong(Place::getExpense)
+                .sum();
+    }
 }
