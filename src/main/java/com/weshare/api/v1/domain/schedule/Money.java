@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class Money {
     }
 
     private BigDecimal parseExpense(String expense) {
-        if (expense.isBlank()) {
+        if (!StringUtils.hasText(expense)) {
             return BigDecimal.ZERO;
         }
         try {

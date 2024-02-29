@@ -1,10 +1,8 @@
 package com.weshare.api.v1.domain.schedule;
 
+import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +25,11 @@ public class Schedule {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Embedded
     private Days days;
