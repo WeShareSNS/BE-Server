@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @ToString
@@ -33,6 +33,12 @@ public class Schedule {
 
     @Builder
     private Schedule(String title, Destination destination, LocalDate startDate, LocalDate endDate, Days days) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("시작, 종료 날짜가 올바르지 않습니다.");
+        }
+        if (!days.areAllDistinctDaysWithinRange(startDate, endDate) || !days.isDayCountMatching(startDate, endDate)) {
+            throw new IllegalArgumentException("날짜 정보가 올바르지 않습니다.");
+        }
         this.title = title;
         this.destination = destination;
         this.startDate = startDate;
@@ -40,31 +46,8 @@ public class Schedule {
         this.days = days;
     }
 
-    public long getTotalScheduleExpense() {
-        return days.getTotalDaysExpense();
+    public BigDecimal getTotalScheduleExpense() {
+        return days.getTotalDaysExpense().getValue();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public Destination getDestination() {
-        return destination;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public List<Day> getDays() {
-        return days.getDays();
-    }
 }

@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,19 +15,43 @@ public class Money {
     @Column(name = "expense")
     private BigDecimal expense;
 
-    public Money(long expense) {
-        this.expense = new BigDecimal(expense);
+    public Money(String expense) {
+        this.expense = parseExpense(expense);
     }
 
-    public Money(BigDecimal expense) {
+    private BigDecimal parseExpense(String expense) {
+        if (expense.isBlank()) {
+            return BigDecimal.ZERO;
+        }
+        try {
+            return new BigDecimal(expense);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("금액 요청이 올바르지 않습니다.");
+        }
+    }
+
+    private Money(BigDecimal expense) {
         this.expense = expense;
     }
 
-    public long sum(Money money) {
-        return this.expense.add(money.expense).longValue();
+    public Money sum(Money money) {
+        return new Money(this.expense.add(money.expense));
     }
 
-    public long getValue() {
-        return expense.longValue();
+    public BigDecimal getValue() {
+        return expense;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Money money = (Money) object;
+        return Objects.equals(expense, money.expense);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expense);
     }
 }
