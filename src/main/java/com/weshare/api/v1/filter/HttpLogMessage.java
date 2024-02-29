@@ -1,4 +1,4 @@
-package com.weshare.api.v1.config.security;
+package com.weshare.api.v1.filter;
 
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -7,7 +7,10 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 
 @NoArgsConstructor

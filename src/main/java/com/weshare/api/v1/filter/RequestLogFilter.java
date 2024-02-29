@@ -1,4 +1,4 @@
-package com.weshare.api.v1.config.security;
+package com.weshare.api.v1.filter;
 
 import com.weshare.api.v1.common.CustomUUID;
 import jakarta.servlet.FilterChain;

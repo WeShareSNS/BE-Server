@@ -1,8 +1,10 @@
-package com.weshare.api.v1.config.security;
+package com.weshare.api.v1.filter;
 
+import com.weshare.api.v1.token.TokenType;
+import com.weshare.api.v1.token.exception.InvalidTokenException;
+import com.weshare.api.v1.token.exception.TokenTimeOutException;
 import com.weshare.api.v1.token.jwt.JwtService;
 import com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepository;
-import com.weshare.api.v1.token.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +13,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService customUserDetailsService;
     private final LogoutAccessTokenRedisRepository logoutTokenRedisRepository;
+    private final FilterExceptionHandler filterExceptionHandler;
 
     @Override
     protected void doFilterInternal(
@@ -55,24 +60,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        final String userEmail = jwtService.extractEmail(jwt);
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+        try {
+            final String userEmail = jwtService.extractEmail(jwt);
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+            filterChain.doFilter(request, response);
+        } catch (TokenTimeOutException e) {
+            filterExceptionHandler.handleAuthenticationExceptionMessage(request,response, HttpStatus.UNAUTHORIZED, FilterErrorCode.TOKEN_TIME_OUT_ERROR);
+        } catch (InvalidTokenException e) {
+            filterExceptionHandler.handleAuthenticationExceptionMessage(request,response,HttpStatus.UNAUTHORIZED, FilterErrorCode.INVALID_TOKEN_ERROR);
+        } catch (UsernameNotFoundException e) {
+            filterExceptionHandler.handleAuthenticationExceptionMessage(request,response,HttpStatus.NOT_FOUND, FilterErrorCode.USER_NOT_FOUND_ERROR);
         }
-        filterChain.doFilter(request, response);
+
     }
 
 }
