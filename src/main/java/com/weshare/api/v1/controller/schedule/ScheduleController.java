@@ -30,12 +30,12 @@ public class ScheduleController {
      * public String extractEmail(String token)만 정적 메서드로 사용하는건 문제가 있을까요?
      */
     @PostMapping("/schedule")
-    public ResponseEntity saveSchedule(@Valid @RequestBody ApplyScheduleRequest applyScheduleRequest,
+    public ResponseEntity saveSchedule(@Valid @RequestBody CreateScheduleRequest createScheduleRequest,
                                        HttpServletRequest request) {
         String accessToken = cookieTokenHandler.getBearerToken(request);
         String userEmail = jwtService.extractEmail(accessToken);
 
-        scheduleService.saveSchedule(applyScheduleRequest, userEmail);
+        scheduleService.saveSchedule(createScheduleRequest, userEmail);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

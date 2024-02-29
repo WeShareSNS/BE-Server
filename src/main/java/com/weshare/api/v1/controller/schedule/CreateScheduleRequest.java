@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public class ApplyScheduleRequest {
+public class CreateScheduleRequest {
 
     @NotBlank
     private final String title;
@@ -44,7 +44,7 @@ public class ApplyScheduleRequest {
     }
 
     @Builder
-    private ApplyScheduleRequest(String title, String destination, LocalDate startDate, LocalDate endDate, List<VisitDate> visitDates) {
+    private CreateScheduleRequest(String title, String destination, LocalDate startDate, LocalDate endDate, List<VisitDate> visitDates) {
         this.title = title;
         this.destination = destination;
         this.startDate = startDate;
