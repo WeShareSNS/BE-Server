@@ -4,7 +4,6 @@ import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -49,8 +48,8 @@ public class Schedule {
         this.days = days;
     }
 
-    public BigDecimal getTotalScheduleExpense() {
-        return days.getTotalDaysExpense().getValue();
+    public Expense getTotalScheduleExpense() {
+        return days.getTotalDaysExpense();
     }
 
 }

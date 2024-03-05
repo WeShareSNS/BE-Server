@@ -1,6 +1,7 @@
 package com.weshare.api.v1.controller.schedule;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -70,7 +71,8 @@ public class CreateScheduleRequest {
 
             private final String memo;
 
-            private final String expense;
+            @Min(value = 0, message = "금액은 0원 이상이어야 합니다.")
+            private final long expense;
 
             @NotBlank
             private final String latitude;
@@ -78,7 +80,7 @@ public class CreateScheduleRequest {
             private final String longitude;
 
             @Builder
-            private VisitPlace(String title, LocalTime time, String memo, String expense, String latitude, String longitude) {
+            private VisitPlace(String title, LocalTime time, String memo, long expense, String latitude, String longitude) {
                 this.title = title;
                 this.time = time;
                 this.memo = memo;

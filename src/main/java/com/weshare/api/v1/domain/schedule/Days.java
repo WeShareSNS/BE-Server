@@ -39,10 +39,10 @@ public class Days {
         return endDate.compareTo(startDate) + 1 == days.size();
     }
 
-    public Money getTotalDaysExpense() {
+    public Expense getTotalDaysExpense() {
         return days.stream()
                 .map(Day::getTotalDayExpense)
-                .reduce(Money::sum)
+                .reduce(Expense::sum)
                 .orElseThrow(() -> new IllegalStateException("금액을 반환할 수 없습니다."));
     }
 

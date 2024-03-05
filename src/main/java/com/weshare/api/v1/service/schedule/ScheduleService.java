@@ -53,7 +53,7 @@ public class ScheduleService {
                 .title(visitPlaceDto.getTitle())
                 .time(visitPlaceDto.getTime())
                 .memo(visitPlaceDto.getMemo())
-                .expense(new Money(visitPlaceDto.getExpense()))
+                .expense(new Expense(visitPlaceDto.getExpense()))
                 .location(new Location(
                         visitPlaceDto.getLatitude(),
                         visitPlaceDto.getLongitude())

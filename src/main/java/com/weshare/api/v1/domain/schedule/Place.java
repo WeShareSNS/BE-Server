@@ -17,13 +17,13 @@ public class Place {
     private String memo;
 
     @Embedded
-    private Money expense;
+    private Expense expense;
 
     @Embedded
     private Location location;
 
     @Builder
-    private Place(String title, LocalTime time, String memo, Money expense, Location location) {
+    private Place(String title, LocalTime time, String memo, Expense expense, Location location) {
         this.title = title;
         this.time = time;
         this.memo = memo;

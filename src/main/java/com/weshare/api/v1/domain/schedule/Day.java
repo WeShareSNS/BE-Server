@@ -34,10 +34,10 @@ public class Day {
         this.travelDate = travelDate;
     }
 
-    public Money getTotalDayExpense() {
+    public Expense getTotalDayExpense() {
         return places.stream()
                 .map(Place::getExpense)
-                .reduce(Money::sum)
+                .reduce(Expense::sum)
                 .orElseThrow(() -> new IllegalStateException("금액을 반환할 수 없습니다."));
     }
 

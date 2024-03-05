@@ -76,12 +76,12 @@ public class CreateScheduleDto {
             private final String title;
             private final LocalTime time;
             private final String memo;
-            private final String expense;
+            private final long expense;
             private final String latitude;
             private final String longitude;
 
             @Builder
-            private VisitPlaceDto(String title, LocalTime time, String memo, String expense, String latitude, String longitude) {
+            private VisitPlaceDto(String title, LocalTime time, String memo, long expense, String latitude, String longitude) {
                 this.title = title;
                 this.time = time;
                 this.memo = memo;
