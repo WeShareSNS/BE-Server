@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ENC(gL9Pf82K8qTBpEvSZpE3cwxNU0MsvZDSb0fTs3RowpLVjlpbQWmflnzcWHxhBRnOyh1zgq6L3VWTrvL3nrKcjEMrJFAHdby7)
+    username: ENC(5a8szO/ckiqxP2iSPrgrGw==)
+    password: ENC(FHRyp74oNI4bTwZz4iiBb9a/qv6kMjOT)
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: true
+    show-sql: true
+    hibernate:
+      default_batch_fetch_size: 100 # in query 개수
+      ddl-auto: create
+    defer-datasource-initialization: true
+
+  data:
+    redis:
+      port: 6379
+      host: ENC(2Dn3KKSnxUpr5491WiYZS+b7m1rh+x6v)
+      jedis:
+        pool:
+          max-idle: 8
+          min-idle: 0
+          max-active: 8
