@@ -1,6 +1,7 @@
 package com.weshare.api.v1.common;
 
 import com.weshare.api.v1.token.TokenType;
+import com.weshare.api.v1.token.exception.TokenNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +39,7 @@ public final class CookieTokenHandler {
     public String getBearerToken(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (hasInvalidBearerTokenFormat(authHeader)) {
-            throw new IllegalArgumentException("토큰 정보가 존재하지 않습니다.");
+            throw new TokenNotFoundException("토큰 정보가 존재하지 않습니다.");
         }
         return authHeader.substring(BEARER_HEADER_LENGTH);
     }

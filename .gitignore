@@ -46,6 +46,3 @@ app_*.log.gz
 .DS_Store
 .AppleDouble
 .LSOverride
-
-*.yml
-*.properties
