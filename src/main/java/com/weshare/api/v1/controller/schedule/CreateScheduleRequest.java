@@ -1,15 +1,17 @@
 package com.weshare.api.v1.controller.schedule;
 
-import com.weshare.api.v1.domain.schedule.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 
+@Getter
 public class CreateScheduleRequest {
 
     @NotBlank
@@ -28,19 +30,8 @@ public class CreateScheduleRequest {
     @Valid
     private final List<VisitDate> visitDates;
 
-    public Schedule toEntity() {
-        return Schedule.builder()
-                .title(title)
-                .destination(Destination.findDestinationByName(destination))
-                .startDate(startDate)
-                .endDate(endDate)
-                .days(
-                        new Days(
-                                visitDates.stream()
-                                        .map(VisitDate::toEntity)
-                                        .toList()
-                        ))
-                .build();
+    public List<VisitDate> getVisitDates() {
+        return Collections.unmodifiableList(visitDates);
     }
 
     @Builder
@@ -53,56 +44,47 @@ public class CreateScheduleRequest {
     }
 
     static class VisitDate {
+        @Getter
         @NotNull
-        private LocalDate travelDate;
+        private final LocalDate travelDate;
         @NotNull
         @Valid
-        private List<VisitPlace> visitPlaces;
+        private final List<VisitPlace> visitPlaces;
 
+        @Builder
         private VisitDate(LocalDate travelDate, List<VisitPlace> visitPlaces) {
             this.travelDate = travelDate;
             this.visitPlaces = visitPlaces;
         }
 
-        private Day toEntity() {
-            return Day.builder()
-                    .travelDate(travelDate)
-                    .places(
-                            visitPlaces.stream()
-                                    .map(VisitPlace::toEntity)
-                                    .toList()
-                    )
-                    .build();
+        public List<VisitPlace> getVisitPlaces() {
+            return Collections.unmodifiableList(visitPlaces);
         }
 
+        @Getter
         static class VisitPlace {
+            @NotBlank
+            private final String title;
             @NotNull
-            private LocalTime time;
+            private final LocalTime time;
 
-            private String memo;
+            private final String memo;
 
-            private String expense;
+            private final String expense;
 
             @NotBlank
-            private String latitude;
+            private final String latitude;
             @NotBlank
-            private String longitude;
+            private final String longitude;
 
-            private VisitPlace(LocalTime time, String memo, String expense, String latitude, String longitude) {
+            @Builder
+            private VisitPlace(String title, LocalTime time, String memo, String expense, String latitude, String longitude) {
+                this.title = title;
                 this.time = time;
                 this.memo = memo;
                 this.expense = expense;
                 this.latitude = latitude;
                 this.longitude = longitude;
-            }
-
-            private Place toEntity() {
-                return Place.builder()
-                        .time(time)
-                        .memo(memo)
-                        .expense(expense)
-                        .location(new Location(latitude, longitude))
-                        .build();
             }
         }
     }

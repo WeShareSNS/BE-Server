@@ -8,9 +8,11 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 @Embeddable
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Place {
 
+    private String title;
     private LocalTime time;
     private String memo;
 
@@ -21,15 +23,12 @@ public class Place {
     private Location location;
 
     @Builder
-    private Place(LocalTime time, String memo, String expense, Location location) {
+    private Place(String title, LocalTime time, String memo, Money expense, Location location) {
+        this.title = title;
         this.time = time;
         this.memo = memo;
-        this.expense = new Money(expense);
+        this.expense = expense;
         this.location = location;
-    }
-
-    public Money getExpense() {
-        return expense;
     }
 
     @Override
