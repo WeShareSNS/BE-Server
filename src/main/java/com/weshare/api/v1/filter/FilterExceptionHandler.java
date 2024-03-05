@@ -12,6 +12,11 @@ import java.io.PrintWriter;
 
 @Component
 public class FilterExceptionHandler {
+    private final ObjectMapper mapper;
+
+    public FilterExceptionHandler(ObjectMapper objectMapper) {
+        this.mapper = objectMapper;
+    }
 
     public void handleAuthenticationExceptionMessage(
             HttpServletRequest request,
@@ -31,7 +36,6 @@ public class FilterExceptionHandler {
                 .message(error.getMessage())
                 .build();
 
-        ObjectMapper mapper = new ObjectMapper();
         String errorJson = mapper.writeValueAsString(errorResponse);
 
         writer.write(errorJson);
