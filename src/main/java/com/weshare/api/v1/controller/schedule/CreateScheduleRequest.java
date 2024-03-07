@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,23 +15,24 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateScheduleRequest {
 
     @NotBlank
-    private final String title;
+    private String title;
 
     @NotBlank
-    private final String destination;
+    private String destination;
 
     @NotNull
-    private final LocalDate startDate;
+    private LocalDate startDate;
 
     @NotNull
-    private final LocalDate endDate;
+    private LocalDate endDate;
 
     @NotNull
     @Valid
-    private final List<VisitDate> visitDates;
+    private List<VisitDate> visitDates;
 
     public List<VisitDate> getVisitDates() {
         return Collections.unmodifiableList(visitDates);
@@ -44,13 +47,14 @@ public class CreateScheduleRequest {
         this.visitDates = visitDates;
     }
 
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     static class VisitDate {
         @Getter
         @NotNull
-        private final LocalDate travelDate;
+        private LocalDate travelDate;
         @NotNull
         @Valid
-        private final List<VisitPlace> visitPlaces;
+        private List<VisitPlace> visitPlaces;
 
         @Builder
         private VisitDate(LocalDate travelDate, List<VisitPlace> visitPlaces) {
@@ -63,21 +67,22 @@ public class CreateScheduleRequest {
         }
 
         @Getter
+        @NoArgsConstructor(access = AccessLevel.PROTECTED)
         static class VisitPlace {
             @NotBlank
-            private final String title;
+            private String title;
             @NotNull
-            private final LocalTime time;
+            private LocalTime time;
 
-            private final String memo;
+            private String memo;
 
             @Min(value = 0, message = "금액은 0원 이상이어야 합니다.")
-            private final long expense;
+            private long expense;
 
             @NotBlank
-            private final String latitude;
+            private String latitude;
             @NotBlank
-            private final String longitude;
+            private String longitude;
 
             @Builder
             private VisitPlace(String title, LocalTime time, String memo, long expense, String latitude, String longitude) {

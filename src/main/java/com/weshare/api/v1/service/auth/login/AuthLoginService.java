@@ -21,19 +21,19 @@ public class AuthLoginService {
         String providerName = getIdentityProviderName(request);
         if (DEFAULT_PROVIDER_SERVICE_NAME.equals(providerName)) {
             return defaultLoginService.login(
-                    request.getEmail(),
-                    request.getPassword(),
+                    request.email(),
+                    request.password(),
                     issuedAt);
         }
         return authProviderLoginAndJoinService.login(
                 providerName,
-                request.getCode(),
+                request.code(),
                 issuedAt
         );
     }
 
     private String getIdentityProviderName(LoginRequest request) {
-        return Optional.ofNullable(request.getIdentityProvider())
+        return Optional.ofNullable(request.identityProvider())
                 .orElse(DEFAULT_PROVIDER_SERVICE_NAME);
     }
 }

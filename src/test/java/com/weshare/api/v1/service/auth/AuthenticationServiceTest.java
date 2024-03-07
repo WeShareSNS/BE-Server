@@ -67,7 +67,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         assertAll(
                 () -> assertEquals(findUSer.getEmail(), email),
                 () -> assertTrue(passwordEncoder.matches(password, findUSer.getPassword())),
-                () -> assertEquals(findUSer.getBirthDate(), LocalDate.parse(request.getBirthDate()))
+                () -> assertEquals(findUSer.getBirthDate(), LocalDate.parse(request.birthDate()))
         );
     }
 
