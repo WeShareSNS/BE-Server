@@ -31,11 +31,9 @@ public class Like extends BaseTimeEntity {
     }
     public void updateLike() {
         state = LikeState.LIKE;
-        schedule.updateLike(this);
     }
 
     public void deleteLike() {
         state = LikeState.UNLIKE;
-        schedule.deleteLike(this);
     }
 }
