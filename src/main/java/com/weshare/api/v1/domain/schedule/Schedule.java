@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @ToString
@@ -33,6 +35,12 @@ public class Schedule {
     @Embedded
     private Days days;
 
+    @OneToMany(mappedBy = "schedule")
+    private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "schedule")
+    private List<Comment> comments = new ArrayList<>();
+
     @Builder
     private Schedule(String title, Destination destination, LocalDate startDate, LocalDate endDate, Days days) {
         if (startDate.isAfter(endDate)) {
@@ -50,6 +58,21 @@ public class Schedule {
 
     public Expense getTotalScheduleExpense() {
         return days.getTotalDaysExpense();
+    }
+
+    void updateLike(Like like) {
+        likes.add(like);
+    }
+
+    void deleteLike(Like like) {
+        likes.remove(like);
+    }
+
+    void updateComment(Comment comment) {
+        if (comments.contains(comment)) {
+            comments.remove(comment);
+        }
+        comments.add(comment);
     }
 
 }
