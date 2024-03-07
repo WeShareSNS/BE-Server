@@ -44,7 +44,7 @@ public class AuthenticationService {
     private final AuthLoginService loginService;
 
     public User join(SignupRequest request) {
-        String email = request.getEmail();
+        String email = request.email();
         // 프론트 -> 서버로 넘어온 회원 가입 정보에서 email을 검증한다.
         if (isDuplicateEmail(email)) {
             throw new EmailDuplicateException(email + "은 가입된 이메일 입니다.");
@@ -69,14 +69,14 @@ public class AuthenticationService {
     }
 
     private User createUser(SignupRequest request) {
-        LocalDate birthDate = LocalDate.parse(request.getBirthDate());
+        LocalDate birthDate = LocalDate.parse(request.birthDate());
         if (isBirthDateInFuture(birthDate)) {
             throw new IllegalArgumentException("생년월일은 미래 날짜를 입력하실 수 없습니다.");
         }
 
         return User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .name(CustomUUID.getCustomUUID(16, ""))
                 .birthDate(birthDate)
                 .profileImg(DEFAULT_PROFILE_IMG_URL)
