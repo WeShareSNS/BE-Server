@@ -1,5 +1,6 @@
 package com.weshare.api.v1.domain.schedule;
 
+import com.weshare.api.v1.domain.BaseTimeEntity;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.util.List;
 @Entity
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule {
+public class Schedule extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

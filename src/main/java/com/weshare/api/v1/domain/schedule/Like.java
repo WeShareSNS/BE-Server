@@ -1,5 +1,6 @@
 package com.weshare.api.v1.domain.schedule;
 
+import com.weshare.api.v1.domain.BaseTimeEntity;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "schedule_like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like {
+public class Like extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "schedule_like_id")

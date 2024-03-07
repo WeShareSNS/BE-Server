@@ -1,5 +1,6 @@
 package com.weshare.api.v1.domain.user;
 
+import com.weshare.api.v1.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +14,7 @@ import java.util.Collection;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User implements UserDetails {
+public class User extends BaseTimeEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

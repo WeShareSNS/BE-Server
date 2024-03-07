@@ -1,5 +1,6 @@
 package com.weshare.api.v1.domain.schedule;
 
+import com.weshare.api.v1.domain.BaseTimeEntity;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "schedule_comment")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
+public class Comment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
