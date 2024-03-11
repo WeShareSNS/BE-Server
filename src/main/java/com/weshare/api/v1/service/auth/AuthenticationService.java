@@ -1,6 +1,5 @@
 package com.weshare.api.v1.service.auth;
 
-import com.weshare.api.v1.controller.auth.dto.DuplicateEmailRequest;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
@@ -24,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -45,10 +45,7 @@ public class AuthenticationService {
 
     public User join(SignupRequest request) {
         String email = request.email();
-        // 프론트 -> 서버로 넘어온 회원 가입 정보에서 email을 검증한다.
-        if (isDuplicateEmail(email)) {
-            throw new EmailDuplicateException(email + "은 가입된 이메일 입니다.");
-        }
+        checkDuplicateEmailForSignup(email);
         return repository.save(createUser(request));
     }
 
@@ -57,8 +54,7 @@ public class AuthenticationService {
     }
 
     // 회원 가입시 사용자는 사용할 수 있는 이메일인지 확인할 수 있다.
-    public void checkDuplicateEmailForSignup(DuplicateEmailRequest request) {
-        String email = request.email();
+    public void checkDuplicateEmailForSignup(String email) {
         if (isDuplicateEmail(email)) {
             throw new EmailDuplicateException(email + "은 가입된 이메일 입니다.");
         }

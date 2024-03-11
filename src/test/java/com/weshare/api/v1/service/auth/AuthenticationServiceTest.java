@@ -1,7 +1,6 @@
 package com.weshare.api.v1.service.auth;
 
 import com.weshare.api.IntegrationTestSupport;
-import com.weshare.api.v1.controller.auth.dto.DuplicateEmailRequest;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;

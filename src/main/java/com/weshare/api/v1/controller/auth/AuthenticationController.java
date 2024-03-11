@@ -1,6 +1,7 @@
 package com.weshare.api.v1.controller.auth;
 
 import com.weshare.api.v1.controller.auth.dto.*;
+import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.service.auth.AuthenticationService;
 import com.weshare.api.v1.common.CookieTokenHandler;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -27,6 +29,7 @@ import java.util.Optional;
 @Slf4j
 public class AuthenticationController {
 
+  private final EmailValidator validator;
   private final AuthenticationService service;
   private final CookieTokenHandler cookieTokenHandler;
 
@@ -51,8 +54,9 @@ public class AuthenticationController {
           @ApiResponse(responseCode = "409", description = "사용자 이메일이 중복되었습니다.")
   })
   @GetMapping("/signup/duplicate-email")
-  public ResponseEntity duplicateEmail(@Valid @RequestBody DuplicateEmailRequest request) {
-    service.checkDuplicateEmailForSignup(request);
+  public ResponseEntity duplicateEmail(@RequestParam String email) {
+    validator.validateEmailFormat(email);
+    service.checkDuplicateEmailForSignup(email);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
