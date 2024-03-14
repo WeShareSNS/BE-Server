@@ -1,10 +1,7 @@
 package com.weshare.api.v1.domain.schedule;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +23,7 @@ public class Day {
             joinColumns = @JoinColumn(name = "day_id")
     )
     private List<Place> places;
+    @Column(name = "travel_date", nullable = false)
     private LocalDate travelDate;
 
     @Builder

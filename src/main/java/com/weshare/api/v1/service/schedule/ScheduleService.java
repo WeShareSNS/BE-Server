@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -25,13 +27,13 @@ public class ScheduleService {
         return Schedule.builder()
                 .title(createScheduleDto.getTitle())
                 .destination(Destination.findDestinationByName(createScheduleDto.getDestination()))
-                .startDate(createScheduleDto.getStartDate())
-                .endDate(createScheduleDto.getEndDate())
                 .days(
                         new Days(
                                 createScheduleDto.getVisitDates().stream()
                                 .map(this::createDay)
-                                .toList()
+                                .toList(),
+                                createScheduleDto.getStartDate(),
+                                createScheduleDto.getEndDate()
                         )
                 )
                 .build();

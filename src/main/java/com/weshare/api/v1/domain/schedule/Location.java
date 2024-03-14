@@ -1,15 +1,20 @@
 package com.weshare.api.v1.domain.schedule;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Objects;
 
 @Embeddable
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location {
+    @Column(name = "latitude", nullable = false)
     private String latitude;
+    @Column(name = "longitude", nullable = false)
     private String longitude;
 
     public Location(String latitude, String longitude) {

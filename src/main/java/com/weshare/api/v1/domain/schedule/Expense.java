@@ -4,8 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Embeddable
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Expense {
 
@@ -18,5 +20,8 @@ public class Expense {
 
     public Expense sum(Expense expense) {
         return new Expense(this.expense + expense.expense);
+    }
+    public long getExpense() {
+        return expense;
     }
 }
