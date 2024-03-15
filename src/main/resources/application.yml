@@ -6,8 +6,10 @@ spring:
       local:
         - local
         - local-db
+        - secret
       prod:
         - prod
         - prod-db
-    include:
-      - secret
+        - secret
+#    include:
+#      - secret
