@@ -7,6 +7,7 @@ import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.repository.user.UserRepository;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -72,61 +74,53 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/signup")
                         .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andDo(print());
     }
 
-//    @Test
-//    @DisplayName("사용자 이메일이 중복되어 있지 않으면 200을 반환한다.")
-//    public void duplicateEmailConflict() throws Exception {
-//        // given
-//        String email = "email@asd.com";
-//        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
-//        String content = getContent(request);
-//        // when // then
-//        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk()) // 예상되는 상태 코드가 409인지 확인
-//                .andDo(print()); // 예상되는 메시지가 반환되는지 확인
-//    }
-//
-//    @Test
-//    @DisplayName("사용자 이메일이 중복 되지 않았는지 확인할 수 있다.")
-//    public void duplicateEmailOk() throws Exception {
-//        // given
-//        String email = "email@asd.com";
-//        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
-//        String content = getContent(request);
-//
-//        // when // then
-//        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print());
-//    }
-//
-//    @Test
-//    @DisplayName("사용자가 이메일 양식을 지키지 않으면 401을 반환한다.")
-//    public void duplicateEmailBadRequest() throws Exception {
-//        // given
-//        String email = "email";
-//        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
-//        String content = getContent(request);
-//
-//        // when // then
-//        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
-//                        .content(content)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andDo(print());
-//    }
+    @Test
+    @DisplayName("사용자 이메일이 중복되어 있지 않으면 200을 반환한다.")
+    public void duplicateEmailConflict() throws Exception {
+        // given
+        String email = "email@asd.com";
+        // when // then
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
+                        .param("email", email)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("사용자가 이메일 양식을 지키지 않으면 400을 반환한다.")
+    public void duplicateEmailBadRequest() throws Exception {
+        // given
+        String email = "email";
+
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
+                        .param("email", email)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertEquals("올바른 이메일 형식이 아닙니다.", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    @DisplayName("사용자 이메일이 중복 되는 경우 409을 반환한다.")
+    public void duplicateEmailOk() throws Exception {
+        // given
+        String email = "email@asd.com";
+        String password = "password";
+        createAndSaveUser(email, password);
+
+        // when // then
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
+                        .param("email", email)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof EmailDuplicateException))
+                .andExpect(result -> assertEquals(email + "은 가입된 이메일 입니다.", result.getResolvedException().getMessage()));
+    }
 
     @Test
     @DisplayName("사용자는 로그인을 할 수 있다.")
@@ -141,13 +135,12 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/signin")
                         .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
+    @Transactional
     @DisplayName("사용자는 refresh 토큰을 통해서 access 토큰을 발급받을 수 있다.")
     public void reissueToken() throws Exception {
         // given
@@ -158,10 +151,8 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         // when // then
         mockMvc.perform(get(PREFIX_ENDPOINT + "/reissue-token")
                         .cookie(new Cookie(cookieName, refreshToken))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
         String reissueRefreshToken = tokenRepository.findTokenByUser(user).get().getToken();
         Assertions.assertFalse(refreshToken.equals(reissueRefreshToken));
@@ -176,8 +167,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/logout")
                         .header(HttpHeaders.AUTHORIZATION, TokenType.BEARER.getType() + accessToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
 

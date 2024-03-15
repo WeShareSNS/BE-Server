@@ -102,7 +102,12 @@ spring:
 application:
   security:
     jwt:
-      secret-key: aaaaaaaaaaaaaaaaaaaaaaaa
+      secret-key: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf

@@ -40,7 +40,7 @@ public class InitSchedule {
             User user1 = createUserAndSave("test1@asd.com", "test1", "test1");
             User user2 = createUserAndSave("test2@asd.com", "test2", "test2");
 
-            for (int i = 1; i <= 1_000; i++) {
+            for (int i = 1; i <= 100_000; i++) {
                 Schedule schedule = createSchedule("제목" + i);
                 schedule.setUser(user2);
                 if (i % 2 == 0) {

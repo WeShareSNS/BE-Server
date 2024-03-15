@@ -19,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -131,6 +132,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     }
 
     @Test
+    @Transactional // given에 트랜잭션 묶기 위해서
     @DisplayName("refresh token을 통해서 accessToken을 재발행 할 수있다.")
     public void refreshToken_reissue() {
         // given
@@ -144,6 +146,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     }
 
     @Test
+    @Transactional // given에 트랜잭션 묶기 위해서
     @DisplayName("refresh 토큰을 통해서 access 토큰을 재발행시 refresh 토큰을 재발행한다.")
     public void refreshToken() {
         // given
