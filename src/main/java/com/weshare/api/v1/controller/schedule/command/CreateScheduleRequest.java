@@ -1,4 +1,4 @@
-package com.weshare.api.v1.controller.schedule;
+package com.weshare.api.v1.controller.schedule.command;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;

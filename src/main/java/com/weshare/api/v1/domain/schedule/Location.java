@@ -3,6 +3,7 @@ package com.weshare.api.v1.domain.schedule;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
 
 @Embeddable
 @ToString
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location {
     @Column(name = "latitude", nullable = false)

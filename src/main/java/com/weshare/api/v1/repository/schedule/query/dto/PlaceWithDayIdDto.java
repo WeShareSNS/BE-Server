@@ -1,5 +1,7 @@
-package com.weshare.api.v1.repository.schedule;
+package com.weshare.api.v1.repository.schedule.query.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.weshare.api.v1.domain.schedule.Expense;
 import com.weshare.api.v1.domain.schedule.Location;
 import lombok.Getter;
@@ -12,20 +14,23 @@ import java.time.LocalTime;
 @Getter
 @NoArgsConstructor
 public class PlaceWithDayIdDto {
-
+    @JsonIgnore
     private Long dayId;
     private String title;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss", timezone = "Asia/Seoul")
     private LocalTime time;
     private String memo;
-    private Expense expense;
-    private Location location;
+    private long expense;
+    private String latitude;
+    private String longitude;
 
     public PlaceWithDayIdDto(Long dayId, String title, LocalTime time, String memo, Expense expense, Location location) {
         this.dayId = dayId;
         this.title = title;
         this.time = time;
         this.memo = memo;
-        this.expense = expense;
-        this.location = location;
+        this.expense = expense.getExpense();
+        this.latitude = location.getLatitude();
+        this.longitude = location.getLongitude();
     }
 }

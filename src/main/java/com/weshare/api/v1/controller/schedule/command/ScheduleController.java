@@ -1,4 +1,4 @@
-package com.weshare.api.v1.controller.schedule;
+package com.weshare.api.v1.controller.schedule.command;
 
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.schedule.ScheduleService;

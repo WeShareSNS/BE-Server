@@ -1,4 +1,4 @@
-package com.weshare.api.v1.repository.schedule;
+package com.weshare.api.v1.repository.schedule.query;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;

@@ -1,4 +1,4 @@
-package com.weshare.api.v1.repository.schedule;
+package com.weshare.api.v1.repository.schedule.query.dto;
 
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package com.weshare.api.v1.repository.schedule;
+package com.weshare.api.v1.repository.schedule.query;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
@@ -8,6 +8,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.weshare.api.v1.domain.schedule.Day;
 import com.weshare.api.v1.domain.schedule.Expense;
+import com.weshare.api.v1.repository.schedule.query.dto.PlaceWithDayIdDto;
+import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,13 +29,13 @@ import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
 @Repository
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ScheduleQueryRepositoryImpl implements ScheduleQueryRepository {
+public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryRepository {
 
     private final JPAQueryFactory queryFactory;
     private final ScheduleOrderSpecifierHelper orderSpecifierHelper;
 
     @Override
-    public Page<SchedulePageDto> getSchedulePage(Pageable pageable) {
+    public Page<SchedulePageDto> findSchedulePage(Pageable pageable) {
         List<OrderSpecifier> orders = orderSpecifierHelper.getOrderSpecifiers(pageable);
         // count query
         final JPAQuery<Long> scheduleCountQuery = getScheduleCountQuery();
@@ -71,15 +73,15 @@ public class ScheduleQueryRepositoryImpl implements ScheduleQueryRepository {
 
     private Map<Long, List<Long>> getScheduleTotalDayExpense(List<SchedulePageDto> content) {
         final Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays = createMultiLevelScheduleMapInDays(content);
-        final Map<Long, List<Expense>> dayExpensesMap = getDayExpensesMap(multiLevelScheduleMapInDays);
+        final Map<Long, List<Long>> dayExpensesMap = getDayExpensesMap(multiLevelScheduleMapInDays);
         final Map<Long, List<Long>> scheduleTotalPriceTransformedMap = new HashMap<>();
 
         multiLevelScheduleMapInDays.forEach((scheduleId, dayMap) -> {
             scheduleTotalPriceTransformedMap.put(scheduleId, new ArrayList<>());
             dayMap.forEach((dayId, day) -> {
-                List<Expense> dayExpenses = dayExpensesMap.get(dayId);
+                List<Long> dayExpenses = dayExpensesMap.get(dayId);
                 long totalExpense = dayExpenses.stream()
-                        .mapToLong(Expense::getExpense)
+                        .mapToLong(Long::longValue)
                         .sum();
                 //하루의 총 비용 더해서 일정 목록을 구하는 맵에 넣어주기
                 List<Long> longs = scheduleTotalPriceTransformedMap.get(scheduleId);
@@ -94,7 +96,7 @@ public class ScheduleQueryRepositoryImpl implements ScheduleQueryRepository {
     private Map<Long, Map<Long, Day>> createMultiLevelScheduleMapInDays(List<SchedulePageDto> content) {
         List<Tuple> allDay = getAllDay(getScheduleIds(content));
 
-        Map<Long, Map<Long, Day>> collect = allDay.stream()
+        return allDay.stream()
                 .collect(Collectors.toMap(
                         tuple -> tuple.get(schedule.id),
                         tuple -> {
@@ -108,7 +110,6 @@ public class ScheduleQueryRepositoryImpl implements ScheduleQueryRepository {
                             return existingMap;
                         }
                 ));
-        return collect;
     }
 
     private List<Tuple> getAllDay(List<Long> scheduleIds) {
@@ -122,7 +123,7 @@ public class ScheduleQueryRepositoryImpl implements ScheduleQueryRepository {
                 .fetch();
     }
 
-    private Map<Long, List<Expense>> getDayExpensesMap(Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays) {
+    private Map<Long, List<Long>> getDayExpensesMap(Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays) {
         List<Long> dayIds = getDayIds(multiLevelScheduleMapInDays);
         List<PlaceWithDayIdDto> daysWithPlace = getDaysWithPlace(dayIds);
 

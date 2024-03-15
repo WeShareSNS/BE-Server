@@ -1,14 +1,12 @@
 package com.weshare.api.v1.service.schedule;
 
-import com.weshare.api.v1.controller.schedule.CreateScheduleDto;
+import com.weshare.api.v1.controller.schedule.command.CreateScheduleDto;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
