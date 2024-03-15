@@ -23,8 +23,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/test_we_share?serverTimezone=UTC
-    username: root
-    password: hwryu990927!
+    username: ENC(x2V6JlsmFnYV9utGMcoOzg==)
+    password: ENC(d449308OPC3Va26T71V41jm/gXa6XDrZ)
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -49,21 +49,21 @@ spring:
         registration:
           kakao:
             client-id: 9f1cb35a6d692ddcde90d2f49a98d75a
-            client-secret: frCluvbz4R8PweEpfbLVOOJuOPGwFPWE
+            client-secret: ENC(nAB4HEOCsApEQz/2Ah7lLh9DkzLJnJPgQfo5NB/RWv1vGhTqgXBxtt5iARg3rbZK)
             redirect-uri: http://localhost:8088/api/v1/auth/callback
             authorization-grant-type: authorization_code
             scope: profile_nickname,profile_image,account_email
 
           naver:
             client-id: wPGItOTcp8CUDZkfByDC
-            client-secret: zHxYLZhzoa
+            client-secret: ENC(+vuq4FCd6ZOcXLUB/ZsU9byM4Od/mkAg)
             redirect-uri: http%3A%2F%2Flocalhost%3A8088%2Fapi%2Fv1%2Fauth%2Fcallback
             authorization-grant-type: authorization_code
             state: STATE_STRING
 
           google:
             client-id: 913699551610-fqpa3f3k7o8l35h2s1eo22bt7p434vhk.apps.googleusercontent.com
-            client-secret: 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
+            client-secret: ENC(UPlmdWwiuIE1z8PXY3zMkn79Y/TmYE8CoRfIMsc75c1VQzSPNabH+GQvTH2AwpDu)
             redirect-uri: http://localhost:8088/api/v1/auth/callback
             authorization-grant-type: authorization_code
             scope: email,profile
@@ -103,9 +103,9 @@ application:
   security:
     jwt:
       secret-key: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdf
-      expiration: 86400000 # a day
+      expiration: 3600000 # a day
       refresh-token:
-        expiration: 604800000 # 7 days
+        expiration: 3600000 # 7 days
 
 jasypt:
   encryptor:
