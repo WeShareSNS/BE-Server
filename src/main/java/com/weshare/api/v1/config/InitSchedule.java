@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Profile("test")
+@Profile("init")
 @Component
 @RequiredArgsConstructor
 public class InitSchedule {
@@ -40,7 +40,7 @@ public class InitSchedule {
             User user1 = createUserAndSave("test1@asd.com", "test1", "test1");
             User user2 = createUserAndSave("test2@asd.com", "test2", "test2");
 
-            for (int i = 0; i < 100_000; i++) {
+            for (int i = 1; i <= 100_000; i++) {
                 Schedule schedule = createSchedule("제목" + i);
                 schedule.setUser(user2);
                 if (i % 2 == 0) {
@@ -114,7 +114,7 @@ public class InitSchedule {
         
         @Transactional
         public void init() {
-            for (long i = 1; i < 100; i++) {
+            for (long i = 1; i <= 100; i++) {
                 Schedule schedule = entityManager.find(Schedule.class, i);
                 User user = entityManager.find(User.class, 1L);
                 Like like = Like.builder()
@@ -133,7 +133,7 @@ public class InitSchedule {
         private EntityManager entityManager;
         @Transactional
         public void init() {
-            for (long i = 1; i < 100; i++) {
+            for (long i = 1; i <= 100; i++) {
                 Schedule schedule = entityManager.find(Schedule.class, i);
                 User user = entityManager.find(User.class, 1L);
                 Comment comment = Comment.builder()

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -31,6 +32,8 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
     }
 
     @Test
+    @Transactional // given user객체 트랜잭션 묶어주기
+
     @DisplayName("사용자가 가지고 있는 토큰을 조회할 수 있다.")
     public void findTokenByUser() {
         // given
@@ -50,6 +53,8 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
     }
 
     @Test
+    @Transactional // given user객체 트랜잭션 묶어주기
+
     @DisplayName("refresh token을 사용해서 사용자를 조회할 수 있다.")
     public void findUserByToken() {
         // given
@@ -66,6 +71,7 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
     }
 
     @Test
+    @Transactional // given user객체 트랜잭션 묶어주기
     @DisplayName("사용자 email을 통해서 토큰을 조회할 수 있다.")
     public void findTokenByUserEmail() {
         // given
