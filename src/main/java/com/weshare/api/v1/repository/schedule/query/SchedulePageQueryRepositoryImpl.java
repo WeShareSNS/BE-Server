@@ -47,6 +47,11 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
         return PageableExecutionUtils.getPage(content, pageable, scheduleCountQuery::fetchOne);
     }
 
+    private JPAQuery<Long> getScheduleCountQuery() {
+        return queryFactory.select(schedule.count())
+                .from(schedule);
+    }
+
     private List<SchedulePageFlatDto> getContent(Pageable pageable, List<OrderSpecifier> orders) {
         return queryFactory.select(
                         Projections.constructor(SchedulePageFlatDto.class,
@@ -74,21 +79,10 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .fetch();
     }
 
-    private static void setDayDetails(List<SchedulePageFlatDto> content, Map<Long, List<Day>> scheduleWithDayDetailsMap) {
-        content.forEach(
-                c -> c.setDays(scheduleWithDayDetailsMap.get(c.getScheduleId()))
-        );
-    }
-
-    private static Set<Long> getScheduleIds(List<SchedulePageFlatDto> content) {
+    private Set<Long> getScheduleIds(List<SchedulePageFlatDto> content) {
         return content.stream()
                 .map(SchedulePageFlatDto::getScheduleId)
                 .collect(Collectors.toUnmodifiableSet());
-    }
-
-    private JPAQuery<Long> getScheduleCountQuery() {
-        return queryFactory.select(schedule.count())
-                .from(schedule);
     }
 
     private Map<Long, List<Day>> getScheduleWithDayDetailsMap(Set<Long> scheduleIds) {
@@ -113,6 +107,16 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> createDayDetails(entry.getValue())));
     }
 
+    private List<Day> createDayDetails(Map<DayKey, List<Place>> dayIdWithPlacesMap) {
+        return dayIdWithPlacesMap.entrySet().stream()
+                .map(entry -> Day.builder()
+                        .id(entry.getKey().dayId())
+                        .travelDate(entry.getKey().travelDate())
+                        .places(Collections.unmodifiableList(entry.getValue()))
+                        .build())
+                .toList();
+    }
+
     private Map<Long, Map<DayKey, List<Place>>> getScheduleIdWithDayToPlaceMap(List<Tuple> allDayWithPlaces) {
         final Map<Long, Map<DayKey, List<Place>>> scheduleIdWithDayToPlaceMap = new HashMap<>();
         for (Tuple allDayWithPlace : allDayWithPlaces) {
@@ -130,7 +134,13 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
         return scheduleIdWithDayToPlaceMap;
     }
 
-    private static Place createPlace(Tuple allDayWithPlace) {
+    private DayKey createKey(Tuple allDayWithPlace) {
+        return new DayKey(
+                allDayWithPlace.get(dayWithPlaceDetailsView.dayId),
+                allDayWithPlace.get(dayWithPlaceDetailsView.travelDate));
+    }
+
+    private Place createPlace(Tuple allDayWithPlace) {
         return Place.builder()
                 .title(allDayWithPlace.get(dayWithPlaceDetailsView.title))
                 .time(allDayWithPlace.get(dayWithPlaceDetailsView.time))
@@ -141,19 +151,9 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .build();
     }
 
-    private static DayKey createKey(Tuple allDayWithPlace) {
-        return new DayKey(
-                allDayWithPlace.get(dayWithPlaceDetailsView.dayId),
-                allDayWithPlace.get(dayWithPlaceDetailsView.travelDate));
-    }
-
-    private List<Day> createDayDetails(Map<DayKey, List<Place>> dayIdWithPlacesMap) {
-        return dayIdWithPlacesMap.entrySet().stream()
-                .map(entry -> Day.builder()
-                        .id(entry.getKey().dayId())
-                        .travelDate(entry.getKey().travelDate())
-                        .places(Collections.unmodifiableList(entry.getValue()))
-                        .build())
-                .toList();
+    private void setDayDetails(List<SchedulePageFlatDto> content, Map<Long, List<Day>> scheduleWithDayDetailsMap) {
+        content.forEach(
+                c -> c.setDays(scheduleWithDayDetailsMap.get(c.getScheduleId()))
+        );
     }
 }
