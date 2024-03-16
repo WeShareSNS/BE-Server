@@ -26,6 +26,7 @@ public class ScheduleQueryService {
             throw new IllegalArgumentException("게시물에 접근할 수 없습니다.");
         }
         final Schedule scheduleDetail = detailQueryRepository.findScheduleDetail(scheduleId);
+        // service에서 변환하지 않고 dto 정적 메서드 이용하기
         return ScheduleDetailDto.from(scheduleDetail);
     }
 }

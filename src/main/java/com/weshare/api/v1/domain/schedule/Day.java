@@ -28,7 +28,8 @@ public class Day {
     private LocalDate travelDate;
 
     @Builder
-    private Day(List<Place> places, LocalDate travelDate) {
+    private Day(Long id, List<Place> places, LocalDate travelDate) {
+        this.id = id;
         this.places = places;
         this.travelDate = travelDate;
     }

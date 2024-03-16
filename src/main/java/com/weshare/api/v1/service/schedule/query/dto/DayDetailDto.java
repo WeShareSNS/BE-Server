@@ -31,6 +31,8 @@ public class DayDetailDto {
     }
 
     public long getTotalDayPrice() {
-        return places.stream().mapToLong(PlaceDetailDto::getExpense).sum();
+        return places.stream()
+                .mapToLong(PlaceDetailDto::getExpense)
+                .sum();
     }
 }

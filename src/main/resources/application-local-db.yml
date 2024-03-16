@@ -11,8 +11,8 @@ spring:
     show-sql: true
     hibernate:
       default_batch_fetch_size: 100
-#      ddl-auto: create
-      ddl-auto: none
+      ddl-auto: create
+#      ddl-auto: none
     defer-datasource-initialization: true
     properties:
       hibernate:
