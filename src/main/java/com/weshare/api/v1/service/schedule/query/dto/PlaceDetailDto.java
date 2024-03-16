@@ -1,21 +1,17 @@
-package com.weshare.api.v1.repository.schedule.query.dto;
+package com.weshare.api.v1.service.schedule.query.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.weshare.api.v1.domain.schedule.Expense;
 import com.weshare.api.v1.domain.schedule.Location;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.weshare.api.v1.domain.schedule.Place;
+import lombok.*;
 
 import java.time.LocalTime;
 
 @ToString
 @Getter
 @NoArgsConstructor
-public class PlaceWithDayIdDto {
-    @JsonIgnore
-    private Long dayId;
+public class PlaceDetailDto {
     private String title;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss", timezone = "Asia/Seoul")
     private LocalTime time;
@@ -24,13 +20,23 @@ public class PlaceWithDayIdDto {
     private String latitude;
     private String longitude;
 
-    public PlaceWithDayIdDto(Long dayId, String title, LocalTime time, String memo, Expense expense, Location location) {
-        this.dayId = dayId;
+    @Builder(access = AccessLevel.PRIVATE)
+    private PlaceDetailDto(String title, LocalTime time, String memo, Expense expense, Location location) {
         this.title = title;
         this.time = time;
         this.memo = memo;
         this.expense = expense.getExpense();
         this.latitude = location.getLatitude();
         this.longitude = location.getLongitude();
+    }
+
+    public static PlaceDetailDto from(Place place) {
+        return PlaceDetailDto.builder()
+                .title(place.getTitle())
+                .time(place.getTime())
+                .memo(place.getMemo())
+                .expense(place.getExpense())
+                .location(place.getLocation())
+                .build();
     }
 }

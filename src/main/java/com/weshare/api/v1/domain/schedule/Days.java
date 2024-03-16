@@ -2,6 +2,7 @@ package com.weshare.api.v1.domain.schedule;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 @ToString
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Days {
 

@@ -9,6 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Day {
 

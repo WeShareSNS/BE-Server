@@ -7,8 +7,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.weshare.api.v1.domain.schedule.Day;
-import com.weshare.api.v1.domain.schedule.Expense;
-import com.weshare.api.v1.repository.schedule.query.dto.PlaceWithDayIdDto;
+import com.weshare.api.v1.repository.schedule.query.dto.PlacePageDto;
 import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -125,11 +124,11 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
 
     private Map<Long, List<Long>> getDayExpensesMap(Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays) {
         List<Long> dayIds = getDayIds(multiLevelScheduleMapInDays);
-        List<PlaceWithDayIdDto> daysWithPlace = getDaysWithPlace(dayIds);
+        List<PlacePageDto> daysWithPlace = getDaysWithPlace(dayIds);
 
         return daysWithPlace.stream()
-                .collect(Collectors.groupingBy(PlaceWithDayIdDto::getDayId,
-                        Collectors.mapping(PlaceWithDayIdDto::getExpense, Collectors.toList())));
+                .collect(Collectors.groupingBy(PlacePageDto::getDayId,
+                        Collectors.mapping(PlacePageDto::getExpense, Collectors.toList())));
     }
 
     private List<Long> getDayIds(Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays) {
@@ -138,10 +137,10 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .toList();
     }
 
-    private List<PlaceWithDayIdDto> getDaysWithPlace(List<Long> dayIds) {
+    private List<PlacePageDto> getDaysWithPlace(List<Long> dayIds) {
         return queryFactory.select(
                         Projections.constructor(
-                                PlaceWithDayIdDto.class,
+                                PlacePageDto.class,
                                 day.id,
                                 place.title,
                                 place.time,
