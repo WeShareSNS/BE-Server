@@ -39,7 +39,7 @@ public class Schedule extends BaseTimeEntity {
         this.days = days;
     }
 
-    @Builder(builderMethodName = "selfBuilder", buildMethodName = "selfBuild",access = AccessLevel.PRIVATE)
+    @Builder(builderMethodName = "conversionBuilder", buildMethodName = "conversionBuild")
     private Schedule(Long id, String title, Destination destination, Days dayDetails, User user) {
         this.id = id;
         this.title = title;
@@ -49,13 +49,13 @@ public class Schedule extends BaseTimeEntity {
     }
 
     public Schedule createSelfInstanceWithDays(Days dayDetails) {
-        return selfBuilder()
+        return conversionBuilder()
                 .id(this.id)
                 .title(this.title)
                 .destination(this.destination)
                 .dayDetails(dayDetails)
                 .user(this.user)
-                .selfBuild();
+                .conversionBuild();
     }
 
     public long getTotalScheduleExpense() {

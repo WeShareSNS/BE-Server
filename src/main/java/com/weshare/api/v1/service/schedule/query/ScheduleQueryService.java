@@ -3,8 +3,9 @@ package com.weshare.api.v1.service.schedule.query;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.repository.schedule.query.ScheduleDetailQueryRepository;
 import com.weshare.api.v1.repository.schedule.query.SchedulePageQueryRepository;
+import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageDto;
+import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,8 @@ public class ScheduleQueryService {
     private final ScheduleDetailQueryRepository detailQueryRepository;
 
     public Page<SchedulePageDto> getSchedulePage(Pageable pageable) {
-        return pageQueryRepository.findSchedulePage(pageable);
+        Page<SchedulePageFlatDto> schedulePage = pageQueryRepository.findSchedulePage(pageable);
+        return schedulePage.map(SchedulePageDto::from);
     }
 
     public ScheduleDetailDto getScheduleDetails(Long scheduleId) {

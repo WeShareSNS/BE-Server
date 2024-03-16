@@ -1,9 +1,9 @@
 package com.weshare.api.v1.controller.schedule.query;
 
 import com.weshare.api.v1.common.Response;
-import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageDto;
+import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import com.weshare.api.v1.service.schedule.query.ScheduleQueryService;
+import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

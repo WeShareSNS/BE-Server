@@ -17,19 +17,20 @@ import java.time.LocalTime;
 @Getter
 @ToString
 @Subselect(
-    """
-    select d.day_id,
-           d.travel_date,
-           p.title,
-           p.time,
-           p.memo,
-           p.expense,
-           p.latitude,
-           p.longitude
-    from day d
-             join places p
-                  on p.day_id = d.day_id
-    """
+        """
+        select d.day_id,
+               d.travel_date,
+               p.title,
+               p.time,
+               p.memo,
+               p.expense,
+               p.latitude,
+               p.longitude,
+               d.schedule_id
+        from day d
+                 join places p
+                      on p.day_id = d.day_id
+        """
 )
 @Immutable // 읽기전용
 @Synchronize({"places", "day"})
@@ -44,10 +45,12 @@ public class DayWithPlaceDetailsView {
     private long expense;
     private String latitude;
     private String longitude;
+    private Long scheduleId;
 
     public DayWithPlaceDetailsView(
-            Long dayId, LocalDate travelDate, String title, LocalTime time,
-            String memo, long expense, String latitude, String longitude
+            Long dayId, LocalDate travelDate, String title,
+            LocalTime time, String memo, long expense, String latitude,
+            String longitude, Long scheduleId
     ) {
         this.dayId = dayId;
         this.travelDate = travelDate;
@@ -57,5 +60,6 @@ public class DayWithPlaceDetailsView {
         this.expense = expense;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.scheduleId = scheduleId;
     }
 }

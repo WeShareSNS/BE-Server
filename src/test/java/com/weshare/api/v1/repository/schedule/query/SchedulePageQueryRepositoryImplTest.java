@@ -1,7 +1,7 @@
 package com.weshare.api.v1.repository.schedule.query;
 
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageDto;
+import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
@@ -27,8 +27,8 @@ class SchedulePageQueryRepositoryImplTest extends ScheduleTestSupport {
         createTwoScheduleAndSaveAll();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("createdDate").descending());
         // when
-        Page<SchedulePageDto> schedulePage = schedulePageQueryRepository.findSchedulePage(pageRequest);
-        List<SchedulePageDto> content = schedulePage.getContent();
+        Page<SchedulePageFlatDto> schedulePage = schedulePageQueryRepository.findSchedulePage(pageRequest);
+        List<SchedulePageFlatDto> content = schedulePage.getContent();
         // then
         Assertions.assertThat(content)
                 .hasSize(2)

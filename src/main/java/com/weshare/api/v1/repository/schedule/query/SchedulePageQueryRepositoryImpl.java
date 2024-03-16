@@ -6,9 +6,9 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.weshare.api.v1.domain.schedule.Day;
-import com.weshare.api.v1.repository.schedule.query.dto.PlacePageDto;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageDto;
+import com.weshare.api.v1.domain.schedule.*;
+import com.weshare.api.v1.repository.schedule.query.dto.DayKey;
+import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +20,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.weshare.api.v1.domain.schedule.QComment.comment;
-import static com.weshare.api.v1.domain.schedule.QDay.day;
+import static com.weshare.api.v1.domain.schedule.QDayWithPlaceDetailsView.dayWithPlaceDetailsView;
 import static com.weshare.api.v1.domain.schedule.QLike.like;
-import static com.weshare.api.v1.domain.schedule.QPlace.place;
 import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
 
 @Repository
@@ -34,15 +33,30 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
     private final ScheduleOrderSpecifierHelper orderSpecifierHelper;
 
     @Override
-    public Page<SchedulePageDto> findSchedulePage(Pageable pageable) {
+    public Page<SchedulePageFlatDto> findSchedulePage(Pageable pageable) {
         List<OrderSpecifier> orders = orderSpecifierHelper.getOrderSpecifiers(pageable);
         // count query
         final JPAQuery<Long> scheduleCountQuery = getScheduleCountQuery();
         // content query
-        final List<SchedulePageDto> content = queryFactory.select(
-                        Projections.constructor(SchedulePageDto.class,
+        final List<SchedulePageFlatDto> content = getContent(pageable, orders);
+
+        Set<Long> scheduleIds = getScheduleIds(content);
+        final Map<Long, List<Day>> scheduleWithDayDetailsMap = getScheduleWithDayDetailsMap(scheduleIds);
+        setDayDetails(content, scheduleWithDayDetailsMap);
+
+        return PageableExecutionUtils.getPage(content, pageable, scheduleCountQuery::fetchOne);
+    }
+
+    private List<SchedulePageFlatDto> getContent(Pageable pageable, List<OrderSpecifier> orders) {
+        return queryFactory.select(
+                        Projections.constructor(SchedulePageFlatDto.class,
                                 schedule.id,
-                                schedule.user.name,
+                                schedule.title,
+                                schedule.destination,
+                                schedule.days.startDate,
+                                schedule.days.endDate,
+                                schedule.user,
+                                schedule.createdDate,
                                 JPAExpressions.select(like.count())
                                         .from(like)
                                         .join(like.schedule)
@@ -58,11 +72,18 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
 
-        final Map<Long, List<Long>> scheduleTotalDayExpenseMap = getScheduleTotalDayExpense(content);
-        setScheduleTotalDayExpense(content, scheduleTotalDayExpenseMap);
+    private static void setDayDetails(List<SchedulePageFlatDto> content, Map<Long, List<Day>> scheduleWithDayDetailsMap) {
+        content.forEach(
+                c -> c.setDays(scheduleWithDayDetailsMap.get(c.getScheduleId()))
+        );
+    }
 
-        return PageableExecutionUtils.getPage(content, pageable, scheduleCountQuery::fetchOne);
+    private static Set<Long> getScheduleIds(List<SchedulePageFlatDto> content) {
+        return content.stream()
+                .map(SchedulePageFlatDto::getScheduleId)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     private JPAQuery<Long> getScheduleCountQuery() {
@@ -70,106 +91,69 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .from(schedule);
     }
 
-    private Map<Long, List<Long>> getScheduleTotalDayExpense(List<SchedulePageDto> content) {
-        final Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays = createMultiLevelScheduleMapInDays(content);
-        final Map<Long, List<Long>> dayExpensesMap = getDayExpensesMap(multiLevelScheduleMapInDays);
-        final Map<Long, List<Long>> scheduleTotalPriceTransformedMap = new HashMap<>();
-
-        multiLevelScheduleMapInDays.forEach((scheduleId, dayMap) -> {
-            scheduleTotalPriceTransformedMap.put(scheduleId, new ArrayList<>());
-            dayMap.forEach((dayId, day) -> {
-                List<Long> dayExpenses = dayExpensesMap.get(dayId);
-                long totalExpense = dayExpenses.stream()
-                        .mapToLong(Long::longValue)
-                        .sum();
-                //하루의 총 비용 더해서 일정 목록을 구하는 맵에 넣어주기
-                List<Long> longs = scheduleTotalPriceTransformedMap.get(scheduleId);
-                longs.add(totalExpense);
-                scheduleTotalPriceTransformedMap.put(scheduleId, longs);
-            });
-        });
-
-        return Collections.unmodifiableMap(scheduleTotalPriceTransformedMap);
-    }
-
-    private Map<Long, Map<Long, Day>> createMultiLevelScheduleMapInDays(List<SchedulePageDto> content) {
-        List<Tuple> allDay = getAllDay(getScheduleIds(content));
-
-        return allDay.stream()
-                .collect(Collectors.toMap(
-                        tuple -> tuple.get(schedule.id),
-                        tuple -> {
-                            Day day = (Day) tuple.get(schedule.days.days);
-                            Map<Long, Day> innerMap = new HashMap<>();
-                            innerMap.put(day.getId(), day);
-                            return innerMap;
-                        },
-                        (existingMap, newMap) -> {
-                            existingMap.putAll(newMap);
-                            return existingMap;
-                        }
-                ));
-    }
-
-    private List<Tuple> getAllDay(List<Long> scheduleIds) {
-        return queryFactory.select(
-                        schedule.id,
-                        schedule.days.days
+    private Map<Long, List<Day>> getScheduleWithDayDetailsMap(Set<Long> scheduleIds) {
+        final List<Tuple> allDayWithPlaces = queryFactory
+                .select(
+                        dayWithPlaceDetailsView.dayId,
+                        dayWithPlaceDetailsView.travelDate,
+                        dayWithPlaceDetailsView.title,
+                        dayWithPlaceDetailsView.time,
+                        dayWithPlaceDetailsView.memo,
+                        dayWithPlaceDetailsView.expense,
+                        dayWithPlaceDetailsView.latitude,
+                        dayWithPlaceDetailsView.longitude,
+                        dayWithPlaceDetailsView.scheduleId
                 )
-                .from(schedule)
-                .join(schedule.days.days)
-                .where(schedule.id.in(scheduleIds))
+                .from(dayWithPlaceDetailsView)
+                .where(dayWithPlaceDetailsView.scheduleId.in(scheduleIds))
                 .fetch();
+
+        final Map<Long, Map<DayKey, List<Place>>> scheduleIdWithDayToPlaceMap = getScheduleIdWithDayToPlaceMap(allDayWithPlaces);
+        return scheduleIdWithDayToPlaceMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> createDayDetails(entry.getValue())));
     }
 
-    private Map<Long, List<Long>> getDayExpensesMap(Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays) {
-        List<Long> dayIds = getDayIds(multiLevelScheduleMapInDays);
-        List<PlacePageDto> daysWithPlace = getDaysWithPlace(dayIds);
+    private Map<Long, Map<DayKey, List<Place>>> getScheduleIdWithDayToPlaceMap(List<Tuple> allDayWithPlaces) {
+        final Map<Long, Map<DayKey, List<Place>>> scheduleIdWithDayToPlaceMap = new HashMap<>();
+        for (Tuple allDayWithPlace : allDayWithPlaces) {
+            Long scheduleId = allDayWithPlace.get(dayWithPlaceDetailsView.scheduleId);
 
-        return daysWithPlace.stream()
-                .collect(Collectors.groupingBy(PlacePageDto::getDayId,
-                        Collectors.mapping(PlacePageDto::getExpense, Collectors.toList())));
+            DayKey dayKey = createKey(allDayWithPlace);
+            Place place = createPlace(allDayWithPlace);
+
+            Map<DayKey, List<Place>> dayToPlaceMap = scheduleIdWithDayToPlaceMap.getOrDefault(scheduleId, new HashMap<>());
+            List<Place> places = dayToPlaceMap.getOrDefault(dayKey, new ArrayList<>());
+            places.add(place);
+            dayToPlaceMap.put(dayKey, places);
+            scheduleIdWithDayToPlaceMap.put(scheduleId, dayToPlaceMap);
+        }
+        return scheduleIdWithDayToPlaceMap;
     }
 
-    private List<Long> getDayIds(Map<Long, Map<Long, Day>> multiLevelScheduleMapInDays) {
-        return multiLevelScheduleMapInDays.values().stream()
-                .flatMap(longDayMap -> longDayMap.keySet().stream())
+    private static Place createPlace(Tuple allDayWithPlace) {
+        return Place.builder()
+                .title(allDayWithPlace.get(dayWithPlaceDetailsView.title))
+                .time(allDayWithPlace.get(dayWithPlaceDetailsView.time))
+                .memo(allDayWithPlace.get(dayWithPlaceDetailsView.memo))
+                .expense(new Expense(allDayWithPlace.get(dayWithPlaceDetailsView.expense)))
+                .location(new Location(allDayWithPlace.get(dayWithPlaceDetailsView.latitude),
+                        allDayWithPlace.get(dayWithPlaceDetailsView.longitude)))
+                .build();
+    }
+
+    private static DayKey createKey(Tuple allDayWithPlace) {
+        return new DayKey(
+                allDayWithPlace.get(dayWithPlaceDetailsView.dayId),
+                allDayWithPlace.get(dayWithPlaceDetailsView.travelDate));
+    }
+
+    private List<Day> createDayDetails(Map<DayKey, List<Place>> dayIdWithPlacesMap) {
+        return dayIdWithPlacesMap.entrySet().stream()
+                .map(entry -> Day.builder()
+                        .id(entry.getKey().dayId())
+                        .travelDate(entry.getKey().travelDate())
+                        .places(Collections.unmodifiableList(entry.getValue()))
+                        .build())
                 .toList();
-    }
-
-    private List<PlacePageDto> getDaysWithPlace(List<Long> dayIds) {
-        return queryFactory.select(
-                        Projections.constructor(
-                                PlacePageDto.class,
-                                day.id,
-                                place.title,
-                                place.time,
-                                place.memo,
-                                place.expense,
-                                place.location
-                        )
-                )
-                .from(day)
-                .join(day.places, place)
-                .where(day.id.in(dayIds))
-                .fetch();
-    }
-
-    private List<Long> getScheduleIds(List<SchedulePageDto> content) {
-        return content.stream()
-                .map(SchedulePageDto::getScheduleId)
-                .toList();
-    }
-
-    private void setScheduleTotalDayExpense(List<SchedulePageDto> content, Map<Long, List<Long>> scheduleTotalDayExpenseMap) {
-        content.forEach(
-                c -> {
-                    List<Long> totalDayPrice = scheduleTotalDayExpenseMap.get(c.getScheduleId());
-                    long expense = totalDayPrice.stream()
-                            .reduce(Long::sum)
-                            .orElseThrow();
-                    c.setExpense(expense);
-                }
-        );
     }
 }
