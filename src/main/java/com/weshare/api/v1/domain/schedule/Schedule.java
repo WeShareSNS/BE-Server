@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -40,12 +41,15 @@ public class Schedule extends BaseTimeEntity {
     }
 
     @Builder(builderMethodName = "conversionBuilder", buildMethodName = "conversionBuild")
-    private Schedule(Long id, String title, Destination destination, Days dayDetails, User user) {
+    private Schedule(
+            Long id, String title, Destination destination,
+            Days dayDetails, User user, LocalDateTime createdDate) {
         this.id = id;
         this.title = title;
         this.destination = destination;
         this.days = dayDetails;
         this.user = user;
+        setCreatedDate(createdDate);
     }
 
     public Schedule createSelfInstanceWithDays(Days dayDetails) {
@@ -55,6 +59,7 @@ public class Schedule extends BaseTimeEntity {
                 .destination(this.destination)
                 .dayDetails(dayDetails)
                 .user(this.user)
+                .createdDate(this.getCreatedDate())
                 .conversionBuild();
     }
 

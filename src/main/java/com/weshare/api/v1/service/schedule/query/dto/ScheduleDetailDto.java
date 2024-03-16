@@ -6,6 +6,7 @@ import com.weshare.api.v1.domain.schedule.Schedule;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,12 +22,15 @@ public class ScheduleDetailDto {
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate createdDate;
     private List<DayDetailDto> dayDetail;
 
     @Builder(access = AccessLevel.PRIVATE)
     private ScheduleDetailDto(
-            Long id, String title, Destination destination, String username,
-            LocalDate startDate, LocalDate endDate, List<DayDetailDto> dayDetail
+            Long id, String title, Destination destination,
+            String username, LocalDateTime createdDate , LocalDate startDate,
+            LocalDate endDate, List<DayDetailDto> dayDetail
     ) {
         this.id = id;
         this.title = title;
@@ -35,10 +39,10 @@ public class ScheduleDetailDto {
         this.startDate = startDate;
         this.endDate = endDate;
         this.dayDetail = dayDetail;
+        this.createdDate = LocalDate.from(createdDate);
     }
 
     public static ScheduleDetailDto from(Schedule schedule) {
-        System.out.println(schedule);
         return ScheduleDetailDto.builder()
                 .id(schedule.getId())
                 .title(schedule.getTitle())
@@ -47,6 +51,7 @@ public class ScheduleDetailDto {
                 .startDate(schedule.getStartDate())
                 .endDate(schedule.getEndDate())
                 .dayDetail(createDayDetails(schedule))
+                .createdDate(schedule.getCreatedDate())
                 .build();
     }
 
