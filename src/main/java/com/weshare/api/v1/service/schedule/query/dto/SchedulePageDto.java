@@ -38,7 +38,7 @@ public class SchedulePageDto {
         return SchedulePageDto.builder()
                 .scheduleId(flatDto.getScheduleId())
                 .expense(getTotalExpense(flatDto))
-                .username(flatDto.getUser().getUsername())
+                .username(flatDto.getUser().getName())
                 .likesCount(flatDto.getLikesCount())
                 .commentsCount(flatDto.getCommentsCount())
                 .createDate(flatDto.getCreatedDate())

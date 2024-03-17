@@ -47,7 +47,7 @@ public class ScheduleDetailDto {
                 .id(schedule.getId())
                 .title(schedule.getTitle())
                 .destination(schedule.getDestination())
-                .username(schedule.getUser().getUsername())
+                .username(schedule.getUser().getName())
                 .startDate(schedule.getStartDate())
                 .endDate(schedule.getEndDate())
                 .dayDetail(createDayDetails(schedule))
