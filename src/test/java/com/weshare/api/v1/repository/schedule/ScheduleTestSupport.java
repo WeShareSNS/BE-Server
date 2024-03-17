@@ -19,6 +19,8 @@ public class ScheduleTestSupport {
     @Autowired
     private EntityManager entityManager;
 
+
+
     @Transactional
     public User createUserAndSave(String email, String name, String password) {
         User user = User.builder()

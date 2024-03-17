@@ -23,14 +23,6 @@ public class ApplicationConfig {
     }
 
     @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        return objectMapper;
-    }
-
-    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
