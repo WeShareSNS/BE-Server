@@ -3,6 +3,7 @@ package com.weshare.api.v1.repository.schedule.query;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.weshare.api.v1.domain.schedule.*;
+import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.repository.schedule.query.dto.DayKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -24,26 +25,29 @@ public class ScheduleDetailQueryRepositoryImpl implements ScheduleDetailQueryRep
     @Override
     public Schedule findScheduleDetail(Long id) {
         // schedule fetch join day
-        final Schedule scheduleWithAllDay = getScheduleWithAllDay(id);
-        final Set<Long> dayIds = getDayIds(scheduleWithAllDay);
+        final Optional<Schedule> scheduleWithAllDay = getScheduleWithAllDay(id);
+        final Schedule schedule = scheduleWithAllDay.orElseThrow(ScheduleNotFoundException::new);
+        final Set<Long> dayIds = getDayIds(schedule);
 
         // place의 원시값 포장한 값타입이 안읽어와져서 tuple로 꺼내기
         final List<Tuple> allDayWithPlaces = getDaysWithPlace(dayIds);
         final List<Day> dayWithPlaceDetails = createDayWithPlaceDetails(allDayWithPlaces);
 
-        return scheduleWithAllDay.createSelfInstanceWithDays(
+        return schedule.createSelfInstanceWithDays(
                 new Days(dayWithPlaceDetails,
-                        scheduleWithAllDay.getStartDate(),
-                        scheduleWithAllDay.getEndDate()));
+                        schedule.getStartDate(),
+                        schedule.getEndDate()));
     }
 
-    private Schedule getScheduleWithAllDay(Long scheduleId) {
-        return queryFactory
-                .selectFrom(schedule)
-                .join(schedule.days.days).fetchJoin()
-                .join(schedule.user).fetchJoin()
-                .where(schedule.id.eq(scheduleId))
-                .fetchOne();
+    private Optional<Schedule> getScheduleWithAllDay(Long scheduleId) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(schedule)
+                        .join(schedule.days.days).fetchJoin()
+                        .join(schedule.user).fetchJoin()
+                        .where(schedule.id.eq(scheduleId))
+                        .fetchOne()
+        );
     }
 
     private Set<Long> getDayIds(Schedule scheduleWithAllDay) {

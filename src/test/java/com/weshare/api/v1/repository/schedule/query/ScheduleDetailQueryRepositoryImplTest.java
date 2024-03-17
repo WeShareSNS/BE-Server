@@ -1,8 +1,16 @@
 package com.weshare.api.v1.repository.schedule.query;
 
+import com.weshare.api.v1.domain.schedule.Destination;
+import com.weshare.api.v1.domain.schedule.Schedule;
+import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
+import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
 
@@ -10,12 +18,28 @@ class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
     private ScheduleDetailQueryRepository scheduleDetailQueryRepository;
 
     @Test
+    @Transactional
     public void 여행일정_상세_조회() {
         // given
-        createTwoScheduleAndSaveAll();
+        User user = createUserAndSave("test1@asd.com", "test1", "test1");
+        Destination destination = Destination.SEOUL;
+        String title = "제목";
+        createAndSaveSchedule(title, destination, user);
         // when
-        scheduleDetailQueryRepository.findScheduleDetail(1L);
+        long scheduleId = 1L;
+        Schedule schedule = scheduleDetailQueryRepository.findScheduleDetail(scheduleId);
         // then
+        assertThat(schedule.getId()).isEqualTo(scheduleId);
+        assertThat(schedule.getTitle()).isEqualTo(title);
+        assertThat(schedule.getUser()).isEqualTo(user);
+    }
+
+    @Test
+    public void 존재하지_않는_여행일정_조회시_예외발생() {
+        // when // then
+        long scheduleId = 9999999L;
+        assertThatThrownBy(() -> scheduleDetailQueryRepository.findScheduleDetail(scheduleId))
+                .isInstanceOf(ScheduleNotFoundException.class);
     }
 
 }

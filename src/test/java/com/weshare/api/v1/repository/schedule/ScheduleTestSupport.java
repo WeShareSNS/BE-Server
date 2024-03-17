@@ -3,7 +3,7 @@ package com.weshare.api.v1.repository.schedule;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,32 +16,11 @@ import java.util.List;
 @ActiveProfiles("test")
 public class ScheduleTestSupport {
 
-    @PersistenceContext
+    @Autowired
     private EntityManager entityManager;
 
-    public void createTwoScheduleAndSaveAll() {
-        initSchedule();
-        initLike();
-        initComment();
-    }
-
-
     @Transactional
-    public void initSchedule() {
-        User user1 = createUserAndSave("test1@asd.com", "test1", "test1");
-        User user2 = createUserAndSave("test2@asd.com", "test2", "test2");
-
-        for (int i = 1; i <= 2; i++) {
-            Schedule schedule = createSchedule("제목", i);
-            schedule.setUser(user1);
-            if (i % 2 == 0) {
-                schedule.setUser(user2);
-            }
-            entityManager.persist(schedule);
-        }
-    }
-
-    private User createUserAndSave(String email, String name, String password) {
+    public User createUserAndSave(String email, String name, String password) {
         User user = User.builder()
                 .email(email)
                 .name(name)
@@ -51,38 +30,35 @@ public class ScheduleTestSupport {
         return user;
     }
 
-    private Schedule createSchedule(String title, int index) {
-        return Schedule.builder()
+    @Transactional
+    public Schedule createAndSaveSchedule(String title, Destination destination, User user) {
+        Schedule schedule = Schedule.builder()
                 .title(title)
-                .destination(Destination.findDestinationByName("서울"))
-                .days(createDays(index))
+                .destination(destination)
+                .days(createDays())
                 .build();
+        schedule.setUser(user);
+        entityManager.persist(schedule);
+        return schedule;
     }
 
-    private Days createDays(int index) {
+    private Days createDays() {
         List<Day> days = List.of(
-                createDay(LocalDate.of(2024, 12, 3), index),
-                createDay(LocalDate.of(2024, 12, 4), index),
-                createDay(LocalDate.of(2024, 12, 5), index)
+                createDay(LocalDate.of(2024, 12, 3)),
+                createDay(LocalDate.of(2024, 12, 4)),
+                createDay(LocalDate.of(2024, 12, 5))
         );
         return new Days(days, LocalDate.of(2024, 12, 3), LocalDate.of(2024, 12, 5));
     }
 
-    private Day createDay(LocalDate travelDate, int index) {
+    private Day createDay(LocalDate travelDate) {
         return Day.builder()
                 .travelDate(travelDate)
-                .places(createPlaces(index))
+                .places(createPlaces())
                 .build();
     }
 
-    private List<Place> createPlaces(int index) {
-        if (index % 2 == 0) {
-            return List.of(
-                    createPlace("지역1", "지역 1입니다", 2000),
-                    createPlace("지역2", "지역 2입니다", 2000),
-                    createPlace("지역3", "지역 3입니다", 2000)
-            );
-        }
+    private List<Place> createPlaces() {
         return List.of(
                 createPlace("지역1", "지역 1입니다", 1000),
                 createPlace("지역2", "지역 2입니다", 1000),
@@ -105,9 +81,9 @@ public class ScheduleTestSupport {
     }
 
     @Transactional
-    public void initLike() {
-        Schedule schedule = entityManager.find(Schedule.class, 1L);
-        User user = entityManager.find(User.class, 1L);
+    public void createAndSaveLike(Long scheduleId, Long userId) {
+        Schedule schedule = entityManager.find(Schedule.class, scheduleId);
+        User user = entityManager.find(User.class, userId);
         Like like = Like.builder()
                 .user(user)
                 .state(LikeState.LIKE)
@@ -117,15 +93,14 @@ public class ScheduleTestSupport {
     }
 
     @Transactional
-    public void initComment() {
-        Schedule schedule = entityManager.find(Schedule.class, 1L);
-        User user = entityManager.find(User.class, 1L);
+    public void createAndSaveComment(Long scheduleId, Long userId) {
+        Schedule schedule = entityManager.find(Schedule.class, scheduleId);
+        User user = entityManager.find(User.class, userId);
         Comment comment = Comment.builder()
                 .content("메롱")
                 .user(user)
                 .schedule(schedule)
                 .build();
-
         entityManager.persist(comment);
     }
 }
