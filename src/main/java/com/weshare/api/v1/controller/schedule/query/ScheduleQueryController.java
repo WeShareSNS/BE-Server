@@ -42,13 +42,12 @@ public class ScheduleQueryController {
 
     @Operation(summary = "여행일정 상세보기 API", description = "특정 ")
     @ApiResponses({
-            @ApiResponse(responseCode = "200",
-                    description = "로그인이 성공했습니다. 사용자의 이름은 UUID, 프로필은 기본 프로필 이미지 URL이 등록됩니다."),
-            @ApiResponse(responseCode = "400", description = "http body를 확인해주세요"),
-            @ApiResponse(responseCode = "409", description = "사용자 이메일이 중복되었습니다.")
+            @ApiResponse(responseCode = "200", description = "여행일정 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "조회하는 여행일정이 올바르지 않습니다."),
+            @ApiResponse(responseCode = "404", description = "여행일정이 존재하지 않습니다.")
     })
     @GetMapping("/schedule/{scheduleId}")
-    public ResponseEntity getScheduleDetails(@PathVariable Long scheduleId) {
+    public ResponseEntity<ScheduleDetailDto> getScheduleDetails(@PathVariable Long scheduleId) {
         ScheduleDetailDto scheduleDetails = scheduleQueryService.getScheduleDetails(scheduleId);
         return response.success(scheduleDetails);
     }
