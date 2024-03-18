@@ -17,7 +17,7 @@ public class ScheduleDetailDto {
     private Long id;
     private String title;
     private Destination destination;
-    private String username;
+    private String userName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -35,7 +35,7 @@ public class ScheduleDetailDto {
         this.id = id;
         this.title = title;
         this.destination = destination;
-        this.username = username;
+        this.userName = username;
         this.startDate = startDate;
         this.endDate = endDate;
         this.dayDetail = dayDetail;

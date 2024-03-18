@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class SchedulePageDto {
     private Long scheduleId;
     private long expense;
-    private String username;
+    private String userName;
     private long likesCount;
     private long commentsCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -28,7 +28,7 @@ public class SchedulePageDto {
                             long likesCount, long commentsCount, LocalDateTime createDate) {
         this.scheduleId = scheduleId;
         this.expense = expense;
-        this.username = username;
+        this.userName = username;
         this.likesCount = likesCount;
         this.commentsCount = commentsCount;
         this.createdDate = LocalDate.from(createDate);

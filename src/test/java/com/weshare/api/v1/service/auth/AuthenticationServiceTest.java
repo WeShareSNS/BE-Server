@@ -71,19 +71,18 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         );
     }
 
-//    @Test
-//    @DisplayName("이메일이 중복되면 예외가 발생한다.")
-//    public void duplicateEmail() {
-//        // given
-//        String email = "email@asd.com";
-//        String password = "password";
-//        createAndSaveUser(email, password);
-//        DuplicateEmailRequest request = new DuplicateEmailRequest(email);
-//        // when // then
-//        assertThatThrownBy(() -> authService.checkDuplicateEmailForSignup(request))
-//                .isInstanceOf(EmailDuplicateException.class)
-//                .hasMessage(email + "은 가입된 이메일 입니다.");
-//    }
+    @Test
+    @DisplayName("이메일이 중복되면 예외가 발생한다.")
+    public void duplicateEmail() {
+        // given
+        String email = "email@asd.com";
+        String password = "password";
+        createAndSaveUser(email, password);
+        // when // then
+        assertThatThrownBy(() -> authService.checkDuplicateEmailForSignup(email))
+                .isInstanceOf(EmailDuplicateException.class)
+                .hasMessage(email + "은 가입된 이메일 입니다.");
+    }
 
     @Test
     @DisplayName("이미 가입된 이메일인 경우 예외가 발생한다.")
