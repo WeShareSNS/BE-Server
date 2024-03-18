@@ -83,8 +83,7 @@ public class AuthenticationController {
   @Operation(summary = "사용자 access 토큰 재발급 API",
           description = "사용자는 쿠키에 저장되어있는 Refresh 토큰을 통해서 access 토큰 재발급 할 수 있습니다.")
   @ApiResponses({
-          @ApiResponse(responseCode = "200",
-                  description = ""),
+          @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
           @ApiResponse(responseCode = "401", description = "쿠키가 만료되어 있는지 확인해주세요"),
   })
   @GetMapping("/reissue-token")

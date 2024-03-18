@@ -1,6 +1,6 @@
 package com.weshare.api.v1.service.schedule;
 
-import com.weshare.api.v1.controller.schedule.CreateScheduleDto;
+import com.weshare.api.v1.controller.schedule.command.CreateScheduleDto;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
@@ -25,13 +25,13 @@ public class ScheduleService {
         return Schedule.builder()
                 .title(createScheduleDto.getTitle())
                 .destination(Destination.findDestinationByName(createScheduleDto.getDestination()))
-                .startDate(createScheduleDto.getStartDate())
-                .endDate(createScheduleDto.getEndDate())
                 .days(
                         new Days(
                                 createScheduleDto.getVisitDates().stream()
                                 .map(this::createDay)
-                                .toList()
+                                .toList(),
+                                createScheduleDto.getStartDate(),
+                                createScheduleDto.getEndDate()
                         )
                 )
                 .build();

@@ -6,9 +6,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @ToString
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule extends BaseTimeEntity {
 
@@ -22,12 +25,8 @@ public class Schedule extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Destination destination;
 
-    private LocalDate startDate;
-
-    private LocalDate endDate;
-
     @Setter
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -35,22 +34,48 @@ public class Schedule extends BaseTimeEntity {
     private Days days;
 
     @Builder
-    private Schedule(String title, Destination destination, LocalDate startDate, LocalDate endDate, Days days) {
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("시작, 종료 날짜가 올바르지 않습니다.");
-        }
-        if (!days.areAllDistinctDaysWithinRange(startDate, endDate) || !days.isDayCountMatching(startDate, endDate)) {
-            throw new IllegalArgumentException("날짜 정보가 올바르지 않습니다.");
-        }
+    private Schedule(String title, Destination destination, Days days) {
         this.title = title;
         this.destination = destination;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.days = days;
     }
 
-    public Expense getTotalScheduleExpense() {
+    @Builder(builderMethodName = "conversionBuilder", buildMethodName = "conversionBuild")
+    private Schedule(
+            Long id, String title, Destination destination,
+            Days dayDetails, User user, LocalDateTime createdDate) {
+        this.id = id;
+        this.title = title;
+        this.destination = destination;
+        this.days = dayDetails;
+        this.user = user;
+        setCreatedDate(createdDate);
+    }
+
+    public Schedule createSelfInstanceWithDays(Days dayDetails) {
+        return conversionBuilder()
+                .id(this.id)
+                .title(this.title)
+                .destination(this.destination)
+                .dayDetails(dayDetails)
+                .user(this.user)
+                .createdDate(this.getCreatedDate())
+                .conversionBuild();
+    }
+
+    public long getTotalScheduleExpense() {
         return days.getTotalDaysExpense();
     }
 
+    public List<Day> getDays() {
+        return days.getDays();
+    }
+
+    public LocalDate getStartDate() {
+        return days.getStartDate();
+    }
+
+    public LocalDate getEndDate() {
+        return days.getEndDate();
+    }
 }

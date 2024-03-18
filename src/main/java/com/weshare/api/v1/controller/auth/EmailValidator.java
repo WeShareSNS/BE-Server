@@ -11,10 +11,10 @@ public class EmailValidator {
 
     public void validateEmailFormat(String email) {
         if (email.isBlank()) {
-            throw new EmailDuplicateException("이메일을 입력해주세요");
+            throw new IllegalArgumentException("이메일을 입력해주세요");
         }
         if (!isValidEmail(email)) {
-            throw new EmailDuplicateException("올바른 이메일 형식이 아닙니다.");
+            throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다.");
         }
     }
 

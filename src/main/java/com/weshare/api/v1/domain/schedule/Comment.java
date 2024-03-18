@@ -4,6 +4,7 @@ import com.weshare.api.v1.domain.BaseTimeEntity;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Table(name = "schedule_comment")
@@ -27,7 +28,8 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
-    public Comment(String content, User user, Schedule schedule) {
+    @Builder
+    private Comment(String content, User user, Schedule schedule) {
         this.content = content;
         this.user = user;
         this.schedule = schedule;

@@ -1,12 +1,8 @@
 package com.weshare.api.v1.controller.auth.advice;
 
 import com.weshare.api.v1.controller.auth.AuthErrorCode;
-import com.weshare.api.v1.controller.schedule.ScheduleErrorCode;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.service.auth.login.OAuthApiException;
-import com.weshare.api.v1.token.exception.InvalidTokenException;
-import com.weshare.api.v1.token.exception.TokenNotFoundException;
-import com.weshare.api.v1.token.exception.TokenTimeOutException;
 import com.weshare.api.v1.common.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 
 @Slf4j
