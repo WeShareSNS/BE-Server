@@ -85,7 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (InvalidTokenException e) {
             filterExceptionHandler.handleAuthenticationExceptionMessage(request,response,HttpStatus.UNAUTHORIZED, FilterErrorCode.INVALID_TOKEN_ERROR);
         } catch (UsernameNotFoundException e) {
-            filterExceptionHandler.handleAuthenticationExceptionMessage(request,response,HttpStatus.NOT_FOUND, FilterErrorCode.USER_NOT_FOUND_ERROR);
+            filterExceptionHandler.handleAuthenticationExceptionMessage(request,response,HttpStatus.UNAUTHORIZED, FilterErrorCode.USER_NOT_FOUND_ERROR);
         }
 
     }
