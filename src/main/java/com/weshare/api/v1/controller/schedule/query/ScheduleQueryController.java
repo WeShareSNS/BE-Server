@@ -33,7 +33,7 @@ public class ScheduleQueryController {
             @ApiResponse(responseCode = "200",
                     description = "여행일정 조회 성공")
     })
-    @GetMapping("/schedule")
+    @GetMapping("/schedules")
     public Page<SchedulePageDto> getSchedule(
             @PageableDefault(size = 12, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable
     ) {
@@ -46,7 +46,7 @@ public class ScheduleQueryController {
             @ApiResponse(responseCode = "400", description = "조회하는 여행일정이 올바르지 않습니다."),
             @ApiResponse(responseCode = "404", description = "여행일정이 존재하지 않습니다.")
     })
-    @GetMapping("/schedule/{scheduleId}")
+    @GetMapping("/schedules/{scheduleId}")
     public ResponseEntity<ScheduleDetailDto> getScheduleDetails(@PathVariable Long scheduleId) {
         ScheduleDetailDto scheduleDetails = scheduleQueryService.getScheduleDetails(scheduleId);
         return response.success(scheduleDetails);

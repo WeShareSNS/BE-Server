@@ -30,7 +30,7 @@ public class ScheduleController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "여행일정 등록 성공")
     })
-    @PostMapping("/schedule")
+    @PostMapping("/schedules")
     public ResponseEntity saveSchedule(@Valid @RequestBody CreateScheduleRequest createScheduleRequest,
                                        @AuthenticationPrincipal User user) {
         CreateScheduleDto createScheduleDto = CreateScheduleDto.from(createScheduleRequest);
