@@ -103,7 +103,7 @@ public class InitSchedule {
         }
 
         private Location createLocation() {
-            return new Location("152.64", "123,67");
+            return new Location(152.64, 123.67);
         }
     }
 

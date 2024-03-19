@@ -37,14 +37,15 @@ class ScheduleServiceTest extends ScheduleTestSupport {
         CreateScheduleRequest request = objectMapper.readValue(getRequestJson(), CreateScheduleRequest.class);
         CreateScheduleDto createScheduleDto = CreateScheduleDto.from(request);
         // when
-        scheduleService.saveSchedule(createScheduleDto, user);
+        Schedule schedule = scheduleService.saveSchedule(createScheduleDto, user);
+        Long scheduleId = schedule.getId();
         // then
-        Schedule schedule = scheduleRepository.findById(1L).orElseThrow();
-        assertThat(schedule.getUser()).isEqualTo(user);
-        assertThat(schedule.getTitle()).isEqualTo("여행 일정");
-        assertThat(schedule.getDestination()).isEqualTo(Destination.SEOUL);
-        assertThat(schedule.getStartDate()).isEqualTo(LocalDate.of(2024, 12, 3));
-        assertThat(schedule.getEndDate()).isEqualTo(LocalDate.of(2024, 12, 5));
+        Schedule findSchedule = scheduleRepository.findById(scheduleId).orElseThrow();
+        assertThat(findSchedule.getUser()).isEqualTo(user);
+        assertThat(findSchedule.getTitle()).isEqualTo("여행 일정");
+        assertThat(findSchedule.getDestination()).isEqualTo(Destination.SEOUL);
+        assertThat(findSchedule.getStartDate()).isEqualTo(LocalDate.of(2024, 12, 3));
+        assertThat(findSchedule.getEndDate()).isEqualTo(LocalDate.of(2024, 12, 5));
     }
 
     private User createAndSaveUser() {

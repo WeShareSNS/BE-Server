@@ -17,8 +17,8 @@ public class PlaceDetailDto {
     private LocalTime time;
     private String memo;
     private long expense;
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 
     @Builder(access = AccessLevel.PRIVATE)
     private PlaceDetailDto(String title, LocalTime time, String memo, Expense expense, Location location) {

@@ -24,14 +24,14 @@ class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
         User user = createUserAndSave("test1@asd.com", "test1", "test1");
         Destination destination = Destination.SEOUL;
         String title = "제목";
-        createAndSaveSchedule(title, destination, user);
+        Schedule schedule = createAndSaveSchedule(title, destination, user);
         // when
-        long scheduleId = 1L;
-        Schedule schedule = scheduleDetailQueryRepository.findScheduleDetail(scheduleId);
+        Long scheduleId = schedule.getId();
+        Schedule findSchedule = scheduleDetailQueryRepository.findScheduleDetail(scheduleId);
         // then
-        assertThat(schedule.getId()).isEqualTo(scheduleId);
-        assertThat(schedule.getTitle()).isEqualTo(title);
-        assertThat(schedule.getUser()).isEqualTo(user);
+        assertThat(findSchedule.getId()).isEqualTo(scheduleId);
+        assertThat(findSchedule.getTitle()).isEqualTo(title);
+        assertThat(findSchedule.getUser()).isEqualTo(user);
     }
 
     @Test

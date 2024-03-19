@@ -15,11 +15,11 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Location {
     @Column(name = "latitude", nullable = false)
-    private String latitude;
+    private Double latitude;
     @Column(name = "longitude", nullable = false)
-    private String longitude;
+    private Double longitude;
 
-    public Location(String latitude, String longitude) {
+    public Location(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }

@@ -35,28 +35,21 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
         User user = createUserAndSave("test1@asd.com", userName, "test1");
         Destination destination = Destination.SEOUL;
         String title = "제목";
-        createAndSaveSchedule(title, destination, user);
+        Schedule schedule = createAndSaveSchedule(title, destination, user);
+        Long scheduleId = schedule.getId();
         // when
-        long scheduleId = 1L;
-        ScheduleDetailDto scheduleDetails = scheduleQueryService.getScheduleDetails(scheduleId);
+        ScheduleDetailDto findScheduleDetails = scheduleQueryService.getScheduleDetails(scheduleId);
         // then
-        assertThat(scheduleDetails.getId()).isEqualTo(scheduleId);
-        assertThat(scheduleDetails.getTitle()).isEqualTo(title);
-        assertThat(scheduleDetails.getUsername()).isEqualTo(userName);
+        assertThat(findScheduleDetails.getId()).isEqualTo(scheduleId);
+        assertThat(findScheduleDetails.getTitle()).isEqualTo(title);
+        assertThat(findScheduleDetails.getUserName()).isEqualTo(userName);
     }
 
     @Test
     @Transactional
     public void 여행일정_페이지는_최신글_순으로_조회된다() {
         // given
-        for (int i = 1; i <= 2; i++) {
-            User user = createUserAndSave(i + "test@asd.com", "test" + i, "test");
-            Destination destination = Destination.SEOUL;
-            String title = "제목" + i;
-            Schedule schedule = createAndSaveSchedule(title, destination, user);
-            createAndSaveLike(schedule.getId(), user.getId());
-            createAndSaveComment(schedule.getId(), user.getId());
-        }
+        ScheduleIds scheduleIds = getIdsAndSaveSchedule();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("createdDate").descending());
         // when
         Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(pageRequest);
@@ -64,10 +57,10 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
         // then
         assertThat(content)
                 .hasSize(2)
-                .extracting("scheduleId", "expense", "username", "likesCount", "commentsCount")
+                .extracting("scheduleId", "expense", "userName", "likesCount", "commentsCount")
                 .containsExactly(
-                        Tuple.tuple(2L, 9000L, "test2", 1L, 1L),
-                        Tuple.tuple(1L, 9000L, "test1", 1L, 1L)
+                        Tuple.tuple(scheduleIds.scheduleIdLast(), 9000L, "test2", 1L, 1L),
+                        Tuple.tuple(scheduleIds.scheduleIdFirst(), 9000L, "test1", 1L, 1L)
                 );
     }
 
@@ -75,14 +68,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     @TestFactory
     Collection<DynamicTest> 현재_페이지가_처음인지_마지막인지_알_수_있다() {
         // given
-        for (int i = 1; i <= 2; i++) {
-            User user = createUserAndSave(i + "test@asd.com", "test" + i, "test");
-            Destination destination = Destination.SEOUL;
-            String title = "제목" + i;
-            Schedule schedule = createAndSaveSchedule(title, destination, user);
-            createAndSaveLike(schedule.getId(), user.getId());
-            createAndSaveComment(schedule.getId(), user.getId());
-        }
+        ScheduleIds scheduleIds = getIdsAndSaveSchedule();
         return List.of(
                 DynamicTest.dynamicTest("첫 페이지인지 알 수 있다.", () -> {
                     //given
@@ -93,9 +79,9 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                     // then
                     assertThat(content)
                             .hasSize(1)
-                            .extracting("scheduleId", "expense", "username", "likesCount", "commentsCount")
+                            .extracting("scheduleId", "expense", "userName", "likesCount", "commentsCount")
                             .containsExactly(
-                                    Tuple.tuple(2L, 9000L, "test2", 1L, 1L)
+                                    Tuple.tuple(scheduleIds.scheduleIdLast(), 9000L, "test2", 1L, 1L)
                             );
                     assertThat(schedulePage.getTotalPages()).isEqualTo(2);
                     assertThat(schedulePage.isFirst()).isEqualTo(true);
@@ -110,9 +96,9 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                     // then
                     assertThat(content)
                             .hasSize(1)
-                            .extracting("scheduleId", "expense", "username", "likesCount", "commentsCount")
+                            .extracting("scheduleId", "expense", "userName", "likesCount", "commentsCount")
                             .containsExactly(
-                                    Tuple.tuple(1L, 9000L, "test1", 1L, 1L)
+                                    Tuple.tuple(scheduleIds.scheduleIdFirst(), 9000L, "test1", 1L, 1L)
                             );
                     assertThat(schedulePage.getTotalPages()).isEqualTo(2);
                     assertThat(schedulePage.isFirst()).isEqualTo(false);

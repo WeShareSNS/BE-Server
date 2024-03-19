@@ -18,6 +18,8 @@ public class ScheduleTestSupport {
 
     @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private ScheduleRepository repository;
 
 
 
@@ -40,8 +42,7 @@ public class ScheduleTestSupport {
                 .days(createDays())
                 .build();
         schedule.setUser(user);
-        entityManager.persist(schedule);
-        return schedule;
+        return repository.save(schedule);
     }
 
     private Days createDays() {
@@ -79,7 +80,7 @@ public class ScheduleTestSupport {
     }
 
     private Location createLocation() {
-        return new Location("152.64", "123,67");
+        return new Location(152.64, 123.67);
     }
 
     @Transactional
@@ -104,5 +105,26 @@ public class ScheduleTestSupport {
                 .schedule(schedule)
                 .build();
         entityManager.persist(comment);
+    }
+
+    protected ScheduleIds getIdsAndSaveSchedule() {
+        Long scheduleIdFirst = null;
+        Long scheduleIdLast = null;
+        for (int i = 1; i <= 2; i++) {
+            User user = createUserAndSave(i + "test@asd.com", "test" + i, "test");
+            Destination destination = Destination.SEOUL;
+            String title = "제목" + i;
+            Schedule schedule = createAndSaveSchedule(title, destination, user);
+            if (i == 1) {
+                scheduleIdFirst = schedule.getId();
+            } else {
+                scheduleIdLast = schedule.getId();
+            }
+            createAndSaveLike(schedule.getId(), user.getId());
+            createAndSaveComment(schedule.getId(), user.getId());
+        }
+        return new ScheduleIds(scheduleIdFirst, scheduleIdLast);
+    }
+    public record ScheduleIds(Long scheduleIdFirst, Long scheduleIdLast) {
     }
 }

@@ -28,7 +28,7 @@ import java.time.LocalTime;
                p.longitude,
                d.schedule_id
         from day d
-                 join places p
+                 left join places p
                       on p.day_id = d.day_id
         """
 )
@@ -43,14 +43,14 @@ public class DayWithPlaceDetailsView {
     private LocalTime time;
     private String memo;
     private long expense;
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
     private Long scheduleId;
 
     public DayWithPlaceDetailsView(
             Long dayId, LocalDate travelDate, String title,
-            LocalTime time, String memo, long expense, String latitude,
-            String longitude, Long scheduleId
+            LocalTime time, String memo, long expense, Double latitude,
+            Double longitude, Long scheduleId
     ) {
         this.dayId = dayId;
         this.travelDate = travelDate;

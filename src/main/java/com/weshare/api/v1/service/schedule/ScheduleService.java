@@ -15,10 +15,10 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public void saveSchedule(final CreateScheduleDto createScheduleDto, User user) {
+    public Schedule saveSchedule(final CreateScheduleDto createScheduleDto, User user) {
         Schedule schedule = createSchedule(createScheduleDto);
         schedule.setUser(user);
-        scheduleRepository.save(schedule);
+        return scheduleRepository.save(schedule);
     }
 
     private Schedule createSchedule(CreateScheduleDto createScheduleDto) {

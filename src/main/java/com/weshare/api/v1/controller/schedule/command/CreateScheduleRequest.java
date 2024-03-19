@@ -80,12 +80,12 @@ public class CreateScheduleRequest {
             private long expense;
 
             @NotBlank
-            private String latitude;
+            private Double latitude;
             @NotBlank
-            private String longitude;
+            private Double longitude;
 
             @Builder
-            private VisitPlace(String title, LocalTime time, String memo, long expense, String latitude, String longitude) {
+            private VisitPlace(String title, LocalTime time, String memo, long expense, Double latitude, Double longitude) {
                 this.title = title;
                 this.time = time;
                 this.memo = memo;
