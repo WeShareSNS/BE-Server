@@ -25,10 +25,10 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     public CreateCommentResponse saveScheduleComment(CreateCommentDto createCommentDto) {
-        Schedule findSchedule = scheduleRepository.findById(createCommentDto.scheduleId())
+        final Schedule findSchedule = scheduleRepository.findById(createCommentDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
-
         final Comment comment = createComment(createCommentDto, findSchedule);
+
         Comment savedComment = commentRepository.save(comment);
         return getCreateCommentResponse(savedComment);
     }
@@ -36,7 +36,7 @@ public class CommentService {
     private Comment createComment(CreateCommentDto createCommentDto, Schedule findSchedule) {
         return Comment.builder()
                 .schedule(findSchedule)
-                .user(createCommentDto.user())
+                .commenter(createCommentDto.commenter())
                 .content(createCommentDto.content())
                 .build();
     }
@@ -44,7 +44,7 @@ public class CommentService {
     private CreateCommentResponse getCreateCommentResponse(Comment comment) {
         return new CreateCommentResponse(
                 comment.getId(),
-                comment.getUser().getName(),
+                comment.getCommenter().getName(),
                 comment.getContent(),
                 comment.getCreatedDate()
         );
@@ -59,7 +59,7 @@ public class CommentService {
     private FindAllCommentDto createFindAllComment(Comment comment) {
         return new FindAllCommentDto(
                 comment.getId(),
-                comment.getUser().getName(),
+                comment.getCommenter().getName(),
                 comment.getContent(),
                 comment.getCreatedDate()
         );
@@ -69,10 +69,10 @@ public class CommentService {
         Comment comment = commentRepository.findById(deleteCommentDto.commentId())
                 .orElseThrow(CommentNotFoundException::new);
 
-        if (!comment.isScheduleId(deleteCommentDto.scheduleId())) {
+        if (!comment.isSameScheduleId(deleteCommentDto.scheduleId())) {
             throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
         }
-        if (!comment.isSameUser(deleteCommentDto.user())) {
+        if (!comment.isSameCommenter(deleteCommentDto.commenter())) {
             throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
         }
         commentRepository.delete(comment);

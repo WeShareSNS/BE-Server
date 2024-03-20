@@ -55,7 +55,7 @@ class CommentServiceTest extends ScheduleTestSupport {
 
     @Test
     @Transactional
-    public void CommentServiceTest() {
+    public void 해당하는_여행일정_댓글을_모두_조회할_수_있다() {
         // given
         User user = createUserAndSave("test@na.com", "test", "test");
         Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
@@ -66,7 +66,7 @@ class CommentServiceTest extends ScheduleTestSupport {
         List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
         // then
         assertThat(allScheduleComment).hasSize(1)
-                .extracting("commentId", "userName", "content", "createdDate")
+                .extracting("commentId", "commenter", "content", "createdDate")
                 .containsExactly(
                         Tuple.tuple(
                                 createCommentResponse.commentId(),

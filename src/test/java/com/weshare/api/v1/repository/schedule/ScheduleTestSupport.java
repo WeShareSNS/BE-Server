@@ -104,7 +104,7 @@ public class ScheduleTestSupport {
         User user = entityManager.find(User.class, userId);
         Comment comment = Comment.builder()
                 .content("메롱")
-                .user(user)
+                .commenter(user)
                 .schedule(schedule)
                 .build();
         entityManager.persist(comment);

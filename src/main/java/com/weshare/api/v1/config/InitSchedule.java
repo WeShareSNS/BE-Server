@@ -141,7 +141,7 @@ public class InitSchedule {
                 User user = entityManager.find(User.class, 1L);
                 Comment comment = Comment.builder()
                         .content("메롱" + i)
-                        .user(user)
+                        .commenter(user)
                         .schedule(schedule)
                         .build();
 

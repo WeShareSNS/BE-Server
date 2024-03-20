@@ -24,17 +24,17 @@ public class Comment extends BaseTimeEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "commenter_id", nullable = false)
+    private User commenter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
     @Builder
-    private Comment(String content, User user, Schedule schedule) {
+    private Comment(String content, User commenter, Schedule schedule) {
         this.content = content;
-        this.user = user;
+        this.commenter = commenter;
         this.schedule = schedule;
     }
 
@@ -42,11 +42,12 @@ public class Comment extends BaseTimeEntity {
         this.content = content;
     }
 
-    public boolean isScheduleId(Long scheduleId) {
-        return this.schedule.getId() == scheduleId;
+    public boolean isSameCommenter(User commenter) {
+        return this.commenter.equals(commenter);
     }
 
-    public boolean isSameUser(User user) {
-        return this.user.equals(user);
+    public boolean isSameScheduleId(Long scheduleId) {
+        return schedule.getId() == scheduleId;
     }
+
 }
