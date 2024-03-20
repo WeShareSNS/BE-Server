@@ -31,7 +31,7 @@ public class CommentController {
     private final CommentService commentService;
     private final Response response;
 
-    @Operation(security = { @SecurityRequirement(name = "bearer-key") },
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")},
             summary = "사용자 댓글 등록 API", description = "사용자는 특정 여행일정에 댓글을 남길 수 있다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "댓글 등록에 성공했습니다."),
@@ -39,24 +39,44 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "해당하는 여행일정이 존재하지 않습니다.")
     })
     @PostMapping("/{scheduleId}/comments")
-    public ResponseEntity<CreateCommentResponse> saveScheduleComment(@PathVariable Long scheduleId,
-                                                                     @AuthenticationPrincipal User user,
-                                                                     @Valid @RequestBody CreateCommentRequest createCommentRequest) {
-
+    public ResponseEntity<CreateCommentResponse> saveScheduleComment(
+            @PathVariable Long scheduleId,
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody CreateCommentRequest createCommentRequest
+    ) {
         final CreateCommentDto createCommentDto = new CreateCommentDto(user, scheduleId, createCommentRequest.content());
         CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+
         return response.success(createCommentResponse, "댓글 등록 성공", HttpStatus.CREATED);
     }
 
-    @Operation(security = { @SecurityRequirement(name = "bearer-key") },
-            summary = "여행일정 댓글 조회 API", description = "사용자는 특정 여행일정에 모든 댓글을 조회할 수 있다.")
+    @Operation(summary = "여행일정 댓글 조회 API", description = "사용자는 특정 여행일정에 모든 댓글을 조회할 수 있다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "댓글 조회에 성공했습니다."),
+            @ApiResponse(responseCode = "200", description = "댓글 조회에 성공했습니다."),
     })
     @GetMapping("/{scheduleId}/comments")
     public ResponseEntity<FindAllCommentResponse> findAllScheduleComment(@PathVariable Long scheduleId) {
         final List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(scheduleId);
         FindAllCommentResponse findAllCommentResponse = new FindAllCommentResponse(allScheduleComment, allScheduleComment.size());
+
         return response.success(findAllCommentResponse);
+    }
+
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")},
+            summary = "여행일정 댓글 삭제 API", description = "사용자는 특정 여행일정에 달린 댓글을 삭제할 수 있다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 삭제에 성공했습니다."),
+            @ApiResponse(responseCode = "404", description = "삭제할 댓글이 없습니다."),
+    })
+    @DeleteMapping("/{scheduleId}/comments/{commentId}")
+    public ResponseEntity deleteScheduleComment(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long scheduleId,
+            @PathVariable Long commentId
+    ) {
+        DeleteCommentDto deleteCommentDto = new DeleteCommentDto(user, scheduleId, commentId);
+        commentService.deleteScheduleComment(deleteCommentDto);
+
+        return response.success("댓글 삭제 성공");
     }
 }

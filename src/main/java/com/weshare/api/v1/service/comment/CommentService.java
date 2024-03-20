@@ -1,7 +1,9 @@
 package com.weshare.api.v1.service.comment;
 
+import com.weshare.api.v1.controller.comment.DeleteCommentDto;
 import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.comment.Comment;
+import com.weshare.api.v1.domain.comment.exception.CommentNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.repository.comment.CommentRepository;
@@ -61,6 +63,19 @@ public class CommentService {
                 comment.getContent(),
                 comment.getCreatedDate()
         );
+    }
+
+    public void deleteScheduleComment(DeleteCommentDto deleteCommentDto) {
+        Comment comment = commentRepository.findById(deleteCommentDto.commentId())
+                .orElseThrow(CommentNotFoundException::new);
+
+        if (!comment.isScheduleId(deleteCommentDto.scheduleId())) {
+            throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
+        }
+        if (!comment.isSameUser(deleteCommentDto.user())) {
+            throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
+        }
+        commentRepository.delete(comment);
     }
 
 }

@@ -4,7 +4,10 @@ import com.weshare.api.v1.domain.BaseTimeEntity;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Table(name = "schedule_comment")
 @Entity
@@ -37,5 +40,13 @@ public class Comment extends BaseTimeEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public boolean isScheduleId(Long scheduleId) {
+        return this.schedule.getId() == scheduleId;
+    }
+
+    public boolean isSameUser(User user) {
+        return this.user.equals(user);
     }
 }

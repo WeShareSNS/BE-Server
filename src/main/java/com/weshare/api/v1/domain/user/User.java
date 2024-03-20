@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
@@ -95,4 +96,16 @@ public class User extends BaseTimeEntity implements UserDetails {
         return true;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        User user = (User) object;
+        return Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(name, user.name) && Objects.equals(profileImg, user.profileImg) && Objects.equals(birthDate, user.birthDate) && Objects.equals(password, user.password) && role == user.role && social == user.social;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, name, profileImg, birthDate, password, role, social);
+    }
 }
