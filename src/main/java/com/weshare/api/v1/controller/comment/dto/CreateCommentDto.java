@@ -1,4 +1,4 @@
-package com.weshare.api.v1.controller.comment;
+package com.weshare.api.v1.controller.comment.dto;
 
 import com.weshare.api.v1.domain.user.User;
 import io.jsonwebtoken.lang.Assert;

@@ -1,6 +1,6 @@
 package com.weshare.api.v1.service.comment;
 
-import com.weshare.api.v1.controller.comment.CreateCommentDto;
+import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;

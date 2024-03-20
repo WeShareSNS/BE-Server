@@ -1,6 +1,6 @@
 package com.weshare.api.v1.service.comment;
 
-import com.weshare.api.v1.controller.comment.CreateCommentDto;
+import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.comment.Comment;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
@@ -11,15 +11,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CommentService {
 
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
 
-    @Transactional
     public CreateCommentResponse saveScheduleComment(CreateCommentDto createCommentDto) {
         Schedule findSchedule = scheduleRepository.findById(createCommentDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
@@ -38,12 +40,25 @@ public class CommentService {
     }
 
     private CreateCommentResponse getCreateCommentResponse(Comment save) {
-        log.info("user={}", save.getUser());
-
         return new CreateCommentResponse(
                 save.getSchedule().getId(),
                 save.getUser().getName(),
                 save.getContent());
+    }
+
+    public List<FindAllCommentDto> findAllScheduleComment(Long scheduleId) {
+        return commentRepository.findAllByScheduleId(scheduleId).stream()
+                .map(this::createFindAllComment)
+                .toList();
+    }
+
+    private FindAllCommentDto createFindAllComment(Comment comment) {
+        return new FindAllCommentDto(
+                comment.getId(),
+                comment.getUser().getName(),
+                comment.getContent(),
+                comment.getCreatedDate()
+        );
     }
 
 }

@@ -4,10 +4,7 @@ import com.weshare.api.v1.domain.BaseTimeEntity;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Table(name = "schedule_comment")
 @Entity
