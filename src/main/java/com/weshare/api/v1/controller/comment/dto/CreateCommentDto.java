@@ -5,7 +5,11 @@ import io.jsonwebtoken.lang.Assert;
 
 import java.util.Objects;
 
-public record CreateCommentDto(User user, Long scheduleId, String content) {
+public record CreateCommentDto(
+        User user,
+        Long scheduleId,
+        String content
+) {
     public CreateCommentDto {
         Objects.requireNonNull(user);
         Objects.requireNonNull(scheduleId);

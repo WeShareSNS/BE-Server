@@ -9,8 +9,7 @@ import java.util.Objects;
 public record FindAllCommentDto(
         Long commentId,
         String userName,
-        String comment,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        String content,
         LocalDateTime createdDate
 ) {
     public FindAllCommentDto {
@@ -19,7 +18,7 @@ public record FindAllCommentDto(
         if (!StringUtils.hasText(userName)) {
             throw new IllegalStateException("사용자 정보가 올바르지 않습니다.");
         }
-        if (!StringUtils.hasText(comment)) {
+        if (!StringUtils.hasText(content)) {
             throw new IllegalStateException("댓글이 올바르지 않습니다.");
         }
     }

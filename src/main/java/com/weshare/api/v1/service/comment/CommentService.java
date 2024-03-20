@@ -31,7 +31,7 @@ public class CommentService {
         return getCreateCommentResponse(savedComment);
     }
 
-    private static Comment createComment(CreateCommentDto createCommentDto, Schedule findSchedule) {
+    private Comment createComment(CreateCommentDto createCommentDto, Schedule findSchedule) {
         return Comment.builder()
                 .schedule(findSchedule)
                 .user(createCommentDto.user())
@@ -39,11 +39,13 @@ public class CommentService {
                 .build();
     }
 
-    private CreateCommentResponse getCreateCommentResponse(Comment save) {
+    private CreateCommentResponse getCreateCommentResponse(Comment comment) {
         return new CreateCommentResponse(
-                save.getSchedule().getId(),
-                save.getUser().getName(),
-                save.getContent());
+                comment.getId(),
+                comment.getUser().getName(),
+                comment.getContent(),
+                comment.getCreatedDate()
+        );
     }
 
     public List<FindAllCommentDto> findAllScheduleComment(Long scheduleId) {

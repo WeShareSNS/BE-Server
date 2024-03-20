@@ -37,7 +37,7 @@ class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
     @Test
     public void 존재하지_않는_여행일정_조회시_예외발생() {
         // when // then
-        long scheduleId = 9999999L;
+        long scheduleId = 0L;
         assertThatThrownBy(() -> scheduleDetailQueryRepository.findScheduleDetail(scheduleId))
                 .isInstanceOf(ScheduleNotFoundException.class);
     }
