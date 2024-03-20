@@ -41,10 +41,10 @@ public class CommentController {
     @PostMapping("/{scheduleId}/comments")
     public ResponseEntity<CreateCommentResponse> saveScheduleComment(
             @PathVariable Long scheduleId,
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal User commenter,
             @Valid @RequestBody CreateCommentRequest createCommentRequest
     ) {
-        final CreateCommentDto createCommentDto = new CreateCommentDto(user, scheduleId, createCommentRequest.content());
+        final CreateCommentDto createCommentDto = new CreateCommentDto(commenter, scheduleId, createCommentRequest.content());
         CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
 
         return response.success(createCommentResponse, "댓글 등록 성공", HttpStatus.CREATED);
@@ -68,13 +68,33 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "댓글 삭제에 성공했습니다."),
             @ApiResponse(responseCode = "404", description = "삭제할 댓글이 없습니다."),
     })
-    @DeleteMapping("/{scheduleId}/comments/{commentId}")
-    public ResponseEntity deleteScheduleComment(
-            @AuthenticationPrincipal User user,
+    @PutMapping("/{scheduleId}/comments/{commentId}")
+    public ResponseEntity updateScheduleComment(
+            @AuthenticationPrincipal User commenter,
+            @Valid @RequestBody UpdateCommentRequest updateCommentRequest,
             @PathVariable Long scheduleId,
             @PathVariable Long commentId
     ) {
-        DeleteCommentDto deleteCommentDto = new DeleteCommentDto(user, scheduleId, commentId);
+        UpdateCommentDto updateCommentDto =
+                new UpdateCommentDto(commenter, updateCommentRequest.content(), scheduleId, commentId);
+        commentService.updateComment(updateCommentDto);
+
+        return response.success("댓글 수정 성공");
+    }
+
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")},
+            summary = "여행일정 댓글 삭제 API", description = "사용자는 특정 여행일정에 달린 댓글을 삭제할 수 있다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 삭제에 성공했습니다."),
+            @ApiResponse(responseCode = "404", description = "삭제할 댓글이 없습니다."),
+    })
+    @DeleteMapping("/{scheduleId}/comments/{commentId}")
+    public ResponseEntity deleteScheduleComment(
+            @AuthenticationPrincipal User commenter,
+            @PathVariable Long scheduleId,
+            @PathVariable Long commentId
+    ) {
+        DeleteCommentDto deleteCommentDto = new DeleteCommentDto(commenter, scheduleId, commentId);
         commentService.deleteScheduleComment(deleteCommentDto);
 
         return response.success("댓글 삭제 성공");

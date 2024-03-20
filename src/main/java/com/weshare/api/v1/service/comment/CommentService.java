@@ -1,11 +1,13 @@
 package com.weshare.api.v1.service.comment;
 
 import com.weshare.api.v1.controller.comment.DeleteCommentDto;
+import com.weshare.api.v1.controller.comment.UpdateCommentDto;
 import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.comment.Comment;
 import com.weshare.api.v1.domain.comment.exception.CommentNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
+import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,7 @@ public class CommentService {
         );
     }
 
+    @Transactional(readOnly = true)
     public List<FindAllCommentDto> findAllScheduleComment(Long scheduleId) {
         return commentRepository.findAllByScheduleId(scheduleId).stream()
                 .map(this::createFindAllComment)
@@ -65,17 +68,28 @@ public class CommentService {
         );
     }
 
+    public void updateComment(UpdateCommentDto updateCommentDto) {
+        Comment comment = commentRepository.findById(updateCommentDto.commentId())
+                .orElseThrow(CommentNotFoundException::new);
+
+        validateUserAndScheduleId(comment, updateCommentDto.scheduleId(), updateCommentDto.commenter());
+        comment.updateContent(updateCommentDto.content());
+    }
+
+    private void validateUserAndScheduleId(Comment comment, Long scheduleId, User commenter) {
+        if (!comment.isSameScheduleId(scheduleId)) {
+            throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
+        }
+        if (!comment.isSameCommenter(commenter)) {
+            throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
+        }
+    }
+
     public void deleteScheduleComment(DeleteCommentDto deleteCommentDto) {
         Comment comment = commentRepository.findById(deleteCommentDto.commentId())
                 .orElseThrow(CommentNotFoundException::new);
 
-        if (!comment.isSameScheduleId(deleteCommentDto.scheduleId())) {
-            throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
-        }
-        if (!comment.isSameCommenter(deleteCommentDto.commenter())) {
-            throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
-        }
+        validateUserAndScheduleId(comment, deleteCommentDto.scheduleId(), deleteCommentDto.commenter());
         commentRepository.delete(comment);
     }
-
 }
