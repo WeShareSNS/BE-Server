@@ -1,6 +1,7 @@
 package com.weshare.api.v1.service.comment;
 
 import com.weshare.api.v1.controller.comment.DeleteCommentDto;
+import com.weshare.api.v1.controller.comment.UpdateCommentDto;
 import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
@@ -97,4 +98,30 @@ class CommentServiceTest extends ScheduleTestSupport {
         assertThat(allScheduleComment).isEmpty();
     }
 
+    @Test
+    @Transactional
+    public void 해당하는_여행일정_댓글을_수정할_수_있다() {
+        // given
+        User user = createUserAndSave("test@na.com", "test", "test");
+        Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
+        CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), "댓글");
+        CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+        String updateContent = "수정한 댓글 입니다.";
+        // when
+        UpdateCommentDto updateCommentDto = new UpdateCommentDto(user, updateContent, schedule.getId(), createCommentResponse.commentId());
+        commentService.updateComment(updateCommentDto);
+        // then
+        List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
+        assertThat(allScheduleComment).hasSize(1)
+                .extracting("commentId", "commenter", "content", "createdDate")
+                .containsExactly(
+                        Tuple.tuple(
+                                createCommentResponse.commentId(),
+                                user.getName(),
+                                updateContent,
+                                createCommentResponse.createdDate()
+                        )
+                );
+
+    }
 }
