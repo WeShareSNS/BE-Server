@@ -1,7 +1,7 @@
 package com.weshare.api.v1.service.comment;
 
-import com.weshare.api.v1.controller.comment.DeleteCommentDto;
-import com.weshare.api.v1.controller.comment.UpdateCommentDto;
+import com.weshare.api.v1.controller.comment.dto.DeleteCommentDto;
+import com.weshare.api.v1.controller.comment.dto.UpdateCommentDto;
 import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
@@ -9,8 +9,6 @@ import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

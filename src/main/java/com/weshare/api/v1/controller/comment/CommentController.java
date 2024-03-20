@@ -1,9 +1,7 @@
 package com.weshare.api.v1.controller.comment;
 
 import com.weshare.api.v1.common.Response;
-import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
-import com.weshare.api.v1.controller.comment.dto.CreateCommentRequest;
-import com.weshare.api.v1.controller.comment.dto.FindAllCommentResponse;
+import com.weshare.api.v1.controller.comment.dto.*;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.comment.CommentService;
 import com.weshare.api.v1.service.comment.CreateCommentResponse;
@@ -63,10 +61,11 @@ public class CommentController {
     }
 
     @Operation(security = {@SecurityRequirement(name = "bearer-key")},
-            summary = "여행일정 댓글 삭제 API", description = "사용자는 특정 여행일정에 달린 댓글을 삭제할 수 있다.")
+            summary = "여행일정 댓글 수정 API", description = "사용자는 특정 여행일정에 달린 댓글을 수정할 수 있다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "댓글 삭제에 성공했습니다."),
-            @ApiResponse(responseCode = "404", description = "삭제할 댓글이 없습니다."),
+            @ApiResponse(responseCode = "200", description = "댓글 수정에 성공했습니다."),
+            @ApiResponse(responseCode = "400", description = "해당하는 여행일정 혹은 댓글이 올바르지 않습니다."),
+            @ApiResponse(responseCode = "404", description = "수정할 댓글이 없습니다."),
     })
     @PutMapping("/{scheduleId}/comments/{commentId}")
     public ResponseEntity updateScheduleComment(
@@ -75,7 +74,7 @@ public class CommentController {
             @PathVariable Long scheduleId,
             @PathVariable Long commentId
     ) {
-        UpdateCommentDto updateCommentDto =
+        final UpdateCommentDto updateCommentDto =
                 new UpdateCommentDto(commenter, updateCommentRequest.content(), scheduleId, commentId);
         commentService.updateComment(updateCommentDto);
 
@@ -86,6 +85,7 @@ public class CommentController {
             summary = "여행일정 댓글 삭제 API", description = "사용자는 특정 여행일정에 달린 댓글을 삭제할 수 있다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "댓글 삭제에 성공했습니다."),
+            @ApiResponse(responseCode = "400", description = "해당하는 여행일정 혹은 댓글이 올바르지 않습니다."),
             @ApiResponse(responseCode = "404", description = "삭제할 댓글이 없습니다."),
     })
     @DeleteMapping("/{scheduleId}/comments/{commentId}")
@@ -94,7 +94,7 @@ public class CommentController {
             @PathVariable Long scheduleId,
             @PathVariable Long commentId
     ) {
-        DeleteCommentDto deleteCommentDto = new DeleteCommentDto(commenter, scheduleId, commentId);
+        final DeleteCommentDto deleteCommentDto = new DeleteCommentDto(commenter, scheduleId, commentId);
         commentService.deleteScheduleComment(deleteCommentDto);
 
         return response.success("댓글 삭제 성공");

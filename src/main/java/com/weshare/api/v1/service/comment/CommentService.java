@@ -1,7 +1,7 @@
 package com.weshare.api.v1.service.comment;
 
-import com.weshare.api.v1.controller.comment.DeleteCommentDto;
-import com.weshare.api.v1.controller.comment.UpdateCommentDto;
+import com.weshare.api.v1.controller.comment.dto.DeleteCommentDto;
+import com.weshare.api.v1.controller.comment.dto.UpdateCommentDto;
 import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.comment.Comment;
 import com.weshare.api.v1.domain.comment.exception.CommentNotFoundException;
@@ -69,7 +69,7 @@ public class CommentService {
     }
 
     public void updateComment(UpdateCommentDto updateCommentDto) {
-        Comment comment = commentRepository.findById(updateCommentDto.commentId())
+        final Comment comment = commentRepository.findById(updateCommentDto.commentId())
                 .orElseThrow(CommentNotFoundException::new);
 
         validateUserAndScheduleId(comment, updateCommentDto.scheduleId(), updateCommentDto.commenter());
@@ -86,7 +86,7 @@ public class CommentService {
     }
 
     public void deleteScheduleComment(DeleteCommentDto deleteCommentDto) {
-        Comment comment = commentRepository.findById(deleteCommentDto.commentId())
+        final Comment comment = commentRepository.findById(deleteCommentDto.commentId())
                 .orElseThrow(CommentNotFoundException::new);
 
         validateUserAndScheduleId(comment, deleteCommentDto.scheduleId(), deleteCommentDto.commenter());
