@@ -1,4 +1,4 @@
-package com.weshare.api.v1.domain.schedule;
+package com.weshare.api.v1.domain.like;
 
 public enum LikeState {
     LIKE, UNLIKE,

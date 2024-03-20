@@ -6,7 +6,10 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.weshare.api.v1.domain.schedule.*;
+import com.weshare.api.v1.domain.schedule.Day;
+import com.weshare.api.v1.domain.schedule.Expense;
+import com.weshare.api.v1.domain.schedule.Location;
+import com.weshare.api.v1.domain.schedule.Place;
 import com.weshare.api.v1.repository.schedule.query.dto.DayKey;
 import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.weshare.api.v1.domain.schedule.QComment.comment;
+import static com.weshare.api.v1.domain.comment.QComment.comment;
+import static com.weshare.api.v1.domain.like.QLike.like;
 import static com.weshare.api.v1.domain.schedule.QDayWithPlaceDetailsView.dayWithPlaceDetailsView;
-import static com.weshare.api.v1.domain.schedule.QLike.like;
 import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
 
 @Repository

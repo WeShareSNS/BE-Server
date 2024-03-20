@@ -1,5 +1,8 @@
 package com.weshare.api.v1.repository.schedule;
 
+import com.weshare.api.v1.domain.comment.Comment;
+import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.like.LikeState;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.EntityManager;
