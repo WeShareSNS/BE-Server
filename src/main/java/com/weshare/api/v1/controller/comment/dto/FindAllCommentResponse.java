@@ -8,7 +8,6 @@ import java.util.Objects;
 
 @Schema(description = "댓글 조회 응답 API")
 public record FindAllCommentResponse(
-        // scheduleId값도 넣어주자
         @Schema(title = "특정 여행일정의 모든 사용자 댓글 응답", description = "사용자 특정 여행일정의 댓글을 확인할 수 있다. ")
         List<FindAllCommentDto> comments,
         @Schema(title = "특정 게시물의 모든 사용자 댓글", description = "사용자 댓글을 입력해주세요")
