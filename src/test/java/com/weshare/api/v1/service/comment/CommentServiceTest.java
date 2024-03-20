@@ -1,5 +1,6 @@
 package com.weshare.api.v1.service.comment;
 
+import com.weshare.api.v1.controller.comment.DeleteCommentDto;
 import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
@@ -7,6 +8,8 @@ import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +78,23 @@ class CommentServiceTest extends ScheduleTestSupport {
                                 createCommentResponse.createdDate()
                         )
                 );
+    }
+
+    @Test
+    @Transactional
+    public void 해당하는_여행일정_댓글을_삭제할_수_있다() {
+        // given
+        User user = createUserAndSave("test@na.com", "test", "test");
+        Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
+        String content  = "댓글";
+        CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
+        CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+        // when
+        DeleteCommentDto deleteCommentDto = new DeleteCommentDto(user, schedule.getId(), createCommentResponse.commentId());
+        commentService.deleteScheduleComment(deleteCommentDto);
+        // then
+        List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
+        assertThat(allScheduleComment).isEmpty();
     }
 
 }
