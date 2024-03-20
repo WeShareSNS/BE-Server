@@ -79,9 +79,9 @@ public class CreateScheduleRequest {
             @Min(value = 0, message = "금액은 0원 이상이어야 합니다.")
             private long expense;
 
-            @NotBlank
+            @NotNull
             private Double latitude;
-            @NotBlank
+            @NotNull
             private Double longitude;
 
             @Builder
