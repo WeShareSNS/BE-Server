@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @Table(name = "schedule_like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Like extends BaseTimeEntity {
@@ -20,26 +21,13 @@ public class Like extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "state")
-    @Getter
-    private LikeState state;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
     @Builder
-    public Like(User user, LikeState state, Schedule schedule) {
+    public Like(User user, Schedule schedule) {
         this.user = user;
-        this.state = state;
         this.schedule = schedule;
-    }
-
-    public void updateLike() {
-        state = LikeState.LIKE;
-    }
-
-    public void deleteLike() {
-        state = LikeState.UNLIKE;
     }
 }

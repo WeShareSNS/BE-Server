@@ -2,7 +2,6 @@ package com.weshare.api.v1.config;
 
 import com.weshare.api.v1.domain.comment.Comment;
 import com.weshare.api.v1.domain.like.Like;
-import com.weshare.api.v1.domain.like.LikeState;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.annotation.PostConstruct;
@@ -122,7 +121,6 @@ public class InitSchedule {
                 User user = entityManager.find(User.class, 1L);
                 Like like = Like.builder()
                         .user(user)
-                        .state(LikeState.LIKE)
                         .schedule(schedule)
                         .build();
                 entityManager.persist(like);

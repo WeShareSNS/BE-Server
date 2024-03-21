@@ -2,7 +2,6 @@ package com.weshare.api.v1.repository.schedule;
 
 import com.weshare.api.v1.domain.comment.Comment;
 import com.weshare.api.v1.domain.like.Like;
-import com.weshare.api.v1.domain.like.LikeState;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.EntityManager;
@@ -92,7 +91,6 @@ public class ScheduleTestSupport {
         User user = entityManager.find(User.class, userId);
         Like like = Like.builder()
                 .user(user)
-                .state(LikeState.LIKE)
                 .schedule(schedule)
                 .build();
         entityManager.persist(like);
