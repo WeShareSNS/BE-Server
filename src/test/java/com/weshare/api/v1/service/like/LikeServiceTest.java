@@ -2,12 +2,14 @@ package com.weshare.api.v1.service.like;
 
 import com.weshare.api.v1.controller.like.dto.CreateLikeDto;
 import com.weshare.api.v1.controller.like.dto.DeleteLikeDto;
+import com.weshare.api.v1.domain.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ class LikeServiceTest extends ScheduleTestSupport {
 
     @Test
     @Transactional
-    public void 특정_게시물에_좋아요_등록을_확인할_수_있다() {
+    public void 특정_게시물에_좋아요를_등록할_수_있다() {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
         Schedule schedule = createAndSaveSchedule("title", Destination.DAEGU, user);
@@ -33,6 +35,19 @@ class LikeServiceTest extends ScheduleTestSupport {
         CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
         // then
         assertThat(user.getName()).isEqualTo(createLikeResponse.likerName());
+    }
+
+    @Test
+    @Transactional
+    public void 사용자가_이미_좋아요를_등록한_여행일정에_좋아요를_등록하면_예외가_발생한다() {
+        // given
+        User user = createUserAndSave("like@test.com", "like1", "like");
+        Schedule schedule = createAndSaveSchedule("title", Destination.DAEGU, user);
+        CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
+        likeService.saveScheduleLike(createLikeDto);
+        // when // then
+        assertThatThrownBy(() -> likeService.saveScheduleLike(createLikeDto))
+                .isInstanceOf(DuplicateLikeException.class);
     }
 
     @Test
