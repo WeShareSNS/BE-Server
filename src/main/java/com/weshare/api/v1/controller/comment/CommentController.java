@@ -13,6 +13,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -53,11 +58,11 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "댓글 조회에 성공했습니다."),
     })
     @GetMapping("/{scheduleId}/comments")
-    public ResponseEntity<FindAllCommentResponse> findAllScheduleComment(@PathVariable Long scheduleId) {
-        final List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(scheduleId);
-        FindAllCommentResponse findAllCommentResponse = new FindAllCommentResponse(allScheduleComment, allScheduleComment.size());
-
-        return response.success(findAllCommentResponse);
+    public Slice<FindAllCommentDto> findAllScheduleComment(
+            @PathVariable Long scheduleId,
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return commentService.findAllScheduleComment(scheduleId, pageable);
     }
 
     @Operation(security = {@SecurityRequirement(name = "bearer-key")},

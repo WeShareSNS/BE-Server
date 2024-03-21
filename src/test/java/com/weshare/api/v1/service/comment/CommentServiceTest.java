@@ -1,8 +1,8 @@
 package com.weshare.api.v1.service.comment;
 
+import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.controller.comment.dto.DeleteCommentDto;
 import com.weshare.api.v1.controller.comment.dto.UpdateCommentDto;
-import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
@@ -11,6 +11,9 @@ import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -57,24 +60,28 @@ class CommentServiceTest extends ScheduleTestSupport {
 
     @Test
     @Transactional
-    public void 해당하는_여행일정_댓글을_모두_조회할_수_있다() {
+    public void 해당하는_여행일정_댓글을_최신순으로_조회할_수_있다() {
         // given
         User user = createUserAndSave("test@na.com", "test", "test");
         Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
         String content = "댓글";
         CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
-        CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+        commentService.saveScheduleComment(createCommentDto);
+        commentService.saveScheduleComment(createCommentDto);
+        CreateCommentResponse lastComment = commentService.saveScheduleComment(createCommentDto);
+        PageRequest pageRequest = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "createdDate"));
         // when
-        List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
+        Slice<FindAllCommentDto> allScheduleCommentSlice = commentService.findAllScheduleComment(schedule.getId(), pageRequest);
         // then
+        List<FindAllCommentDto> allScheduleComment = allScheduleCommentSlice.getContent();
         assertThat(allScheduleComment).hasSize(1)
                 .extracting("commentId", "commenterName", "content", "createdDate")
                 .containsExactly(
                         Tuple.tuple(
-                                createCommentResponse.commentId(),
+                                lastComment.commentId(),
                                 user.getName(),
                                 content,
-                                createCommentResponse.createdDate()
+                                lastComment.createdDate()
                         )
                 );
     }
@@ -92,7 +99,8 @@ class CommentServiceTest extends ScheduleTestSupport {
         DeleteCommentDto deleteCommentDto = new DeleteCommentDto(user, schedule.getId(), createCommentResponse.commentId());
         commentService.deleteScheduleComment(deleteCommentDto);
         // then
-        List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId(),pageRequest).getContent();
         assertThat(allScheduleComment).isEmpty();
     }
 
@@ -109,7 +117,8 @@ class CommentServiceTest extends ScheduleTestSupport {
         UpdateCommentDto updateCommentDto = new UpdateCommentDto(user, updateContent, schedule.getId(), createCommentResponse.commentId());
         commentService.updateComment(updateCommentDto);
         // then
-        List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId(),pageRequest).getContent();
         assertThat(allScheduleComment).hasSize(1)
                 .extracting("commentId", "commenterName", "content", "createdDate")
                 .containsExactly(

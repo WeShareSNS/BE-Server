@@ -12,6 +12,9 @@ import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,10 +56,10 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public List<FindAllCommentDto> findAllScheduleComment(Long scheduleId) {
-        return commentRepository.findAllByScheduleId(scheduleId).stream()
-                .map(this::createFindAllComment)
-                .toList();
+    public Slice<FindAllCommentDto> findAllScheduleComment(Long scheduleId, Pageable pageable) {
+        Slice<Comment> comments = commentRepository.findAllByScheduleId(scheduleId, pageable);
+
+        return comments.map(this::createFindAllComment);
     }
 
     private FindAllCommentDto createFindAllComment(Comment comment) {
