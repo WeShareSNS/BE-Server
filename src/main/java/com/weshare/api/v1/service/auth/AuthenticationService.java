@@ -20,10 +20,10 @@ import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -114,13 +114,17 @@ public class AuthenticationService {
         return new TokenDto(accessToken, reissueToken);
     }
 
-    private User findUserByValidRefreshToken(String refreshToken) {
-        User user = refreshTokenRepository.findUserByToken(refreshToken)
+    private User findUserByValidRefreshToken(String token) {
+        RefreshToken refreshToken = refreshTokenRepository.findByTokenWithUser(token)
                 .orElseThrow(() -> {
                     throw new TokenNotFoundException("Refresh Token이 존재하지 않습니다.");
                 });
+        User user = refreshToken.getUser();
+        if (user == null) {
+            throw new UsernameNotFoundException("token의 사용자가 존재하지 않습니다.");
+        }
 
-        if (!jwtService.isTokenValid(refreshToken, user)) {
+        if (!jwtService.isTokenValid(token, user)) {
             throw new InvalidTokenException("토큰이 유효하지 않습니다.");
         }
         return user;

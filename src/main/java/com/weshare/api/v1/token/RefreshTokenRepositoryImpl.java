@@ -23,18 +23,17 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenCustomRepository 
     public Optional<RefreshToken> findTokenByUser(User findUser) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(refreshToken)
-                        .innerJoin(refreshToken.user, user).fetchJoin()
+                        .join(refreshToken.user).fetchJoin()
                         .where(refreshToken.user.eq(findUser))
                         .fetchOne());
     }
 
     @Override
-    public Optional<User> findUserByToken(String findToken) {
+    public Optional<RefreshToken> findByTokenWithUser(String findToken) {
         return Optional.ofNullable(
-                jpaQueryFactory.select(user)
-                        .from(refreshToken)
-                        .join(user)
-                        .on(refreshToken.token.eq(findToken))
+                jpaQueryFactory.selectFrom(refreshToken)
+                        .join(refreshToken.user).fetchJoin()
+                        .where(refreshToken.token.eq(findToken))
                         .fetchOne());
     }
 
@@ -42,7 +41,7 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenCustomRepository 
     public Optional<RefreshToken> findTokenByUserEmail(String userEmail) {
         return Optional.ofNullable(
                 jpaQueryFactory.selectFrom(refreshToken)
-                        .innerJoin(refreshToken.user, user).fetchJoin()
+                        .join(refreshToken.user).fetchJoin()
                         .where(refreshToken.user.email.eq(userEmail))
                         .fetchOne());
     }

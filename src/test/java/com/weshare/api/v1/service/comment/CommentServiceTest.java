@@ -36,7 +36,7 @@ class CommentServiceTest extends ScheduleTestSupport {
         CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
         // then
         assertAll(
-                () -> assertEquals(createCommentResponse.username(), user.getName()),
+                () -> assertEquals(createCommentResponse.commenterName(), user.getName()),
                 () -> assertTrue(createCommentResponse.commentId() != null),
                 () -> assertEquals(createCommentResponse.content(), content)
         );
@@ -68,7 +68,7 @@ class CommentServiceTest extends ScheduleTestSupport {
         List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
         // then
         assertThat(allScheduleComment).hasSize(1)
-                .extracting("commentId", "commenter", "content", "createdDate")
+                .extracting("commentId", "commenterName", "content", "createdDate")
                 .containsExactly(
                         Tuple.tuple(
                                 createCommentResponse.commentId(),
@@ -111,7 +111,7 @@ class CommentServiceTest extends ScheduleTestSupport {
         // then
         List<FindAllCommentDto> allScheduleComment = commentService.findAllScheduleComment(schedule.getId());
         assertThat(allScheduleComment).hasSize(1)
-                .extracting("commentId", "commenter", "content", "createdDate")
+                .extracting("commentId", "commenterName", "content", "createdDate")
                 .containsExactly(
                         Tuple.tuple(
                                 createCommentResponse.commentId(),

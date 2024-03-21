@@ -61,7 +61,8 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
         User user = createAndSaveUser("admin@test.com", "hw");
         createAndSaveToken(user, "token");
         // when
-        User findUser = tokenRepository.findUserByToken("token").get();
+        RefreshToken refreshToken = tokenRepository.findByTokenWithUser("token").get();
+        User findUser = refreshToken.getUser();
         // then
         Assertions.assertAll(
                 () -> Assertions.assertEquals(user.getEmail(), findUser.getEmail()),

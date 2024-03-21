@@ -155,8 +155,8 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         // when
         TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken), new Date(System.nanoTime()));
         // then
-        Optional<User> userByOldToken = tokenRepository.findUserByToken(refreshToken);
-        Optional<User> userByNewToken = tokenRepository.findUserByToken(response.refreshToken());
+        Optional<RefreshToken> userByOldToken = tokenRepository.findByTokenWithUser(refreshToken);
+        Optional<RefreshToken> userByNewToken = tokenRepository.findByTokenWithUser(response.refreshToken());
 
         assertTrue(userByOldToken.isEmpty());
         assertTrue(userByNewToken.isPresent());
