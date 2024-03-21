@@ -1,15 +1,14 @@
 package com.weshare.api.v1.controller.like;
 
 import com.weshare.api.v1.common.Response;
-import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.service.like.CreateLikeResponse;
 import com.weshare.api.v1.service.like.FindAllScheduleLikeDto;
 import com.weshare.api.v1.service.like.LikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,12 +21,21 @@ public class LikeController {
     private final LikeService likeService;
 
     @GetMapping("/{scheduleId}/likes")
-    public ResponseEntity<List<Like>> getAllScheduleLike(@PathVariable Long scheduleId) {
+    public ResponseEntity<FindAllScheduleLikeResponse> getAllScheduleLike(@PathVariable Long scheduleId) {
         final List<FindAllScheduleLikeDto> allLikes = likeService.findAllScheduleLike(scheduleId);
         FindAllScheduleLikeResponse findAllScheduleLikeResponse =
                 new FindAllScheduleLikeResponse(allLikes, allLikes.size());
 
         return response.success(findAllScheduleLikeResponse);
+    }
+
+    @PostMapping("/{scheduleId}/likes")
+    public ResponseEntity<CreateLikeResponse> saveScheduleLike(@PathVariable Long scheduleId,
+                                           @AuthenticationPrincipal User liker) {
+        final CreateLikeDto createLikeDto = new CreateLikeDto(scheduleId, liker);
+        CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
+
+        return response.success(createLikeResponse);
     }
 
 }
