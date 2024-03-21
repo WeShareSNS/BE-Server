@@ -9,9 +9,9 @@ import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -72,8 +72,9 @@ class LikeServiceTest extends ScheduleTestSupport {
         // when
         DeleteLikeDto deleteLikeDto = new DeleteLikeDto(schedule.getId(), createLikeResponse.likeId(), user);
         likeService.deleteScheduleLike(deleteLikeDto);
+        PageRequest pageRequest = PageRequest.of(0, 1);
         // then
-        List<FindAllScheduleLikeDto> allScheduleLike = likeService.findAllScheduleLike(schedule.getId());
+        List<FindAllScheduleLikeDto> allScheduleLike = likeService.findAllScheduleLike(schedule.getId(),pageRequest).getContent();
         assertThat(allScheduleLike).hasSize(0);
     }
 
@@ -85,8 +86,9 @@ class LikeServiceTest extends ScheduleTestSupport {
         Schedule schedule = createAndSaveSchedule("title", Destination.DAEGU, user);
         CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
         CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
+        PageRequest pageRequest = PageRequest.of(0, 1);
         // when
-        List<FindAllScheduleLikeDto> allScheduleLike = likeService.findAllScheduleLike(schedule.getId());
+        List<FindAllScheduleLikeDto> allScheduleLike = likeService.findAllScheduleLike(schedule.getId(),pageRequest).getContent();
         // then
         assertThat(allScheduleLike).hasSize(1)
                 .extracting("likeId", "likerName", "likedTime")

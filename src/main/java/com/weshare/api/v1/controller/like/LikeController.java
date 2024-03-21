@@ -14,6 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +38,10 @@ public class LikeController {
             @ApiResponse(responseCode = "200", description = "좋아요 조회에 성공했습니다."),
     })
     @GetMapping("/{scheduleId}/likes")
-    public ResponseEntity<FindAllScheduleLikeResponse> getAllScheduleLike(@PathVariable Long scheduleId) {
-        final List<FindAllScheduleLikeDto> allLikes = likeService.findAllScheduleLike(scheduleId);
-        FindAllScheduleLikeResponse findAllScheduleLikeResponse = new FindAllScheduleLikeResponse(allLikes, allLikes.size());
+    public Slice<FindAllScheduleLikeDto> getAllScheduleLike(@PathVariable Long scheduleId,
+                                                            @PageableDefault Pageable pageable) {
 
-        return response.success(findAllScheduleLikeResponse);
+        return likeService.findAllScheduleLike(scheduleId, pageable);
     }
 
     @Operation(security = {@SecurityRequirement(name = "bearer-key")},

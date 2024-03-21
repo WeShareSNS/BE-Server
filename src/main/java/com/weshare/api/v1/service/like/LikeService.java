@@ -11,6 +11,8 @@ import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.like.LikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +26,10 @@ public class LikeService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional(readOnly = true)
-    public List<FindAllScheduleLikeDto> findAllScheduleLike(Long scheduleId) {
-        final List<Like> allLikeBySchedule = likeRepository.findAllLikeBySchedule(scheduleId);
+    public Slice<FindAllScheduleLikeDto> findAllScheduleLike(Long scheduleId, Pageable pageable) {
+        final Slice<Like> allLikeBySchedule = likeRepository.findAllLikeBySchedule(scheduleId, pageable);
 
-        return allLikeBySchedule.stream()
-                .map(this::getScheduleLikeDto)
-                .toList();
+        return allLikeBySchedule.map(this::getScheduleLikeDto);
     }
 
     private FindAllScheduleLikeDto getScheduleLikeDto(Like like) {
