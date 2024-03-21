@@ -1,17 +1,15 @@
-package com.weshare.api.v1.controller.like;
+package com.weshare.api.v1.controller.like.dto;
 
 import com.weshare.api.v1.domain.user.User;
 
 import java.util.Objects;
 
-public record DeleteLikeDto(
+public record CreateLikeDto(
         Long scheduleId,
-        Long likeId,
         User liker
 ) {
-    public DeleteLikeDto {
+    public CreateLikeDto {
         Objects.requireNonNull(scheduleId);
-        Objects.requireNonNull(likeId);
         Objects.requireNonNull(liker);
     }
 }

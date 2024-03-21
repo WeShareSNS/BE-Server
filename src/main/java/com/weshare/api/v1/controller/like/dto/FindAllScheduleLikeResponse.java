@@ -1,4 +1,4 @@
-package com.weshare.api.v1.controller.like;
+package com.weshare.api.v1.controller.like.dto;
 
 import com.weshare.api.v1.service.like.FindAllScheduleLikeDto;
 
