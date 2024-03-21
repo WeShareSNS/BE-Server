@@ -22,14 +22,10 @@ import java.util.List;
 public class InitSchedule {
 
     private final InitScheduleService initScheduleService;
-    private final InitLikeService initLikeService;
-    private final InitCommentService initCommentService;
 
     @PostConstruct
     public void init() {
         initScheduleService.init();
-        initLikeService.init();
-        initCommentService.init();
     }
 
     @Component
@@ -106,45 +102,6 @@ public class InitSchedule {
 
         private Location createLocation() {
             return new Location(152.64, 123.67);
-        }
-    }
-
-    @Component
-    static class InitLikeService {
-        @PersistenceContext
-        private EntityManager entityManager;
-        
-        @Transactional
-        public void init() {
-            for (long i = 1; i <= 100; i++) {
-                Schedule schedule = entityManager.find(Schedule.class, i);
-                User user = entityManager.find(User.class, 1L);
-                Like like = Like.builder()
-                        .user(user)
-                        .schedule(schedule)
-                        .build();
-                entityManager.persist(like);
-            }
-        }
-    }
-
-    @Component
-    static class InitCommentService {
-        @PersistenceContext
-        private EntityManager entityManager;
-        @Transactional
-        public void init() {
-            for (long i = 1; i <= 100; i++) {
-                Schedule schedule = entityManager.find(Schedule.class, i);
-                User user = entityManager.find(User.class, 1L);
-                Comment comment = Comment.builder()
-                        .content("메롱" + i)
-                        .commenter(user)
-                        .schedule(schedule)
-                        .build();
-
-                entityManager.persist(comment);
-            }
         }
     }
 }

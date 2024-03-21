@@ -3,9 +3,11 @@ package com.weshare.api.v1.service.like;
 import com.weshare.api.v1.controller.like.dto.CreateLikeDto;
 import com.weshare.api.v1.controller.like.dto.DeleteLikeDto;
 import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.like.exception.LikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
+import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.like.LikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,10 @@ public class LikeService {
     public CreateLikeResponse saveScheduleLike(CreateLikeDto createLikeDto) {
         final Schedule findSchedule = scheduleRepository.findById(createLikeDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
+
+        likeRepository.findLikeByUser(createLikeDto.liker())
+                .ifPresent((like -> {
+                    throw new DuplicateLikeException();}));
 
         final Like like = createLike(createLikeDto, findSchedule);
         Like savedLike = likeRepository.save(like);

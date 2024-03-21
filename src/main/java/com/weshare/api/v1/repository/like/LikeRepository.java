@@ -1,10 +1,12 @@
 package com.weshare.api.v1.repository.like;
 
 import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
@@ -15,4 +17,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
                     where l.schedule.id = :ScheduleId
             """)
     List<Like> findAllLikeBySchedule(Long ScheduleId);
+
+    Optional<Like> findLikeByUser(User user);
 }
