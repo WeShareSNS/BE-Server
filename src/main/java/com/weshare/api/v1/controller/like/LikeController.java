@@ -31,11 +31,18 @@ public class LikeController {
 
     @PostMapping("/{scheduleId}/likes")
     public ResponseEntity<CreateLikeResponse> saveScheduleLike(@PathVariable Long scheduleId,
-                                           @AuthenticationPrincipal User liker) {
+                                                               @AuthenticationPrincipal User liker) {
         final CreateLikeDto createLikeDto = new CreateLikeDto(scheduleId, liker);
         CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
 
         return response.success(createLikeResponse);
     }
 
+    @DeleteMapping("/{scheduleId}/likes/{likeId}")
+    public void deleteScheduleLike(@PathVariable Long scheduleId,
+                                   @PathVariable Long likeId,
+                                   @AuthenticationPrincipal User liker) {
+        final DeleteLikeDto deleteLikeDto = new DeleteLikeDto(scheduleId, likeId, liker);
+        likeService.deleteScheduleLike(deleteLikeDto);
+    }
 }

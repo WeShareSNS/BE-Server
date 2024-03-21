@@ -1,7 +1,9 @@
 package com.weshare.api.v1.service.like;
 
 import com.weshare.api.v1.controller.like.CreateLikeDto;
+import com.weshare.api.v1.controller.like.DeleteLikeDto;
 import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.like.exception.LikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.repository.like.LikeRepository;
@@ -56,5 +58,19 @@ public class LikeService {
                 .user(createLikeDto.liker())
                 .schedule(findSchedule)
                 .build();
+    }
+
+    public void deleteScheduleLike(DeleteLikeDto deleteLikeDto) {
+        final Like like = likeRepository.findById(deleteLikeDto.likeId())
+                .orElseThrow(LikeNotFoundException::new);
+
+        if (!like.isSameLiker(deleteLikeDto.liker())) {
+            throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
+        }
+        if (!like.isSameScheduleId(deleteLikeDto.scheduleId())) {
+            throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
+        }
+
+        likeRepository.delete(like);
     }
 }

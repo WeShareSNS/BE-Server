@@ -30,4 +30,12 @@ public class Like extends BaseTimeEntity {
         this.user = user;
         this.schedule = schedule;
     }
+
+    public boolean isSameLiker(User liker) {
+        return user.equals(liker);
+    }
+
+    public boolean isSameScheduleId(Long scheduleId) {
+        return schedule.getId() == scheduleId;
+    }
 }
