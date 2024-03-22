@@ -5,10 +5,12 @@ import com.weshare.api.v1.token.exception.TokenNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public final class CookieTokenHandler {
 
     private static final String KEY = "Refresh-Token";
@@ -17,6 +19,7 @@ public final class CookieTokenHandler {
     private static final int BEARER_HEADER_LENGTH = 7;
 
     public void setCookieToken(HttpServletResponse response, String refreshToken) {
+        log.info("cookieHandler={}",refreshToken);
         // create a cookie
         Cookie cookie = new Cookie(KEY, refreshToken);
         // expires in 7 days

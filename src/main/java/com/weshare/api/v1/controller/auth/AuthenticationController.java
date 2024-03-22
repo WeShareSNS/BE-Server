@@ -89,6 +89,7 @@ public class AuthenticationController {
   @GetMapping("/reissue-token")
   public ResponseEntity<AuthenticationResponse> reissueToken(@CookieValue("Refresh-Token") Optional<String> refreshToken,
                                                              HttpServletResponse response) {
+    log.info("controller token={}",refreshToken);
     TokenDto tokenDto = service.reissueToken(refreshToken, new Date(System.nanoTime()));
     cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
     return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));
