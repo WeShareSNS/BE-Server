@@ -26,7 +26,7 @@ public final class CookieTokenHandler {
 
         // optional properties
 //        cookie.setSecure(true); localhost test를 위해서 잠시 주석
-        cookie.setHttpOnly(true);
+//        cookie.setHttpOnly(true);
         cookie.setPath("/");
 //        cookie.setDomain(DOMAIN);
 
