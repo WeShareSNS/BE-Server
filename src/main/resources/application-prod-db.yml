@@ -11,7 +11,7 @@ spring:
     show-sql: true
     hibernate:
       default_batch_fetch_size: 100 # in query 개수
-      ddl-auto: create
+      ddl-auto: none
     defer-datasource-initialization: true
 
   data:

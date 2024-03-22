@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 public final class CookieTokenHandler {
 
     private static final String KEY = "Refresh-Token";
+    public static final String DOMAIN = "uhanuu.site";
     private static final int EXPIRE_TIME = 7 * 24 * 60 * 60;
     private static final int BEARER_HEADER_LENGTH = 7;
 
@@ -25,6 +26,7 @@ public final class CookieTokenHandler {
         cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setDomain(DOMAIN);
 
         // add cookie to response
         response.addCookie(cookie);
