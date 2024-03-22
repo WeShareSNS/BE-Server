@@ -102,7 +102,6 @@ public class AuthenticationService {
     }
 
     public TokenDto reissueToken(Optional<String> token, Date issuedAt) {
-        log.info("token={}", token);
         if (token.isEmpty()) {
             throw new InvalidTokenException("토큰이 존재하지 않습니다.");
         }
