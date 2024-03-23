@@ -16,7 +16,7 @@ public record CreateCommentResponse(
         @Schema(title = "사용자가 등록한 댓글", description = "사용자가 등록한 댓글을 응답한다.")
         String content,
         @Schema(title = "사용자가 댓글을 등록한 시간", description = "사용자가 댓글을 등록한 시간을 알 수 있다.")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm a", timezone = "Asia/Seoul", locale = "en_US")
         LocalDateTime createdDate
 ) {
     public CreateCommentResponse {

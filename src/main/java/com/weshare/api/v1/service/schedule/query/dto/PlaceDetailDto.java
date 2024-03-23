@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 public class PlaceDetailDto {
     private String title;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm a", timezone = "Asia/Seoul", locale = "en_US")
     private LocalTime time;
     private String memo;
     private long expense;

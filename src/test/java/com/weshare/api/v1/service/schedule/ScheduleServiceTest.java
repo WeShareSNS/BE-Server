@@ -70,7 +70,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                         "visitPlaces": [
                           {
                             "memo": "이쁘다~",
-                            "time": "10:00",
+                            "time": "10:00 AM",
                             "title": "첫 번째 장소 목적지 이름",
                             "expense": 100,
                             "latitude": "37.1234",
@@ -78,7 +78,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                           },
                           {
                             "memo": "이쁘다~",
-                            "time": "13:00",
+                            "time": "01:00 PM",
                             "title": "두 번째 장소",
                             "expense": 60000,
                             "latitude": "37.5678",
@@ -91,7 +91,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                         "visitPlaces": [
                           {
                             "memo": "이쁘다~",
-                            "time": "11:00",
+                            "time": "11:00 PM",
                             "title": "세 번째 장소",
                             "expense": 9900000,
                             "latitude": "37.2468",
@@ -104,7 +104,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                         "visitPlaces": [
                           {
                             "memo": "이쁘다~",
-                            "time": "11:00",
+                            "time": "11:00 AM",
                             "title": "네 번째 장소",
                             "expense": 124,
                             "latitude": "37.2468",

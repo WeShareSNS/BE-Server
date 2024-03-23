@@ -16,7 +16,7 @@ public record FindAllCommentDto(
         @Schema(title = "사용자가 남긴 댓글 내용", description = "사용자가 남긴 댓글 내용을 응답한다.")
         String content,
         @Schema(title = "사용자가 댓글을 작성한 시간", description = "사용자가 댓글을 작성한 시간을 응답한다.")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm a", timezone = "Asia/Seoul", locale = "en_US")
         LocalDateTime createdDate
 ) {
     public FindAllCommentDto {
