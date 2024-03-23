@@ -2,8 +2,8 @@
 source /etc/profile
 
 DEPLOY_DIR=/home/ec2-user/jenkins
-# log 파일 생성을 위한 권한 추가
-chmod -R 755 $DEPLOY_DIR
+
+chmod -R 777 $DEPLOY_DIR
 
 BUILD_JAR=$(ls /home/ec2-user/jenkins/build/libs/*SNAPSHOT.jar)     # jar가 위치하는 곳
 JAR_NAME=$(basename $BUILD_JAR)
