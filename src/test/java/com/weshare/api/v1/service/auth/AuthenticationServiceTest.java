@@ -52,7 +52,6 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         userRepository.deleteAllInBatch();
     }
 
-    // dto에 의존하는 test 상관 없으려나,,, test때문에 빌더도 쓰는데
     @Test
     @DisplayName("사용자는 회원가입을 할 수 있다.")
     public void join() {
@@ -162,7 +161,6 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         assertTrue(userByNewToken.isPresent());
     }
 
-    //jwt service를 테스트할 때마다 넣어서 처리해주는 일이 생길거같은 느낌,,
     @Test
     @DisplayName("사용자는 로그아웃을 할 수 있다.")
     public void logout() {
