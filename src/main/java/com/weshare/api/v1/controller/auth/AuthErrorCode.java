@@ -8,7 +8,8 @@ public enum AuthErrorCode {
     AUTH_LOGIN_BAD_REQUEST(-4001),
     PARAMETER_BAD_REQUEST_ERROR(-4002),
     USER_NOT_FOUND_ERROR(-4040),
-    EMAIL_DUPLICATE_ERROR(-4090);
+    EMAIL_DUPLICATE_ERROR(-4091),
+    NAME_DUPLICATE_ERROR(-4092);
 
     @Getter
     private final int code;

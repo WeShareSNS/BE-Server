@@ -3,21 +3,21 @@ package com.weshare.api.v1.service.auth;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
-import com.weshare.api.v1.service.auth.login.AuthLoginService;
-import com.weshare.api.v1.common.CustomUUID;
+import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;
+import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
+import com.weshare.api.v1.domain.user.exception.UsernameDuplicateException;
+import com.weshare.api.v1.repository.user.UserRepository;
+import com.weshare.api.v1.service.auth.login.AuthLoginService;
+import com.weshare.api.v1.token.RefreshToken;
+import com.weshare.api.v1.token.RefreshTokenRepository;
+import com.weshare.api.v1.token.TokenType;
 import com.weshare.api.v1.token.exception.InvalidTokenException;
 import com.weshare.api.v1.token.exception.TokenNotFoundException;
+import com.weshare.api.v1.token.jwt.JwtService;
 import com.weshare.api.v1.token.logout.LogoutAccessTokenFromRedis;
 import com.weshare.api.v1.token.logout.LogoutAccessTokenRedisRepository;
-import com.weshare.api.v1.token.RefreshToken;
-import com.weshare.api.v1.token.TokenType;
-import com.weshare.api.v1.domain.user.Role;
-import com.weshare.api.v1.domain.user.User;
-import com.weshare.api.v1.token.jwt.JwtService;
-import com.weshare.api.v1.token.RefreshTokenRepository;
-import com.weshare.api.v1.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,8 +44,8 @@ public class AuthenticationService {
     private final AuthLoginService loginService;
 
     public User join(SignupRequest request) {
-        String email = request.email();
-        checkDuplicateEmailForSignup(email);
+        checkDuplicateEmailForSignup(request.email());
+        checkDuplicateNameForSignup(request.name());
         return repository.save(createUser(request));
     }
 
@@ -58,6 +58,16 @@ public class AuthenticationService {
         if (isDuplicateEmail(email)) {
             throw new EmailDuplicateException(email + "은 가입된 이메일 입니다.");
         }
+    }
+
+    public void checkDuplicateNameForSignup(String name) {
+        if (isDuplicateName(name)) {
+            throw new UsernameDuplicateException(name + "은 가입된 닉네임 입니다.");
+        }
+    }
+
+    private boolean isDuplicateName(String name) {
+        return repository.findByName(name).isPresent();
     }
 
     public Optional<TokenDto> login(LoginRequest request, Date issuedAt) {
@@ -73,7 +83,7 @@ public class AuthenticationService {
         return User.builder()
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .name(CustomUUID.getCustomUUID(16, ""))
+                .name(request.name())
                 .birthDate(birthDate)
                 .profileImg(DEFAULT_PROFILE_IMG_URL)
                 .role(Role.USER)

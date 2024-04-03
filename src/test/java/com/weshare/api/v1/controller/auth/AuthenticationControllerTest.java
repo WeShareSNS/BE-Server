@@ -2,12 +2,12 @@ package com.weshare.api.v1.controller.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.weshare.api.v1.controller.IntegrationMvcTestSupport;
-import com.weshare.api.v1.controller.auth.advice.AuthenticationExceptionHandler;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
+import com.weshare.api.v1.domain.user.exception.UsernameDuplicateException;
 import com.weshare.api.v1.repository.user.UserRepository;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
@@ -51,8 +51,6 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     private LogoutAccessTokenRedisRepository logoutTokenRepository;
     @Autowired
     private JwtService jwtService;
-    @Autowired
-    private AuthenticationExceptionHandler authenticationExceptionHandler;
 
     @AfterEach
     void tearDown() {
@@ -66,6 +64,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         // given
         SignupRequest request = createSignupRequest(
                 "email@asd.com",
+                "test",
                 "password",
                 "1999-09-27"
         );
@@ -81,7 +80,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
 
     @Test
     @DisplayName("사용자 이메일이 중복되어 있지 않으면 200을 반환한다.")
-    public void duplicateEmailConflict() throws Exception {
+    public void duplicateEmailOk() throws Exception {
         // given
         String email = "email@asd.com";
         // when // then
@@ -107,11 +106,12 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
 
     @Test
     @DisplayName("사용자 이메일이 중복 되는 경우 409을 반환한다.")
-    public void duplicateEmailOk() throws Exception {
+    public void duplicateEmailConflict() throws Exception {
         // given
         String email = "email@asd.com";
         String password = "password";
-        createAndSaveUser(email, password);
+        String name = "test1";
+        createAndSaveUser(email, name, password);
 
         // when // then
         mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-email")
@@ -123,12 +123,57 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     }
 
     @Test
+    @DisplayName("사용자 닉네임이 중복되어 있지 않으면 200을 반환한다.")
+    public void duplicateNameOk() throws Exception {
+        // given
+        String name = "test2";
+        // when // then
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-name")
+                        .param("name", name)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("사용자가 닉네임 길이를 지키지 않으면 400을 반환한다.")
+    public void duplicateNameBadRequest() throws Exception {
+        // given
+        String name = "12자리가넘어가야합니다라리라로";
+
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-name")
+                        .param("name", name)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertEquals("닉네임은 2~12 글자 사이어야 합니다.", result.getResolvedException().getMessage()));
+    }
+
+    @Test
+    @DisplayName("사용자 닉네임이 중복 되는 경우 409을 반환한다.")
+    public void duplicateNameConflict() throws Exception {
+        // given
+        String email = "email@asd.com";
+        String password = "password";
+        String name = "중복된 이름 입니다.";
+        createAndSaveUser(email, name, password);
+
+        // when // then
+        mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-name")
+                        .param("name", name)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UsernameDuplicateException))
+                .andExpect(result -> assertEquals(name + "은 가입된 닉네임 입니다.", result.getResolvedException().getMessage()));
+    }
+
+    @Test
     @DisplayName("사용자는 로그인을 할 수 있다.")
     public void login() throws Exception {
         // given
         String email = "email@asd.com";
         String password = "password";
-        createAndSaveUser(email, password);
+        String name = "test3";
+        createAndSaveUser(email, name, password);
 
         LoginRequest request = createLoginRequest(email, password);
         String content = getContent(request);
@@ -145,7 +190,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     public void reissueToken() throws Exception {
         // given
         String cookieName = "Refresh-Token";
-        User user = createAndSaveUser("email@asd.com", "password");
+        User user = createAndSaveUser("email@asd.com", "test4", "password");
         String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveToken(user, refreshToken);
         // when // then
@@ -162,7 +207,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     @DisplayName("사용자는 logout할 수 있다.")
     public void logout() throws Exception {
         // given
-        User user = createAndSaveUser("email@asd.com", "password");
+        User user = createAndSaveUser("email@asd.com", "test6", "password");
         String accessToken = jwtService.generateAccessToken(user, new Date(System.nanoTime()));
         // when // then
         mockMvc.perform(post(PREFIX_ENDPOINT + "/logout")
@@ -175,9 +220,10 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         assertTrue(logoutToken.isPresent());
     }
 
-    private SignupRequest createSignupRequest(String email, String password, String birthDate) {
+    private SignupRequest createSignupRequest(String email, String name, String password, String birthDate) {
         return SignupRequest.builder()
                 .email(email)
+                .name(name)
                 .password(password)
                 .birthDate(birthDate)
                 .build();
@@ -190,11 +236,11 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
                 .build();
     }
 
-    private User createAndSaveUser(String email, String password) {
+    private User createAndSaveUser(String email, String name, String password) {
         User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .name("name")
+                .name(name)
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .role(Role.USER)
                 .build();

@@ -1,9 +1,11 @@
 package com.weshare.api.v1.controller.auth;
 
-import com.weshare.api.v1.controller.auth.dto.*;
-import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
-import com.weshare.api.v1.service.auth.AuthenticationService;
 import com.weshare.api.v1.common.CookieTokenHandler;
+import com.weshare.api.v1.controller.auth.dto.AuthenticationResponse;
+import com.weshare.api.v1.controller.auth.dto.LoginRequest;
+import com.weshare.api.v1.controller.auth.dto.SignupRequest;
+import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.service.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -29,7 +30,7 @@ import java.util.Optional;
 @Slf4j
 public class AuthenticationController {
 
-  private final EmailValidator validator;
+  private final UserSignupValidator validator;
   private final AuthenticationService service;
   private final CookieTokenHandler cookieTokenHandler;
 
@@ -42,7 +43,6 @@ public class AuthenticationController {
   })
   @PostMapping("/signup")
   public ResponseEntity join(@Valid @RequestBody SignupRequest request) {
-
     service.join(request);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
@@ -59,6 +59,20 @@ public class AuthenticationController {
     service.checkDuplicateEmailForSignup(email);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
+
+  @Operation(summary = "사용자 닉네임 중복 확인 API", description = "사용자는 닉네임을 중복확인 할 수 있습니다.")
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "사용 가능한 닉네임 입니다."),
+          @ApiResponse(responseCode = "400", description = "닉네임 길이를 확인해주세요"),
+          @ApiResponse(responseCode = "409", description = "사용자 닉네임이 중복되었습니다.")
+  })
+  @GetMapping("/signup/duplicate-name")
+  public ResponseEntity duplicateName(@RequestParam String name) {
+    validator.validateNameLength(name);
+    service.checkDuplicateNameForSignup(name);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
 
   @Operation(summary = "사용자 로그인 API", description = "사용자는 로그인을 할 수 있습니다.")
   @ApiResponses({

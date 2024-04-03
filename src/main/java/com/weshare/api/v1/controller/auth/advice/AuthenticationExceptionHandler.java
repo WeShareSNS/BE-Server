@@ -2,6 +2,7 @@ package com.weshare.api.v1.controller.auth.advice;
 
 import com.weshare.api.v1.controller.auth.AuthErrorCode;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
+import com.weshare.api.v1.domain.user.exception.UsernameDuplicateException;
 import com.weshare.api.v1.service.auth.login.OAuthApiException;
 import com.weshare.api.v1.common.Response;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +52,15 @@ public class AuthenticationExceptionHandler {
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EmailDuplicateException.class)
-    public ResponseEntity EmailDuplicateExceptionHandler (EmailDuplicateException e) {
+    public ResponseEntity emailDuplicateExceptionHandler (EmailDuplicateException e) {
         log.error("[exceptionHandler] ex", e);
         return response.fail(AuthErrorCode.EMAIL_DUPLICATE_ERROR.getCode(), HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(UsernameDuplicateException.class)
+    public ResponseEntity usernameDuplicateExceptionHandler (UsernameDuplicateException e) {
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(AuthErrorCode.NAME_DUPLICATE_ERROR.getCode(), HttpStatus.CONFLICT, e.getMessage());
     }
 }
