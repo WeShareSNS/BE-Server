@@ -7,6 +7,7 @@ import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.auth.login.OAuthApiException;
+import com.weshare.api.v1.service.auth.login.provider.AuthNameGenerator;
 import com.weshare.api.v1.service.auth.login.provider.ExternalProvider;
 import com.weshare.api.v1.service.auth.login.provider.ResponseAuthToken;
 import com.weshare.api.v1.token.TokenType;
@@ -80,7 +81,7 @@ public class KakaoLoginAndJoinProvider implements ExternalProvider {
     private User createAuthUser(String email, String profileImg, Social social) {
         return User.builder()
                 .email(email)
-                .name(CustomUUID.getCustomUUID(16, ""))
+                .name(AuthNameGenerator.generateNameToEmail(email))
                 .profileImg(profileImg)
                 .role(Role.USER)
                 .social(social)

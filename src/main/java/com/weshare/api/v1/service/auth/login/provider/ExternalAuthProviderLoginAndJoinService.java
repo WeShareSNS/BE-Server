@@ -1,4 +1,4 @@
-package com.weshare.api.v1.service.auth.login;
+package com.weshare.api.v1.service.auth.login.provider;
 
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
 import com.weshare.api.v1.domain.user.User;

@@ -61,6 +61,14 @@ public class User extends BaseTimeEntity implements UserDetails {
         this.social = social;
     }
 
+    public void updateName(String name) {
+        int length = name.length();
+        if (2 > length || length > 20) {
+            throw new IllegalArgumentException("이름의 길이는 2~20 사이어야 합니다.");
+        }
+        this.name = name;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

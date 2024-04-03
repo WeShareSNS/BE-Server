@@ -2,6 +2,7 @@ package com.weshare.api.v1.service.auth.login;
 
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.service.auth.login.provider.ExternalAuthProviderLoginAndJoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
