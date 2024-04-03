@@ -81,7 +81,8 @@ public class AuthenticationController {
           @ApiResponse(responseCode = "200", description = "refresh 토큰은 cookie에 저장됩니다."),
           @ApiResponse(responseCode = "201", description = "간편 로그인 사용자가 신규 유저인 경우 회원가입 처리합니다."),
           @ApiResponse(responseCode = "400", description = "http body를 확인해주세요"),
-          @ApiResponse(responseCode = "404", description = "이메일을 확인해 주세요")
+          @ApiResponse(responseCode = "404", description = "이메일을 확인해 주세요"),
+          @ApiResponse(responseCode = "500", description = "간편 로그인 사용자의 이름이 중복되어 재시도 로직을 수행 후 재시도 횟수가 초과되는 경우도 포함합니다.")
   })
   @PostMapping("/signin")
   public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody(required = false) LoginRequest request,

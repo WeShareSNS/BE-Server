@@ -1,10 +1,11 @@
 package com.weshare.api.v1.controller.auth.advice;
 
+import com.weshare.api.v1.common.Response;
 import com.weshare.api.v1.controller.auth.AuthErrorCode;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.domain.user.exception.UsernameDuplicateException;
 import com.weshare.api.v1.service.auth.login.OAuthApiException;
-import com.weshare.api.v1.common.Response;
+import com.weshare.api.v1.service.auth.login.RetryFailException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class AuthenticationExceptionHandler {
 
     private final Response response;
 
+    //RetryFailException
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity illegalArgumentExceptionHandler (IllegalArgumentException e){
@@ -62,5 +64,12 @@ public class AuthenticationExceptionHandler {
     public ResponseEntity usernameDuplicateExceptionHandler (UsernameDuplicateException e) {
         log.error("[exceptionHandler] ex", e);
         return response.fail(AuthErrorCode.NAME_DUPLICATE_ERROR.getCode(), HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(RetryFailException.class)
+    public ResponseEntity retryFailExceptionHandler (RetryFailException e) {
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(AuthErrorCode.RETRY_FAIL_ERROR.getCode(), HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 }

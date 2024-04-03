@@ -5,6 +5,7 @@ import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.repository.user.UserRepository;
+import com.weshare.api.v1.service.auth.login.NotUniqueNameException;
 import com.weshare.api.v1.service.auth.login.RetryFailException;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
@@ -12,7 +13,6 @@ import com.weshare.api.v1.token.TokenType;
 import com.weshare.api.v1.token.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,12 +35,12 @@ public class ExternalAuthProviderLoginAndJoinHelper {
         Optional<User> findUser = userRepository.findByEmail(authUser.getEmail());
         if (!findUser.isPresent()) {
             try {
-                userRepository.save(authUser);
-            } catch (DataIntegrityViolationException e) {
+                verifyAndSaveUserByName(authUser);
+            } catch (NotUniqueNameException e) {
                 SaveRetry.retry(()-> {
                     String uniqueNameRandomized = AuthNameGenerator.generateUniqueNameRandomized(authUser.getName());
                     authUser.updateName(uniqueNameRandomized);
-                    return userRepository.save(authUser);
+                    return verifyAndSaveUserByName(authUser);
                 });
             }
             return Optional.empty();
@@ -50,6 +50,12 @@ public class ExternalAuthProviderLoginAndJoinHelper {
             throw new EmailDuplicateException(authUser.getEmail() + "은 기존 사용자이거나 다른 소셜 로그인으로 가입된 회원입니다.");
         }
         return getTokenDto(issuedAt, existingUser);
+    }
+
+    private User verifyAndSaveUserByName(User authUser) {
+        userRepository.findByName(authUser.getName())
+                .ifPresent(user -> { throw new NotUniqueNameException(); });
+        return userRepository.save(authUser);
     }
 
     private Optional<TokenDto> getTokenDto(Date issuedAt, User existingUser) {
@@ -63,7 +69,6 @@ public class ExternalAuthProviderLoginAndJoinHelper {
     }
 
     private boolean areSocialProvidersEqual(Social newUserSocial, Social existingUserSocial) {
-        // 소셜 정보가 같으면 true, 다르면 false 반환
         return newUserSocial == existingUserSocial;
     }
 
@@ -85,7 +90,7 @@ public class ExternalAuthProviderLoginAndJoinHelper {
 
     @Slf4j
     private static class SaveRetry {
-        private static final int RETRY_COUNT = 2;
+        private static final int RETRY_COUNT = 3;
         private SaveRetry() {
         }
         private static <T> T retry(Supplier<T> supplier) {
@@ -94,9 +99,9 @@ public class ExternalAuthProviderLoginAndJoinHelper {
                 try {
                     return supplier.get();
                 }
-                catch (DataIntegrityViolationException e) {
+                catch (NotUniqueNameException e) {
                     if (retries < RETRY_COUNT) {
-                        throw new RetryFailException("Failed after " + RETRY_COUNT + " retries.", e);
+                        throw new RetryFailException("사용자 회원가입 재시도 횟수를 초과했습니다. 재요청을 해주세요.", e);
                     }
                     log.error("재시도 시작 현재 count ={}", retries, e);
                     retries++;
