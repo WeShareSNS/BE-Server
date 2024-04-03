@@ -138,14 +138,14 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
     @DisplayName("사용자가 닉네임 길이를 지키지 않으면 400을 반환한다.")
     public void duplicateNameBadRequest() throws Exception {
         // given
-        String name = "12자리가넘어가야합니다라리라로";
+        String name = "qweasdzxcqweasdzxcqweasdzxc";
 
         mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-name")
                         .param("name", name)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
-                .andExpect(result -> assertEquals("닉네임은 2~12 글자 사이어야 합니다.", result.getResolvedException().getMessage()));
+                .andExpect(result -> assertEquals("닉네임은 2~20 글자 사이어야 합니다.", result.getResolvedException().getMessage()));
     }
 
     @Test

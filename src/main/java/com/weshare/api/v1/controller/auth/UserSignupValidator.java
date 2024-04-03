@@ -23,8 +23,8 @@ public class UserSignupValidator {
 
     public void validateNameLength(String name) {
         int length = name.length();
-        if (2 > length || length > 12) {
-            throw new IllegalArgumentException("닉네임은 2~12 글자 사이어야 합니다.");
+        if (2 > length || length > 20) {
+            throw new IllegalArgumentException("닉네임은 2~20 글자 사이어야 합니다.");
         }
     }
 }

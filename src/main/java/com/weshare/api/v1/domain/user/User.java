@@ -22,10 +22,10 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "email", nullable = false, unique = true, length = 30)
+    @Column(name = "email", nullable = false, unique = true, length = 50)
     private String email;
 
-    @Column(name = "name", nullable = false, unique = true, length = 12)
+    @Column(name = "name", nullable = false, unique = true, length = 20)
     private String name;
 
     @Column(name = "profile_img")
