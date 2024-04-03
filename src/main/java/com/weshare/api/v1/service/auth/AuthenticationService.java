@@ -1,6 +1,5 @@
 package com.weshare.api.v1.service.auth;
 
-import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
 import com.weshare.api.v1.domain.user.Role;
@@ -9,7 +8,6 @@ import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.domain.user.exception.UsernameDuplicateException;
 import com.weshare.api.v1.repository.user.UserRepository;
-import com.weshare.api.v1.service.auth.login.AuthLoginService;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.token.TokenType;
@@ -41,7 +39,6 @@ public class AuthenticationService {
     private final LogoutAccessTokenRedisRepository logoutTokenRedisRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final AuthLoginService loginService;
 
     public User join(SignupRequest request) {
         checkDuplicateEmailForSignup(request.email());
@@ -68,10 +65,6 @@ public class AuthenticationService {
 
     private boolean isDuplicateName(String name) {
         return repository.findByName(name).isPresent();
-    }
-
-    public Optional<TokenDto> login(LoginRequest request, Date issuedAt) {
-        return loginService.login(request, issuedAt);
     }
 
     private User createUser(SignupRequest request) {

@@ -16,7 +16,13 @@ server:
 
 logging:
   level:
-    org.hibernate.sql: debug
+    org.hibernate.SQL: debug
+
+    org.hibernate.resource.transaction: debug
+    org.springframework.orm.jpa.JpaTransactionManager: debug
+    org.springframework.transaction.interceptor: trace
+    org.springframework.jdbc.datasource.DataSourceTransactionManager: debug
+
 
 #management:
 #  endpoints:

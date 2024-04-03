@@ -6,6 +6,7 @@ import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
 import com.weshare.api.v1.service.auth.AuthenticationService;
+import com.weshare.api.v1.service.auth.login.AuthLoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -32,6 +33,7 @@ public class AuthenticationController {
 
   private final UserSignupValidator validator;
   private final AuthenticationService service;
+  private final AuthLoginService loginService;
   private final CookieTokenHandler cookieTokenHandler;
 
   @Operation(summary = "사용자 회원가입 API", description = "사용자는 회원가입을 할 수 있습니다.")
@@ -85,7 +87,7 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody(required = false) LoginRequest request,
                                                       HttpServletResponse response) {
     log.info("data={}", request);
-    Optional<TokenDto> tokenDtoOptional = service.login(request, new Date(System.nanoTime()));
+    Optional<TokenDto> tokenDtoOptional = loginService.login(request, new Date(System.nanoTime()));
     if (tokenDtoOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.CREATED).build();
     }

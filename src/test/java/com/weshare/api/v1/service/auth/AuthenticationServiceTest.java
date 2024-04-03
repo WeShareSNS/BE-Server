@@ -9,6 +9,7 @@ import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.UsernameDuplicateException;
 import com.weshare.api.v1.repository.user.UserRepository;
+import com.weshare.api.v1.service.auth.login.AuthLoginService;
 import com.weshare.api.v1.token.RefreshToken;
 import com.weshare.api.v1.token.RefreshTokenRepository;
 import com.weshare.api.v1.token.TokenType;
@@ -37,6 +38,8 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     private UserRepository userRepository;
     @Autowired
     private AuthenticationService authService;
+    @Autowired
+    private AuthLoginService authLoginService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -143,7 +146,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, name, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        Optional<TokenDto> response = authService.login(request, new Date(System.nanoTime()));
+        Optional<TokenDto> response = authLoginService.login(request, new Date(System.nanoTime()));
         // then
         RefreshToken refreshToken = tokenRepository.findTokenByUser(user).get();
         assertEquals(response.get().refreshToken(), refreshToken.getToken());
@@ -159,7 +162,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, name, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        Optional<TokenDto> response = authService.login(request, new Date(System.nanoTime()));
+        Optional<TokenDto> response = authLoginService.login(request, new Date(System.nanoTime()));
         // then
         String findEmail = jwtService.extractEmail(response.get().accessToken());
         assertEquals(user.getEmail(), findEmail);
@@ -208,7 +211,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String jwt = jwtService.generateAccessToken(user, new Date(System.nanoTime()));
 
         LoginRequest loginRequest = createLoginRequest(email, password);
-        authService.login(loginRequest, new Date(System.nanoTime()));
+        authLoginService.login(loginRequest, new Date(System.nanoTime()));
         // when
         authService.logout(jwt);
         // then
