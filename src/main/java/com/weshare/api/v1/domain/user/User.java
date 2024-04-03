@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -28,7 +29,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "name", nullable = false, unique = true, length = 20)
     private String name;
 
-    @Column(name = "profile_img")
+    @Column(name = "profile_img", nullable = false)
     private String profileImg;
 
     @Column(name = "birth_date")
@@ -67,6 +68,20 @@ public class User extends BaseTimeEntity implements UserDetails {
             throw new IllegalArgumentException("이름의 길이는 2~20 사이어야 합니다.");
         }
         this.name = name;
+    }
+
+    public void updateBirthDate(LocalDate birthDate) {
+        if (birthDate == null) {
+            throw new IllegalArgumentException("생년월일을 입력해주세요");
+        }
+        this.birthDate = birthDate;
+    }
+
+    public void updateProfileImg(String profileImg) {
+        if (!StringUtils.hasText(profileImg)) {
+            throw new IllegalArgumentException("프로필 이미지 정보가 올바르지 않습니다.");
+        }
+        this.profileImg = profileImg;
     }
 
     @Override
