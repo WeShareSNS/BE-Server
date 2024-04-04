@@ -8,6 +8,7 @@ import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.like.LikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import java.util.List;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class ScheduleEventListener {
 
@@ -27,10 +29,11 @@ public class ScheduleEventListener {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void deletedEvent(UserDeletedEvent deletedEvent) {
+        log.info("schedule event 진입");
         final List<Schedule> schedules = scheduleRepository.findByUserId(deletedEvent.userId());
         final List<Long> scheduleIds = getScheduleIds(schedules);
-        deleteAllCommentByScheduleIds(scheduleIds);
-        deleteAllLikeByScheduleIds(scheduleIds);
+        deleteAllCommentByScheduleIds(scheduleIds, deletedEvent.userId());
+        deleteAllLikeByScheduleIds(scheduleIds, deletedEvent.userId());
         scheduleRepository.deleteAll(schedules);
     }
 
@@ -40,13 +43,13 @@ public class ScheduleEventListener {
                 .toList();
     }
 
-    private void deleteAllCommentByScheduleIds(List<Long> scheduleIds) {
-        final List<Comment> commentByScheduleIds = commentRepository.findCommentByScheduleIds(scheduleIds);
+    private void deleteAllCommentByScheduleIds(List<Long> scheduleIds, Long commenterId) {
+        final List<Comment> commentByScheduleIds = commentRepository.findCommentByScheduleIds(scheduleIds, commenterId);
         commentRepository.deleteAll(commentByScheduleIds);
     }
 
-    private void deleteAllLikeByScheduleIds(List<Long> scheduleIds) {
-        final List<Like> likeByScheduleIds = likeRepository.findLikeByScheduleIds(scheduleIds);
+    private void deleteAllLikeByScheduleIds(List<Long> scheduleIds, Long userId) {
+        final List<Like> likeByScheduleIds = likeRepository.findLikeByScheduleIds(scheduleIds, userId);
         likeRepository.deleteAll(likeByScheduleIds);
     }
 

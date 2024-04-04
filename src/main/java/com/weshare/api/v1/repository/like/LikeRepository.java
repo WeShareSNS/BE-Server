@@ -23,7 +23,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Optional<Like> findLikeByUser(User user);
     @Query("""
     select l from Like l  
-    where l.schedule.id in :scheduleIds
+    where l.schedule.id in :scheduleIds or l.user.id = :userId
     """)
-    List<Like> findLikeByScheduleIds(List<Long> scheduleIds);
+    List<Like> findLikeByScheduleIds(List<Long> scheduleIds, Long userId);
 }

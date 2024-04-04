@@ -1,17 +1,21 @@
 package com.weshare.api.v1.service.user;
 
-import com.weshare.api.IntegrationTestSupport;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
-import com.weshare.api.v1.service.user.dto.UserUpdateDto;
 import com.weshare.api.v1.service.user.dto.PasswordUpdateDto;
-import org.junit.jupiter.api.*;
+import com.weshare.api.v1.service.user.dto.UserUpdateDto;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -22,13 +26,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UserServiceTest extends IntegrationTestSupport {
+@ActiveProfiles("test")
+@SpringBootTest
+//@RecordApplicationEvents
+class UserServiceTest {
+
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private ApplicationEvents events;
 
     @AfterEach
     void tearDown() {
@@ -153,6 +163,23 @@ class UserServiceTest extends IntegrationTestSupport {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기존 패스워드가 올바르지 않습니다.");
     }
+
+//    @Test
+//    public void 사용자_삭제시_연관된_테이블도_전부_삭제된다() {
+//        // given
+//        User user = createAndSaveUser("test2@qwe.com", "name2", "password");
+//        // 아래는 FOREIGN KEY 제약 조건 때문에 밑에가 지워져야 유저가 지워질 수 있다.
+//        // when
+//        UserDeleteDto userDeleteDto = new UserDeleteDto(
+//                user.getId(),
+//                LocalDateTime.of(
+//                        LocalDate.of(2024, 3, 2), LocalTime.of(1, 2)
+//                ));
+//        userService.deleteUser(userDeleteDto);
+//        // then
+//        int count = (int) events.stream(UserDeletedEvent.class).count();
+//        assertEquals(3, count);
+//    }
 
     private PasswordUpdateDto createPasswordUpdateDto(User user, String password, String newPassword, String verifyPassword) {
         return PasswordUpdateDto.builder()

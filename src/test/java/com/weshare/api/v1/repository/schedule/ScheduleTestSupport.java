@@ -18,14 +18,12 @@ import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ScheduleTestSupport {
+public abstract class ScheduleTestSupport {
 
     @Autowired
     private EntityManager entityManager;
     @Autowired
     private ScheduleRepository repository;
-
-
 
     @Transactional
     public User createUserAndSave(String email, String name, String password) {
@@ -91,7 +89,7 @@ public class ScheduleTestSupport {
     }
 
     @Transactional
-    public void createAndSaveLike(Long scheduleId, Long userId) {
+    public Like createAndSaveLike(Long scheduleId, Long userId) {
         Schedule schedule = entityManager.find(Schedule.class, scheduleId);
         User user = entityManager.find(User.class, userId);
         Like like = Like.builder()
@@ -99,6 +97,7 @@ public class ScheduleTestSupport {
                 .schedule(schedule)
                 .build();
         entityManager.persist(like);
+        return like;
     }
 
     @Transactional

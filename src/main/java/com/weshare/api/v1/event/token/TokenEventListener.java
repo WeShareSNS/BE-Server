@@ -19,6 +19,7 @@ public class TokenEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void deletedEvent(UserDeletedEvent deletedEvent) {
+        log.info("token event 진입");
         Optional<RefreshToken> findToken = tokenRepository.findByUserId(deletedEvent.userId());
         findToken.ifPresent(tokenRepository::delete);
     }

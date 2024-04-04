@@ -19,7 +19,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("""
         select c from Comment c
-        where c.schedule.id in :scheduleIds
+        where c.schedule.id in :scheduleIds or c.commenter.id = :commenterId
     """)
-    List<Comment> findCommentByScheduleIds(List<Long> scheduleIds);
+    List<Comment> findCommentByScheduleIds(List<Long> scheduleIds, Long commenterId);
 }

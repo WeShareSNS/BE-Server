@@ -18,6 +18,7 @@ public class UserEventListener {
     @Order // 기본값 우선순위 최하위
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void deletedUserEvent(UserDeletedEvent deletedEvent) {
+        log.info("user event 진입");
         userRepository.deleteById(deletedEvent.userId());
     }
 
