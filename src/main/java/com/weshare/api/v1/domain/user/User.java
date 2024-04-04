@@ -38,11 +38,17 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Social social;
+
+//    delete 상태 추가해서 처리할지 고민하기
+//    @Column(nullable = false, columnDefinition = "TINYINT(1) default 0")
+//    private boolean isDeleted;
 
     @Builder
     private User(
@@ -99,6 +105,11 @@ public class User extends BaseTimeEntity implements UserDetails {
     public boolean isSamePassword(String password, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(password, this.password);
     }
+
+    // deletedAt 까지 받아서 JPA 콜백 이벤트로 로그 처리나 할 수 있을거 같음
+//    public void deleteUser() {
+//        this.isDeleted = true;
+//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

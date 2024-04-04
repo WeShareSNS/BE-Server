@@ -1,6 +1,8 @@
 package com.weshare.api.v1.service.auth.login.provider;
 
 import com.weshare.api.IntegrationTestSupport;
+import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -51,6 +53,8 @@ class ExternalAuthProviderLoginAndJoinHelperTest extends IntegrationTestSupport 
                 .name(name)
                 .profileImg("profile")
                 .password("password")
+                .role(Role.USER)
+                .social(Social.DEFAULT)
                 .build();
     }
 

@@ -3,6 +3,8 @@ package com.weshare.api.v1.repository.schedule;
 import com.weshare.api.v1.domain.comment.Comment;
 import com.weshare.api.v1.domain.like.Like;
 import com.weshare.api.v1.domain.schedule.*;
+import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ public class ScheduleTestSupport {
                 .name(name)
                 .password(password)
                 .profileImg("profile")
+                .role(Role.USER)
+                .social(Social.DEFAULT)
                 .build();
         entityManager.persist(user);
         return user;
@@ -98,7 +102,7 @@ public class ScheduleTestSupport {
     }
 
     @Transactional
-    public void createAndSaveComment(Long scheduleId, Long userId) {
+    public Comment createAndSaveComment(Long scheduleId, Long userId) {
         Schedule schedule = entityManager.find(Schedule.class, scheduleId);
         User user = entityManager.find(User.class, userId);
         Comment comment = Comment.builder()
@@ -107,6 +111,7 @@ public class ScheduleTestSupport {
                 .schedule(schedule)
                 .build();
         entityManager.persist(comment);
+        return comment;
     }
 
     protected ScheduleIds getIdsAndSaveSchedule() {

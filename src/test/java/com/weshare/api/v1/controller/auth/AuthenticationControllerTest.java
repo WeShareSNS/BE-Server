@@ -5,6 +5,7 @@ import com.weshare.api.v1.controller.IntegrationMvcTestSupport;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.domain.user.exception.UsernameDuplicateException;
@@ -244,6 +245,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .role(Role.USER)
                 .profileImg("profile")
+                .social(Social.DEFAULT)
                 .build();
 
         return userRepository.save(user);

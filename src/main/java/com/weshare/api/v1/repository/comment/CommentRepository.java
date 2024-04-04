@@ -1,7 +1,6 @@
 package com.weshare.api.v1.repository.comment;
 
 import com.weshare.api.v1.domain.comment.Comment;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +16,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                      where c.schedule.id = :scheduleId
             """)
     Slice<Comment> findAllByScheduleId(Long scheduleId, Pageable pageable);
+
+    @Query("""
+        select c from Comment c
+        where c.schedule.id in :scheduleIds
+    """)
+    List<Comment> findCommentByScheduleIds(List<Long> scheduleIds);
 }

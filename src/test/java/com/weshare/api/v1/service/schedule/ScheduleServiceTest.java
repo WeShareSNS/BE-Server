@@ -5,6 +5,8 @@ import com.weshare.api.v1.controller.schedule.command.CreateScheduleDto;
 import com.weshare.api.v1.controller.schedule.command.CreateScheduleRequest;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
+import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
@@ -54,6 +56,8 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                 .name("test")
                 .password("test")
                 .profileImg("profile")
+                .role(Role.USER)
+                .social(Social.DEFAULT)
                 .build();
         return userRepository.save(user);
     }

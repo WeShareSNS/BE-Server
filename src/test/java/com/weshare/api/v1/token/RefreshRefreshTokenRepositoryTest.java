@@ -2,6 +2,7 @@ package com.weshare.api.v1.token;
 
 import com.weshare.api.IntegrationTestSupport;
 import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -99,6 +100,7 @@ class RefreshRefreshTokenRepositoryTest extends IntegrationTestSupport {
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .role(Role.USER)
                 .profileImg("profile")
+                .social(Social.DEFAULT)
                 .build();
 
         return userRepository.save(user);

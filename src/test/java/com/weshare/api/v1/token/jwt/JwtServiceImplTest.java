@@ -1,6 +1,8 @@
 package com.weshare.api.v1.token.jwt;
 
 import com.weshare.api.IntegrationTestSupport;
+import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
 import com.weshare.api.v1.token.exception.InvalidTokenException;
@@ -205,6 +207,8 @@ class JwtServiceImplTest extends IntegrationTestSupport {
                 .profileImg("profile")
                 .name(name)
                 .birthDate(LocalDate.of(1999, 9, 27))
+                .role(Role.USER)
+                .social(Social.DEFAULT)
                 .build();
 
         return userRepository.save(user);

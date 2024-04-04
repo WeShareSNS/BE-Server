@@ -1,10 +1,14 @@
 package com.weshare.api.v1.service.user;
 
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.event.user.UserDeletedEvent;
 import com.weshare.api.v1.repository.user.UserRepository;
+import com.weshare.api.v1.service.user.dto.UserDeleteDto;
 import com.weshare.api.v1.service.user.dto.UserUpdateDto;
 import com.weshare.api.v1.service.user.dto.PasswordUpdateDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,12 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void updateUser(UserUpdateDto updateDto) {
         User user = findUserOrElseThrow(updateDto.getUserEmail());
@@ -50,5 +56,10 @@ public class UserService {
 
     private boolean isMatchPassword(String newPassword, String verifyPassword) {
         return !Objects.equals(newPassword, verifyPassword);
+    }
+
+    public void deleteUser(UserDeleteDto userDeleteDto) {
+        Long userId = userDeleteDto.userId();
+        eventPublisher.publishEvent(new UserDeletedEvent(userId, userDeleteDto.deletedAt()));
     }
 }

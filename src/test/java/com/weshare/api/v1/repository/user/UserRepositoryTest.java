@@ -2,6 +2,7 @@ package com.weshare.api.v1.repository.user;
 
 import com.weshare.api.IntegrationTestSupport;
 import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -51,6 +52,7 @@ class UserRepositoryTest extends IntegrationTestSupport {
                 .role(role)
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .profileImg("profile")
+                .social(Social.DEFAULT)
                 .build();
 
         return userRepository.save(user);

@@ -6,12 +6,15 @@ import com.weshare.api.v1.controller.user.dto.UserUpdateRequest;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.user.UserService;
 import com.weshare.api.v1.service.user.dto.PasswordUpdateDto;
+import com.weshare.api.v1.service.user.dto.UserDeleteDto;
 import com.weshare.api.v1.service.user.dto.UserUpdateDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +37,14 @@ public class UserController {
                                         @AuthenticationPrincipal User user) {
         PasswordUpdateDto passwordUpdateDto = createPasswordUpdateDto(passwordUpdateRequest, user);
         userService.updatePassword(passwordUpdateDto);
+        return response.success();
+    }
+
+    @DeleteMapping
+    public ResponseEntity deleteUser(@AuthenticationPrincipal User user) {
+        UserDeleteDto userDeleteDto = new UserDeleteDto(user.getId(), LocalDateTime.now());
+        userService.deleteUser(userDeleteDto);
+        // 200번이랑 202번이랑 고민됨
         return response.success();
     }
 

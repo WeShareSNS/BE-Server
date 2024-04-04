@@ -1,6 +1,8 @@
 package com.weshare.api.v1.service.user;
 
 import com.weshare.api.IntegrationTestSupport;
+import com.weshare.api.v1.domain.user.Role;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
 import com.weshare.api.v1.service.user.dto.UserUpdateDto;
@@ -167,6 +169,8 @@ class UserServiceTest extends IntegrationTestSupport {
                 .name(name)
                 .password(passwordEncoder.encode(password))
                 .profileImg("profile")
+                .role(Role.USER)
+                .social(Social.DEFAULT)
                 .build();
         return userRepository.save(user);
     }

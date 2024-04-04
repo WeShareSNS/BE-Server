@@ -7,6 +7,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
@@ -20,4 +21,9 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Slice<Like> findAllLikeBySchedule(Long ScheduleId, Pageable pageable);
 
     Optional<Like> findLikeByUser(User user);
+    @Query("""
+    select l from Like l  
+    where l.schedule.id in :scheduleIds
+    """)
+    List<Like> findLikeByScheduleIds(List<Long> scheduleIds);
 }

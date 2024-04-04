@@ -22,11 +22,7 @@ public class RefreshToken {
   @Enumerated(EnumType.STRING)
   private TokenType tokenType = TokenType.BEARER;
 
-  // user에 값타입으로 들어가야 하는데 User와 생명주기가 다르다고 판단하고 Entity로 처리함
-  @OneToOne(
-          fetch = FetchType.LAZY, // EAGER로 하면 되는데 우선 LAZY
-          cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-          orphanRemoval = true)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
 

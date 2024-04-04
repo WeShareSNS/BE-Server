@@ -4,6 +4,7 @@ import com.weshare.api.IntegrationTestSupport;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
 import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.User;
@@ -230,6 +231,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
                 .role(Role.USER)
                 .profileImg("profile")
                 .birthDate(LocalDate.of(1999, 9, 27))
+                .social(Social.DEFAULT)
                 .build();
 
         return userRepository.save(user);
