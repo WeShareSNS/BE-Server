@@ -3,7 +3,7 @@ package com.weshare.api.v1.service.auth;
 import com.weshare.api.IntegrationTestSupport;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
-import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.controller.auth.dto.UserLoginDto;
 import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
 import com.weshare.api.v1.domain.user.Role;
@@ -147,7 +147,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, name, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        Optional<TokenDto> response = authLoginService.login(request, new Date(System.nanoTime()));
+        Optional<UserLoginDto> response = authLoginService.login(request, new Date(System.nanoTime()));
         // then
         RefreshToken refreshToken = tokenRepository.findTokenByUser(user).get();
         assertEquals(response.get().refreshToken(), refreshToken.getToken());
@@ -163,7 +163,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         User user = createAndSaveUser(email, name, password);
         LoginRequest request = createLoginRequest(email, password);
         // when
-        Optional<TokenDto> response = authLoginService.login(request, new Date(System.nanoTime()));
+        Optional<UserLoginDto> response = authLoginService.login(request, new Date(System.nanoTime()));
         // then
         String findEmail = jwtService.extractEmail(response.get().accessToken());
         assertEquals(user.getEmail(), findEmail);
@@ -178,7 +178,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveRefreshToken(user, refreshToken);
         // when
-        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken), new Date(System.nanoTime()));
+        UserLoginDto response = authService.reissueToken(Optional.ofNullable(refreshToken), new Date(System.nanoTime()));
         // then
         assertTrue(jwtService.isTokenValid(response.accessToken(), user));
     }
@@ -192,7 +192,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
         String refreshToken = jwtService.generateRefreshToken(user, new Date(System.nanoTime()));
         createAndSaveRefreshToken(user, refreshToken);
         // when
-        TokenDto response = authService.reissueToken(Optional.ofNullable(refreshToken), new Date(System.nanoTime()));
+        UserLoginDto response = authService.reissueToken(Optional.ofNullable(refreshToken), new Date(System.nanoTime()));
         // then
         Optional<RefreshToken> userByOldToken = tokenRepository.findByTokenWithUser(refreshToken);
         Optional<RefreshToken> userByNewToken = tokenRepository.findByTokenWithUser(response.refreshToken());

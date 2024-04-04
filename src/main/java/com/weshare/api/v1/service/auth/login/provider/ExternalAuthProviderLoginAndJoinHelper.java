@@ -1,6 +1,6 @@
 package com.weshare.api.v1.service.auth.login.provider;
 
-import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.controller.auth.dto.UserLoginDto;
 import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.domain.user.exception.EmailDuplicateException;
@@ -28,7 +28,7 @@ public class ExternalAuthProviderLoginAndJoinHelper {
     private final JwtService jwtService;
 
     @Transactional
-    public Optional<TokenDto> issueTokenOrRegisterUser(
+    public Optional<UserLoginDto> issueTokenOrRegisterUser(
             User authUser,
             Date issuedAt
     ) {
@@ -58,13 +58,14 @@ public class ExternalAuthProviderLoginAndJoinHelper {
         return userRepository.save(authUser);
     }
 
-    private Optional<TokenDto> getTokenDto(Date issuedAt, User existingUser) {
+    private Optional<UserLoginDto> getTokenDto(Date issuedAt, User existingUser) {
         String accessToken = jwtService.generateAccessToken(existingUser, issuedAt);
         String refreshToken = jwtService.generateRefreshToken(existingUser, issuedAt);
         reissueRefreshTokenByUser(existingUser, refreshToken);
-        return Optional.of(new TokenDto(
+        return Optional.of(new UserLoginDto(
                 accessToken,
-                refreshToken
+                refreshToken,
+                existingUser.getName()
         ));
     }
 

@@ -4,7 +4,7 @@ import com.weshare.api.v1.common.CookieTokenHandler;
 import com.weshare.api.v1.controller.auth.dto.AuthenticationResponse;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
-import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.controller.auth.dto.UserLoginDto;
 import com.weshare.api.v1.service.auth.AuthenticationService;
 import com.weshare.api.v1.service.auth.login.AuthLoginService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -88,13 +88,13 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody(required = false) LoginRequest request,
                                                       HttpServletResponse response) {
     log.info("data={}", request);
-    Optional<TokenDto> tokenDtoOptional = loginService.login(request, new Date(System.nanoTime()));
+    Optional<UserLoginDto> tokenDtoOptional = loginService.login(request, new Date(System.nanoTime()));
     if (tokenDtoOptional.isEmpty()) {
       return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-    TokenDto tokenDto = tokenDtoOptional.get();
-    cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
-    return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));
+    UserLoginDto userLoginDto = tokenDtoOptional.get();
+    cookieTokenHandler.setCookieToken(response, userLoginDto.refreshToken());
+    return ResponseEntity.ok(new AuthenticationResponse(userLoginDto.name(), userLoginDto.accessToken()));
   }
 
   @Operation(summary = "사용자 access 토큰 재발급 API",
@@ -107,9 +107,9 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> reissueToken(@CookieValue("Refresh-Token") Optional<String> refreshToken,
                                                              HttpServletResponse response) {
     log.info("controller token={}",refreshToken);
-    TokenDto tokenDto = service.reissueToken(refreshToken, new Date(System.nanoTime()));
-    cookieTokenHandler.setCookieToken(response, tokenDto.refreshToken());
-    return ResponseEntity.ok(new AuthenticationResponse(tokenDto.accessToken()));
+    UserLoginDto userLoginDto = service.reissueToken(refreshToken, new Date(System.nanoTime()));
+    cookieTokenHandler.setCookieToken(response, userLoginDto.refreshToken());
+    return ResponseEntity.ok(new AuthenticationResponse(userLoginDto.name(), userLoginDto.accessToken()));
   }
 
   @Operation(security = { @SecurityRequirement(name = "bearer-key") },

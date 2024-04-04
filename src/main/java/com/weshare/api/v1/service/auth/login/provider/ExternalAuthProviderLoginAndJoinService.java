@@ -1,9 +1,7 @@
 package com.weshare.api.v1.service.auth.login.provider;
 
-import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.controller.auth.dto.UserLoginDto;
 import com.weshare.api.v1.domain.user.User;
-import com.weshare.api.v1.service.auth.login.provider.AuthProvider;
-import com.weshare.api.v1.service.auth.login.provider.ExternalAuthProviderLoginAndJoinHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,7 +15,7 @@ public class ExternalAuthProviderLoginAndJoinService {
     private final AuthProvider authProvider;
     private final ExternalAuthProviderLoginAndJoinHelper helper;
 
-    public Optional<TokenDto> login(
+    public Optional<UserLoginDto> login(
             String providerName,
             String code,
             Date issuedAt

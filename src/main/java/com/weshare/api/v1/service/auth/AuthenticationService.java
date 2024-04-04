@@ -1,7 +1,7 @@
 package com.weshare.api.v1.service.auth;
 
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;
-import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.controller.auth.dto.UserLoginDto;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
@@ -104,7 +104,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public TokenDto reissueToken(Optional<String> token, Date issuedAt) {
+    public UserLoginDto reissueToken(Optional<String> token, Date issuedAt) {
         if (token.isEmpty()) {
             throw new InvalidTokenException("토큰이 존재하지 않습니다.");
         }
@@ -114,7 +114,7 @@ public class AuthenticationService {
         String accessToken = jwtService.generateAccessToken(user, issuedAt);
         String reissueToken = jwtService.generateRefreshToken(user, issuedAt);
         reissueRefreshTokenByUser(user, reissueToken);
-        return new TokenDto(accessToken, reissueToken);
+        return new UserLoginDto(accessToken, reissueToken, user.getName());
     }
 
     private User findUserByValidRefreshToken(String token) {

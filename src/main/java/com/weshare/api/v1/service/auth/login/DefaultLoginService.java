@@ -1,6 +1,6 @@
 package com.weshare.api.v1.service.auth.login;
 
-import com.weshare.api.v1.controller.auth.dto.TokenDto;
+import com.weshare.api.v1.controller.auth.dto.UserLoginDto;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.user.UserRepository;
 import com.weshare.api.v1.token.RefreshToken;
@@ -27,7 +27,7 @@ public class DefaultLoginService {
     private final JwtService jwtService;
 
     @Transactional
-    public Optional<TokenDto> login(
+    public Optional<UserLoginDto> login(
             String email,
             String password,
             Date issuedAt
@@ -42,7 +42,7 @@ public class DefaultLoginService {
         String accessToken = jwtService.generateAccessToken(user, issuedAt);
         String refreshToken = jwtService.generateRefreshToken(user, issuedAt);
         reissueRefreshTokenByUser(user, refreshToken);
-        return Optional.of(new TokenDto(accessToken, refreshToken));
+        return Optional.of(new UserLoginDto(accessToken, refreshToken, user.getName()));
     }
 
     private boolean checkNonBlankValues(String email, String password) {
