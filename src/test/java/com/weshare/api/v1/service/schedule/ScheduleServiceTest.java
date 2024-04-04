@@ -69,10 +69,10 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                     "destination": "서울",
                     "startDate": "2024-12-03",
                     "endDate": "2024-12-05",
-                    "visitDates": [
+                    "dayDetail": [
                       {
                         "travelDate": "2024-12-03",
-                        "visitPlaces": [
+                        "places": [
                           {
                             "memo": "이쁘다~",
                             "time": "10:00 AM",
@@ -93,7 +93,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                       },
                       {
                         "travelDate": "2024-12-04",
-                        "visitPlaces": [
+                        "places": [
                           {
                             "memo": "이쁘다~",
                             "time": "11:00 PM",
@@ -106,7 +106,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                       },
                       {
                         "travelDate": "2024-12-05",
-                        "visitPlaces": [
+                        "places": [
                           {
                             "memo": "이쁘다~",
                             "time": "11:00 AM",
