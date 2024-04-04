@@ -4,6 +4,7 @@ import com.weshare.api.v1.common.Response;
 import com.weshare.api.v1.controller.user.dto.PasswordUpdateRequest;
 import com.weshare.api.v1.controller.user.dto.UserUpdateRequest;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
 import com.weshare.api.v1.service.user.UserService;
 import com.weshare.api.v1.service.user.dto.PasswordUpdateDto;
 import com.weshare.api.v1.service.user.dto.UserDeleteDto;
@@ -15,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -64,5 +66,12 @@ public class UserController {
                 .newPassword(passwordUpdateRequest.newPassword())
                 .verifyPassword(passwordUpdateRequest.verifyPassword())
                 .build();
+    }
+
+    @GetMapping("/schedules")
+    public ResponseEntity<UserScheduleResponse> getSchedule(@AuthenticationPrincipal User user) {
+        final List<UserScheduleDto> scheduleByUserId = userService.getScheduleByUserId(user.getId());
+        UserScheduleResponse userScheduleResponse = new UserScheduleResponse(scheduleByUserId, scheduleByUserId.size());
+        return response.success(userScheduleResponse);
     }
 }

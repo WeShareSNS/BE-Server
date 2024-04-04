@@ -12,7 +12,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("""
     select s from Schedule s 
-    join fetch s.user
     where s.user.id = :userId
     """)
     List<Schedule> findByUserId(Long userId);

@@ -3,9 +3,11 @@ package com.weshare.api.v1.service.user;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.event.user.UserDeletedEvent;
 import com.weshare.api.v1.repository.user.UserRepository;
+import com.weshare.api.v1.service.schedule.query.ScheduleQueryService;
+import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
+import com.weshare.api.v1.service.user.dto.PasswordUpdateDto;
 import com.weshare.api.v1.service.user.dto.UserDeleteDto;
 import com.weshare.api.v1.service.user.dto.UserUpdateDto;
-import com.weshare.api.v1.service.user.dto.PasswordUpdateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -25,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
+    private final ScheduleQueryService scheduleQueryService;
 
     public void updateUser(UserUpdateDto updateDto) {
         User user = findUserOrElseThrow(updateDto.getUserEmail());
@@ -61,5 +65,9 @@ public class UserService {
     public void deleteUser(UserDeleteDto userDeleteDto) {
         Long userId = userDeleteDto.userId();
         eventPublisher.publishEvent(new UserDeletedEvent(userId, userDeleteDto.deletedAt()));
+    }
+
+    public List<UserScheduleDto> getScheduleByUserId(Long userId) {
+        return scheduleQueryService.findAllScheduleByUserId(userId);
     }
 }

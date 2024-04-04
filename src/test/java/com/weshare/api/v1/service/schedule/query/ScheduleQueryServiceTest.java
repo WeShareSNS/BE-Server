@@ -6,6 +6,7 @@ import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
 import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
+import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -105,5 +106,18 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                     assertThat(schedulePage.isLast()).isEqualTo(true);
                 })
         );
+    }
+
+    @Test
+    @Transactional
+    public void 사용자가_작성한_게시물을_조회할_수_있다() {
+        // given
+        User user = createUserAndSave("test13@test.com", "test13", "password");
+        createAndSaveSchedule("title1", Destination.BUSAN, user);
+        createAndSaveSchedule("title2", Destination.GANGNEUNG, user);
+        // when
+        List<UserScheduleDto> allScheduleByUserId = scheduleQueryService.findAllScheduleByUserId(user.getId());
+        // then
+        assertThat(allScheduleByUserId).hasSize(2);
     }
 }
