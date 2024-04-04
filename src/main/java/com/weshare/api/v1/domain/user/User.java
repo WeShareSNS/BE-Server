@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -65,23 +65,39 @@ public class User extends BaseTimeEntity implements UserDetails {
     public void updateName(String name) {
         int length = name.length();
         if (2 > length || length > 20) {
-            throw new IllegalArgumentException("이름의 길이는 2~20 사이어야 합니다.");
+            throw new IllegalStateException("이름의 길이는 2~20 사이어야 합니다.");
         }
         this.name = name;
     }
 
     public void updateBirthDate(LocalDate birthDate) {
-        if (birthDate == null) {
-            throw new IllegalArgumentException("생년월일을 입력해주세요");
+        if (!isBeforeDate(birthDate)) {
+            throw new IllegalStateException("생년월일이 올바르지 않습니다.");
         }
         this.birthDate = birthDate;
     }
 
+    private boolean isBeforeDate(LocalDate birthDate) {
+        return birthDate != null && LocalDate.now().isAfter(birthDate);
+    }
+
     public void updateProfileImg(String profileImg) {
-        if (!StringUtils.hasText(profileImg)) {
-            throw new IllegalArgumentException("프로필 이미지 정보가 올바르지 않습니다.");
+        if (!ProfileImgValidator.isUrlPattern(profileImg)) {
+            throw new IllegalStateException("프로필 이미지 정보가 올바르지 않습니다.");
         }
         this.profileImg = profileImg;
+    }
+
+    public void updatePassword(String newPassword, PasswordEncoder passwordEncoder) {
+        int length = newPassword.length();
+        if (8 > length || length > 16) {
+            throw new IllegalStateException("패스워드의 길이는 8~16 사이어야 합니다.");
+        }
+        this.password = passwordEncoder.encode(newPassword);
+    }
+
+    public boolean isSamePassword(String password, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(password, this.password);
     }
 
     @Override

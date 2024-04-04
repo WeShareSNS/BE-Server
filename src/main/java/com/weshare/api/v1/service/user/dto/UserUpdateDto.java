@@ -9,10 +9,10 @@ import java.util.Optional;
 
 @Getter
 public class UserUpdateDto {
-    String userEmail;
-    Optional<String> profileImg;
-    Optional<String> name;
-    Optional<LocalDate> birthDate;
+    private final String userEmail;
+    private final Optional<String> profileImg;
+    private final Optional<String> name;
+    private final Optional<LocalDate> birthDate;
 
     @Builder
     private UserUpdateDto(

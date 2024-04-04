@@ -49,6 +49,7 @@ class ExternalAuthProviderLoginAndJoinHelperTest extends IntegrationTestSupport 
         return User.builder()
                 .email(email)
                 .name(name)
+                .profileImg("profile")
                 .password("password")
                 .build();
     }

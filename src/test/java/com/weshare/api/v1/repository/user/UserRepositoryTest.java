@@ -3,8 +3,10 @@ package com.weshare.api.v1.repository.user;
 import com.weshare.api.IntegrationTestSupport;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.User;
-import com.weshare.api.v1.repository.user.UserRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -48,6 +50,7 @@ class UserRepositoryTest extends IntegrationTestSupport {
                 .password("12345678")
                 .role(role)
                 .birthDate(LocalDate.of(1999, 9, 27))
+                .profileImg("profile")
                 .build();
 
         return userRepository.save(user);

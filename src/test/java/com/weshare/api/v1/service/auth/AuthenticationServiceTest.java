@@ -228,6 +228,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
                 .name(name)
                 .password(passwordEncoder.encode(password))
                 .role(Role.USER)
+                .profileImg("profile")
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .build();
 

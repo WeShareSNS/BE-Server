@@ -53,6 +53,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
                 .email("asd@asdf.com")
                 .name("test")
                 .password("test")
+                .profileImg("profile")
                 .build();
         return userRepository.save(user);
     }

@@ -31,6 +31,7 @@ public class ScheduleTestSupport {
                 .email(email)
                 .name(name)
                 .password(password)
+                .profileImg("profile")
                 .build();
         entityManager.persist(user);
         return user;

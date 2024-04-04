@@ -202,6 +202,7 @@ class JwtServiceImplTest extends IntegrationTestSupport {
         User user = User.builder()
                 .email(email)
                 .password(password)
+                .profileImg("profile")
                 .name(name)
                 .birthDate(LocalDate.of(1999, 9, 27))
                 .build();
