@@ -35,19 +35,19 @@ public class CreateScheduleRequest {
 
     @NotNull
     @Valid
-    private List<VisitDate> visitDates;
+    private List<VisitDate> dayDetail;
 
-    public List<VisitDate> getVisitDates() {
-        return Collections.unmodifiableList(visitDates);
+    public List<VisitDate> getDayDetail() {
+        return Collections.unmodifiableList(dayDetail);
     }
 
     @Builder
-    private CreateScheduleRequest(String title, String destination, LocalDate startDate, LocalDate endDate, List<VisitDate> visitDates) {
+    private CreateScheduleRequest(String title, String destination, LocalDate startDate, LocalDate endDate, List<VisitDate> dayDetail) {
         this.title = title;
         this.destination = destination;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.visitDates = visitDates;
+        this.dayDetail = dayDetail;
     }
 
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -58,16 +58,16 @@ public class CreateScheduleRequest {
         private LocalDate travelDate;
         @NotNull
         @Valid
-        private List<VisitPlace> visitPlaces;
+        private List<VisitPlace> places;
 
         @Builder
-        private VisitDate(LocalDate travelDate, List<VisitPlace> visitPlaces) {
+        private VisitDate(LocalDate travelDate, List<VisitPlace> places) {
             this.travelDate = travelDate;
-            this.visitPlaces = visitPlaces;
+            this.places = places;
         }
 
-        public List<VisitPlace> getVisitPlaces() {
-            return Collections.unmodifiableList(visitPlaces);
+        public List<VisitPlace> getPlaces() {
+            return Collections.unmodifiableList(places);
         }
 
         @Getter

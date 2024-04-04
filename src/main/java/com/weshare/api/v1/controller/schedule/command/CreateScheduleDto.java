@@ -35,7 +35,7 @@ public class CreateScheduleDto {
                 .startDate(createScheduleRequest.getStartDate())
                 .endDate(createScheduleRequest.getEndDate())
                 .visitDates(
-                        createScheduleRequest.getVisitDates()
+                        createScheduleRequest.getDayDetail()
                                 .stream()
                                 .map(TravelDayDto::from)
                                 .toList())
@@ -61,7 +61,7 @@ public class CreateScheduleDto {
             return TravelDayDto.builder()
                     .travelDate(visitDate.getTravelDate())
                     .visitPlaces(
-                            visitDate.getVisitPlaces().stream()
+                            visitDate.getPlaces().stream()
                                     .map(VisitPlaceDto::from)
                                     .toList())
                     .build();
