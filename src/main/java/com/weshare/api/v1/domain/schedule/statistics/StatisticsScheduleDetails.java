@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StatisticsScheduleDetails extends BaseTimeEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
     private Long scheduleId;
@@ -20,13 +21,13 @@ public class StatisticsScheduleDetails extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int totalCommentCount;
     @Column(columnDefinition = "bigint default 0", nullable = false)
-    private long totalPrice;
+    private long totalExpense;
 
     @Builder
-    private StatisticsScheduleDetails(Long scheduleId, int totalViewCount, int totalCommentCount, long totalPrice) {
+    private StatisticsScheduleDetails(Long scheduleId, int totalViewCount, int totalCommentCount, long totalExpense) {
         this.scheduleId = scheduleId;
         this.totalViewCount = totalViewCount;
         this.totalCommentCount = totalCommentCount;
-        this.totalPrice = totalPrice;
+        this.totalExpense = totalExpense;
     }
 }

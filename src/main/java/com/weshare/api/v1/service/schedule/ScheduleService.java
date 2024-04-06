@@ -3,8 +3,10 @@ package com.weshare.api.v1.service.schedule;
 import com.weshare.api.v1.controller.schedule.command.CreateScheduleDto;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.event.schedule.ScheduleCreatedEvent;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,12 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Schedule saveSchedule(final CreateScheduleDto createScheduleDto, User user) {
         Schedule schedule = createSchedule(createScheduleDto);
         schedule.setUser(user);
-        return scheduleRepository.save(schedule);
+        Schedule save = scheduleRepository.save(schedule);
+        eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule.getId(), schedule.getTotalScheduleExpense()));
+        return save;
     }
 
     private Schedule createSchedule(CreateScheduleDto createScheduleDto) {
