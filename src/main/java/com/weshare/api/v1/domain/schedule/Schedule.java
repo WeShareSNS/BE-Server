@@ -25,6 +25,9 @@ public class Schedule extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Destination destination;
 
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int viewCount;
+
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -42,13 +45,20 @@ public class Schedule extends BaseTimeEntity {
 
     @Builder(builderMethodName = "conversionBuilder", buildMethodName = "conversionBuild")
     private Schedule(
-            Long id, String title, Destination destination,
-            Days dayDetails, User user, LocalDateTime createdDate) {
+            Long id,
+            String title,
+            Destination destination,
+            int viewCount,
+            Days dayDetails,
+            User user,
+            LocalDateTime createdDate
+    ) {
         this.id = id;
         this.title = title;
         this.destination = destination;
         this.days = dayDetails;
         this.user = user;
+        this.viewCount = viewCount;
         setCreatedDate(createdDate);
     }
 
@@ -58,6 +68,7 @@ public class Schedule extends BaseTimeEntity {
                 .title(this.title)
                 .destination(this.destination)
                 .dayDetails(dayDetails)
+                .viewCount(this.viewCount)
                 .user(this.user)
                 .createdDate(this.getCreatedDate())
                 .conversionBuild();
