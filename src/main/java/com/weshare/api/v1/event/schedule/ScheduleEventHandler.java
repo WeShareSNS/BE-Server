@@ -20,7 +20,7 @@ import java.util.List;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ScheduleEventListener {
+public class ScheduleEventHandler {
 
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;

@@ -12,12 +12,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
-public class StatisticsScheduleEventListener {
+public class StatisticsScheduleEventHandler {
+
     private final StatisticsScheduleDetailsRepository scheduleDetailsRepository;
     private final StatisticsScheduleTotalCountRepository scheduleTotalCountRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void deletedEvent(ScheduleCreatedEvent createdEvent) {
+    public void scheduleCreatedEvent(ScheduleCreatedEvent createdEvent) {
         StatisticsScheduleDetails statisticsScheduleDetails = createStatisticsScheduleDetails(createdEvent);
         scheduleDetailsRepository.save(statisticsScheduleDetails);
 

@@ -15,7 +15,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class TokenEventListener {
+public class TokenEventHandler {
     private final RefreshTokenRepository tokenRepository;
 
     @Order(2)

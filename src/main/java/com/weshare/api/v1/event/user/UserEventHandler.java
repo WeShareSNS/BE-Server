@@ -11,7 +11,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class UserEventListener {
+public class UserEventHandler {
 
     private final UserRepository userRepository;
 

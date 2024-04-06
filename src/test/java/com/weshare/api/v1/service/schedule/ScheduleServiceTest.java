@@ -5,12 +5,9 @@ import com.weshare.api.v1.controller.schedule.command.CreateScheduleDto;
 import com.weshare.api.v1.controller.schedule.command.CreateScheduleRequest;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
-import com.weshare.api.v1.domain.user.Role;
-import com.weshare.api.v1.domain.user.Social;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
-import com.weshare.api.v1.repository.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +23,6 @@ class ScheduleServiceTest extends ScheduleTestSupport {
     @Autowired
     private ScheduleRepository scheduleRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Test
@@ -35,7 +30,7 @@ class ScheduleServiceTest extends ScheduleTestSupport {
     @Transactional
     public void 여행일정을_저장할_수_있다() throws IOException {
         // given
-        User user = createAndSaveUser();
+        User user = createUserAndSave("test@asdf.com","asdfa","password");
         CreateScheduleRequest request = objectMapper.readValue(getRequestJson(), CreateScheduleRequest.class);
         CreateScheduleDto createScheduleDto = CreateScheduleDto.from(request);
         // when
@@ -48,18 +43,6 @@ class ScheduleServiceTest extends ScheduleTestSupport {
         assertThat(findSchedule.getDestination()).isEqualTo(Destination.SEOUL);
         assertThat(findSchedule.getStartDate()).isEqualTo(LocalDate.of(2024, 12, 3));
         assertThat(findSchedule.getEndDate()).isEqualTo(LocalDate.of(2024, 12, 5));
-    }
-
-    private User createAndSaveUser() {
-        User user = User.builder()
-                .email("asd@asdf.com")
-                .name("test")
-                .password("test")
-                .profileImg("profile")
-                .role(Role.USER)
-                .social(Social.DEFAULT)
-                .build();
-        return userRepository.save(user);
     }
 
     private String getRequestJson() {
