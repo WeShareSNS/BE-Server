@@ -1,6 +1,7 @@
 package com.weshare.api.v1.controller.user;
 
 import com.weshare.api.v1.common.Response;
+import com.weshare.api.v1.controller.user.dto.DeleteUserRequest;
 import com.weshare.api.v1.controller.user.dto.PasswordUpdateRequest;
 import com.weshare.api.v1.controller.user.dto.UserUpdateRequest;
 import com.weshare.api.v1.domain.user.User;
@@ -64,8 +65,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "사용자 탈퇴 성공"),
     })
     @DeleteMapping
-    public ResponseEntity deleteUser(@AuthenticationPrincipal User user) {
-        UserDeleteDto userDeleteDto = new UserDeleteDto(user.getId(), LocalDateTime.now());
+    public ResponseEntity deleteUser(@Valid @RequestBody DeleteUserRequest deleteUserRequest,
+                                     @AuthenticationPrincipal User user) {
+        UserDeleteDto userDeleteDto = new UserDeleteDto(user.getId(), deleteUserRequest.password(), LocalDateTime.now());
         userService.deleteUser(userDeleteDto);
         // 200번이랑 202번이랑 고민됨
         return response.success();

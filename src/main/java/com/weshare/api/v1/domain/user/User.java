@@ -103,6 +103,10 @@ public class User extends BaseTimeEntity implements UserDetails {
     }
 
     public boolean isSamePassword(String password, PasswordEncoder passwordEncoder) {
+        int length = password.length();
+        if (8 > length || length > 16) {
+            return false;
+        }
         return passwordEncoder.matches(password, this.password);
     }
 

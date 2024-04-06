@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public record UserDeleteDto(
         Long userId,
+        String password,
         LocalDateTime deletedAt
 ) {
     public UserDeleteDto {

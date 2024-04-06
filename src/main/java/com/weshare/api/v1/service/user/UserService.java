@@ -64,7 +64,16 @@ public class UserService {
 
     public void deleteUser(UserDeleteDto userDeleteDto) {
         Long userId = userDeleteDto.userId();
+        User user = findUserByIdOrElseThrow(userId);
+        if (!user.isSamePassword(userDeleteDto.password(), passwordEncoder)) {
+            throw new IllegalArgumentException("사용자의 비밀번호가 올바르지 않습니다.");
+        }
         eventPublisher.publishEvent(new UserDeletedEvent(userId, userDeleteDto.deletedAt()));
+    }
+
+    private User findUserByIdOrElseThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자가 존재하지 않습니다."));
     }
 
     public List<UserScheduleDto> getScheduleByUserId(Long userId) {
