@@ -9,7 +9,6 @@ import com.weshare.api.v1.event.schedule.ScheduleCreatedEvent;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import com.weshare.api.v1.repository.schedule.statistics.StatisticsScheduleDetailsRepository;
 import com.weshare.api.v1.repository.schedule.statistics.StatisticsScheduleTotalCountRepository;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.event.RecordApplicationEvents;
@@ -46,6 +45,23 @@ class StatisticsScheduleEventHandlerTest extends ScheduleTestSupport {
         assertThat(statisticsScheduleDetails.getTotalExpense()).isEqualTo(schedule.getTotalScheduleExpense());
         assertThat(statisticsScheduleDetails.getTotalViewCount()).isEqualTo(0);
         assertThat(statisticsScheduleDetails.getTotalCommentCount()).isEqualTo(0);
+    }
+
+    @Test
+    @Transactional
+    public void 여러명_생성() {
+        // given
+        int threadCount = 100;
+
+        // when
+        for (long i = 0; i < threadCount; i++) {
+            long scheduleId = i;
+            ScheduleCreatedEvent scheduleCreatedEvent = new ScheduleCreatedEvent(scheduleId, 30000L);
+            statisticsScheduleEventHandler.scheduleCreatedEvent(scheduleCreatedEvent);
+        }
+        // then
+        StatisticsScheduleTotalCount afterCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate().orElseThrow();
+        assertThat(afterCount.getTotalCount()).isEqualTo(threadCount);
     }
 
 }

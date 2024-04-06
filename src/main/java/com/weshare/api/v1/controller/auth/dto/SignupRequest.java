@@ -17,7 +17,7 @@ public record SignupRequest(
         @Schema(title = "사용자 닉네임", description = "사용자 닉네임을 입력해주세요")
         @Size(min = 2, max = 20, message = "닉네임은 2~20 글자 사이어야 합니다.")
         @NotBlank(message = "이메일은 필수 입니다.")
-        String name,
+        String userName,
         @Schema(title = "사용자 비밀번호", description = "사용자 비밀번호를 입력해주세요")
         @Size(min = 8, max = 16, message = "비밀번호는 8자리 이상 16자리 이하입니다.")
         @NotBlank(message = "비밀번호는 필수 입니다.")
