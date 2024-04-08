@@ -33,13 +33,14 @@ class StatisticsScheduleEventHandlerTest extends ScheduleTestSupport {
         Schedule schedule = createAndSaveSchedule("title", Destination.BUSAN, user);
         ScheduleCreatedEvent scheduleCreatedEvent = new ScheduleCreatedEvent(schedule.getId(), schedule.getTotalScheduleExpense());
 
-        StatisticsScheduleTotalCount beforeCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate()
-                .orElse(new StatisticsScheduleTotalCount());
+        // JPA는 java 컬렉션 처럼 동작하기 때문에 before, after는 같은 참조값이라서 할당으로 해결
+        long beforeCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate()
+                .orElse(new StatisticsScheduleTotalCount()).getTotalCount();
         // when
         statisticsScheduleEventHandler.scheduleCreatedEvent(scheduleCreatedEvent);
         // then
-        StatisticsScheduleTotalCount afterCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate().orElseThrow();
-        assertThat(afterCount.getTotalCount()).isEqualTo(beforeCount.getTotalCount() + 1);
+        long afterCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate().orElseThrow().getTotalCount();
+        assertThat(afterCount).isEqualTo(beforeCount + 1);
         StatisticsScheduleDetails statisticsScheduleDetails = scheduleDetailsRepository.findByScheduleId(schedule.getId()).orElseThrow();
 
         assertThat(statisticsScheduleDetails.getTotalExpense()).isEqualTo(schedule.getTotalScheduleExpense());

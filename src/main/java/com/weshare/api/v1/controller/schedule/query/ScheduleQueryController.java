@@ -41,7 +41,7 @@ public class ScheduleQueryController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String expense,
             @RequestParam(name = "destination", required = false) Set<String> destinations,
-            @PageableDefault(size = 12, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 12, sort = "created-date", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         validator.validateExpenseCondition(expense);
 

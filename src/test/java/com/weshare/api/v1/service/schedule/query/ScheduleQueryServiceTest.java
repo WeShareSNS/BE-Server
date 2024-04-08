@@ -3,12 +3,15 @@ package com.weshare.api.v1.service.schedule.query;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.init.statistics.InitStatisticsScheduleDetails;
+import com.weshare.api.v1.init.statistics.InitStatisticsScheduleTotalCount;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
 import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
-import org.assertj.core.groups.Tuple;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -21,13 +24,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 class ScheduleQueryServiceTest extends ScheduleTestSupport {
 
     @Autowired
     private ScheduleQueryService scheduleQueryService;
+    @Autowired
+    private InitStatisticsScheduleTotalCount initStatisticsScheduleTotalCount;
+    @Autowired
+    private InitStatisticsScheduleDetails initStatisticsScheduleDetails;
 
     @Test
     @Transactional
@@ -52,7 +61,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     public void 여행일정_페이지는_최신글_순으로_조회된다() {
         // given
         ScheduleIds scheduleIds = getIdsAndSaveSchedule();
-        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("createdDate").descending());
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
         // when
         ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder().pageable(pageRequest).build();
         Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
@@ -60,11 +69,182 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
         // then
         assertThat(content)
                 .hasSize(2)
-                .extracting("scheduleId", "expense", "userName", "likesCount", "commentsCount")
+                .extracting("scheduleId", "userName")
                 .containsExactly(
-                        Tuple.tuple(scheduleIds.scheduleIdLast(), 9000L, "test2", 1L, 1L),
-                        Tuple.tuple(scheduleIds.scheduleIdFirst(), 9000L, "test1", 1L, 1L)
+                        tuple(scheduleIds.scheduleIdLast(), "test2"),
+                        tuple(scheduleIds.scheduleIdFirst(), "test1")
                 );
+    }
+
+    @Test
+    @Transactional
+    public void 제목으로_여행일정을_조회할_수_있다() {
+        // given
+        String title = "제목2";
+        User user = createUserAndSave("test14@test.com", "test14", "password");
+        createAndSaveSchedule("제목1", Destination.BUSAN, user);
+        Schedule schedule2 = createAndSaveSchedule(title, Destination.BUSAN, user);
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        // when
+        ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                .pageable(pageRequest)
+                .search(title)
+                .build();
+        Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+        List<SchedulePageDto> content = schedulePage.getContent();
+        // then
+        assertThat(content)
+                .hasSize(1)
+                .extracting("scheduleId", "title", "userName", "destination")
+                .containsExactly(tuple(schedule2.getId(), title, schedule2.getUser().getName(), schedule2.getDestination()));
+    }
+
+    @Test
+    @Transactional
+    public void 목적지로_여행일정을_조회할_수_있다() {
+        // given
+        User user = createUserAndSave("test14@test.com", "test14", "password");
+        Destination destination = Destination.SUWON;
+        Schedule schedule1 = createAndSaveSchedule("제목1", destination, user);
+        createAndSaveSchedule("제목2", Destination.BUSAN, user);
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        // when
+        ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                .destinations(Set.of(destination.getName()))
+                .pageable(pageRequest)
+                .build();
+        Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+        List<SchedulePageDto> content = schedulePage.getContent();
+        // then
+        assertThat(content)
+                .hasSize(1)
+                .extracting("scheduleId", "title", "userName", "destination")
+                .containsExactly(tuple(schedule1.getId(), schedule1.getTitle(), schedule1.getUser().getName(), destination));
+    }
+
+    @Transactional
+    @DisplayName("여행일정 총 비용이 9000원일 때 여행비용을 통해서 조회할 수 있다.")
+    @TestFactory
+    Collection<DynamicTest> 여행비용_범위로_여행일정을_조회할_수_있다() {
+        // given
+        User user = createUserAndSave("test14@test.com", "test14", "password");
+        Schedule schedule = createAndSaveSchedule("제목1", Destination.SUWON, user);
+        initStatisticsScheduleDetails.init();
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        return List.of(
+                DynamicTest.dynamicTest("9000~10000원을 지정하면 조회시 조회가 가능하다.", () -> {
+                    //given
+                    String expenseCondition = "9000~10000";
+                    //when
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                            .pageable(pageRequest)
+                            .expenseCondition(expenseCondition)
+                            .build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+                    List<SchedulePageDto> content = schedulePage.getContent();
+                    //then
+                    Assertions.assertThat(schedule.getTotalScheduleExpense()).isEqualTo(9000L);
+                    assertThat(content)
+                            .hasSize(1)
+                            .extracting("scheduleId", "title", "userName", "destination")
+                            .containsExactly(
+                                    tuple(schedule.getId(), schedule.getTitle(), schedule.getUser().getName(), schedule.getDestination())
+                            );
+                }),
+                DynamicTest.dynamicTest("0~9000원을 사이를 지정하면 조회가 가능하다.", () -> {
+                    //given
+                    String expenseCondition = "~9000";
+                    //when
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                            .pageable(pageRequest)
+                            .expenseCondition(expenseCondition)
+                            .build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+                    List<SchedulePageDto> content = schedulePage.getContent();
+                    //then
+                    Assertions.assertThat(schedule.getTotalScheduleExpense()).isEqualTo(9000L);
+                    assertThat(content)
+                            .hasSize(1)
+                            .extracting("scheduleId", "title", "userName", "destination")
+                            .containsExactly(
+                                    tuple(schedule.getId(), schedule.getTitle(), schedule.getUser().getName(), schedule.getDestination())
+                            );
+                }),
+                DynamicTest.dynamicTest("0~범위 끝까지 지정하면 조회가 가능하다.", () -> {
+                    //given
+                    String expenseCondition = "~";
+                    //when
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                            .pageable(pageRequest)
+                            .expenseCondition(expenseCondition)
+                            .build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+                    List<SchedulePageDto> content = schedulePage.getContent();
+                    //then
+                    Assertions.assertThat(schedule.getTotalScheduleExpense()).isEqualTo(9000L);
+                    assertThat(content)
+                            .hasSize(1)
+                            .extracting("scheduleId", "title", "userName", "destination")
+                            .containsExactly(
+                                    tuple(schedule.getId(), schedule.getTitle(), schedule.getUser().getName(), schedule.getDestination())
+                            );
+                })
+        );
+    }
+
+    @Transactional
+    @DisplayName("여행일정 총 비용이 9000원일 때 범위를 넘어가면 여행비용을 통해서 조회할 수 없다.")
+    @TestFactory
+    Collection<DynamicTest> 여행비용_범위를_넘어가면_여행일정을_조회할_수_없다() {
+        // given
+        User user = createUserAndSave("test14@test.com", "test14", "password");
+        Schedule schedule = createAndSaveSchedule("제목1", Destination.SUWON, user);
+        initStatisticsScheduleDetails.init();
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        return List.of(
+                DynamicTest.dynamicTest("9500~범위 끝까지 사이를 지정하면 조회되지 않는다.", () -> {
+                    //given
+                    String expenseCondition = "9500~";
+                    //when
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                            .pageable(pageRequest)
+                            .expenseCondition(expenseCondition)
+                            .build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+                    List<SchedulePageDto> content = schedulePage.getContent();
+                    //then
+                    Assertions.assertThat(schedule.getTotalScheduleExpense()).isEqualTo(9000L);
+                    assertThat(content.isEmpty()).isTrue();
+                }),
+                DynamicTest.dynamicTest("0~8999원 사이를 지정하면 조회되지 않는다.", () -> {
+                    //given
+                    String expenseCondition = "~8999";
+                    //when
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                            .pageable(pageRequest)
+                            .expenseCondition(expenseCondition)
+                            .build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+                    List<SchedulePageDto> content = schedulePage.getContent();
+                    //then
+                    Assertions.assertThat(schedule.getTotalScheduleExpense()).isEqualTo(9000L);
+                    assertThat(content.isEmpty()).isTrue();
+                }),
+                DynamicTest.dynamicTest("5000~8900원 사이를 지정하면 조회되지 않는다.", () -> {
+                    //given
+                    String expenseCondition = "5000~8900";
+                    //when
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
+                            .pageable(pageRequest)
+                            .expenseCondition(expenseCondition)
+                            .build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+                    List<SchedulePageDto> content = schedulePage.getContent();
+                    //then
+                    Assertions.assertThat(schedule.getTotalScheduleExpense()).isEqualTo(9000L);
+                    assertThat(content.isEmpty()).isTrue();
+                })
+        );
     }
 
     @Transactional
@@ -72,10 +252,11 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     Collection<DynamicTest> 현재_페이지가_처음인지_마지막인지_알_수_있다() {
         // given
         ScheduleIds scheduleIds = getIdsAndSaveSchedule();
+        initStatisticsScheduleTotalCount.init();
         return List.of(
                 DynamicTest.dynamicTest("첫 페이지인지 알 수 있다.", () -> {
                     //given
-                    Pageable pageRequest = PageRequest.of(0, 1, Sort.by("createdDate").descending());
+                    Pageable pageRequest = PageRequest.of(0, 1, Sort.by("created-date").descending());
                     // when
                     ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder().pageable(pageRequest).build();
                     Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
@@ -83,9 +264,9 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                     // then
                     assertThat(content)
                             .hasSize(1)
-                            .extracting("scheduleId", "expense", "userName", "likesCount", "commentsCount")
+                            .extracting("scheduleId", "userName")
                             .containsExactly(
-                                    Tuple.tuple(scheduleIds.scheduleIdLast(), 9000L, "test2", 1L, 1L)
+                                    tuple(scheduleIds.scheduleIdLast(), "test2")
                             );
                     assertThat(schedulePage.getTotalPages()).isEqualTo(2);
                     assertThat(schedulePage.isFirst()).isEqualTo(true);
@@ -93,7 +274,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                 }),
                 DynamicTest.dynamicTest("마지막 페이지인지 알 수 있다.", () -> {
                     //given
-                    Pageable pageRequest = PageRequest.of(1, 1, Sort.by("createdDate").descending());
+                    Pageable pageRequest = PageRequest.of(1, 1, Sort.by("created-date").descending());
                     // when
                     ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder().pageable(pageRequest).build();
                     Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
@@ -101,9 +282,9 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                     // then
                     assertThat(content)
                             .hasSize(1)
-                            .extracting("scheduleId", "expense", "userName", "likesCount", "commentsCount")
+                            .extracting("scheduleId", "userName")
                             .containsExactly(
-                                    Tuple.tuple(scheduleIds.scheduleIdFirst(), 9000L, "test1", 1L, 1L)
+                                    tuple(scheduleIds.scheduleIdFirst(), "test1")
                             );
                     assertThat(schedulePage.getTotalPages()).isEqualTo(2);
                     assertThat(schedulePage.isFirst()).isEqualTo(false);

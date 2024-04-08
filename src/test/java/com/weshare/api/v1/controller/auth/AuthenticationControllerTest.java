@@ -130,7 +130,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         String name = "test2";
         // when // then
         mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-name")
-                        .param("name", name)
+                        .param("userName", name)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -142,7 +142,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
         String name = "qweasdzxcqweasdzxcqweasdzxc";
 
         mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-name")
-                        .param("name", name)
+                        .param("userName", name)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
@@ -160,7 +160,7 @@ class AuthenticationControllerTest extends IntegrationMvcTestSupport {
 
         // when // then
         mockMvc.perform(get(PREFIX_ENDPOINT + "/signup/duplicate-name")
-                        .param("name", name)
+                        .param("userName", name)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof UsernameDuplicateException))

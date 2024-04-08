@@ -42,8 +42,14 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .where(statisticsScheduleDetails.scheduleId.in(scheduleIds))
                 .fetch();
 
-        return scheduleDetails.stream()
-                .collect(toMap(StatisticsScheduleDetails::getScheduleId, Function.identity()));
+        return scheduleIds.stream()
+                .collect(toMap(
+                        Function.identity(),
+                        id -> scheduleDetails.stream()
+                                .filter(s -> s.getScheduleId().equals(id))
+                                .findAny()
+                                .orElse(new StatisticsScheduleDetails(id))
+                ));
     }
 
     @Override

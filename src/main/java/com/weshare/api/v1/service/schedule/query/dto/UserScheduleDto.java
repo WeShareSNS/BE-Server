@@ -13,6 +13,6 @@ public record UserScheduleDto(
         String title,
         @Schema(title = "사용자가 작성한 여행일정 등록 날짜", description = "사용자가 작성한 여행일정 등록 날짜")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm a", timezone = "Asia/Seoul", locale = "en_US")
-        LocalDateTime createAt
+        LocalDateTime createdDate
 ) {
 }

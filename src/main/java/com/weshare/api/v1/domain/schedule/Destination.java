@@ -1,5 +1,7 @@
 package com.weshare.api.v1.domain.schedule;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -19,6 +21,8 @@ public enum Destination {
     ULSAN("울산"),
     JEONJU("전주"),
     CHUNCHEON("춘천");
+
+    @Getter
     private final String name;
 
     Destination(String name) {

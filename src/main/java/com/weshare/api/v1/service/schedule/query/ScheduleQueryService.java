@@ -56,7 +56,7 @@ public class ScheduleQueryService {
     }
 
     private List<Destination> getDestinations(Set<String> destinations) {
-        if (destinations == null) {
+        if (destinations == null || destinations.isEmpty()) {
             return List.of(Destination.EMPTY);
         }
         return destinations.stream()
