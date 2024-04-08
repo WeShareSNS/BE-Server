@@ -2,7 +2,7 @@ package com.weshare.api.v1.service.like;
 
 import com.weshare.api.v1.controller.like.dto.CreateLikeDto;
 import com.weshare.api.v1.controller.like.dto.DeleteLikeDto;
-import com.weshare.api.v1.domain.like.exception.DuplicateLikeException;
+import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;

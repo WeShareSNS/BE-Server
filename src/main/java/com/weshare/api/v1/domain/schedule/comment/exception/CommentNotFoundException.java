@@ -1,4 +1,4 @@
-package com.weshare.api.v1.domain.comment.exception;
+package com.weshare.api.v1.domain.schedule.comment.exception;
 
 public class CommentNotFoundException extends RuntimeException {
     public CommentNotFoundException() {

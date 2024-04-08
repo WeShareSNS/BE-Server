@@ -5,6 +5,7 @@ import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
+import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
 import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
 import org.assertj.core.groups.Tuple;
@@ -53,7 +54,8 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
         ScheduleIds scheduleIds = getIdsAndSaveSchedule();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("createdDate").descending());
         // when
-        Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(pageRequest);
+        ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder().pageable(pageRequest).build();
+        Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
         List<SchedulePageDto> content = schedulePage.getContent();
         // then
         assertThat(content)
@@ -75,7 +77,8 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                     //given
                     Pageable pageRequest = PageRequest.of(0, 1, Sort.by("createdDate").descending());
                     // when
-                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(pageRequest);
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder().pageable(pageRequest).build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
                     List<SchedulePageDto> content = schedulePage.getContent();
                     // then
                     assertThat(content)
@@ -92,7 +95,8 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
                     //given
                     Pageable pageRequest = PageRequest.of(1, 1, Sort.by("createdDate").descending());
                     // when
-                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(pageRequest);
+                    ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder().pageable(pageRequest).build();
+                    Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
                     List<SchedulePageDto> content = schedulePage.getContent();
                     // then
                     assertThat(content)

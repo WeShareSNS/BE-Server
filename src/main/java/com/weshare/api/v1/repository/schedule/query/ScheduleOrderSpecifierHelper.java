@@ -30,8 +30,11 @@ public class ScheduleOrderSpecifierHelper {
             case "destination" -> {
                 return QueryDslUtil.getSortedColumn(direction, schedule, "destination");
             }
-            case "createdDate" -> {
+            case "created-date" -> {
                 return QueryDslUtil.getSortedColumn(direction, schedule, "createdDate");
+            }
+            case "view-count" -> {
+                return QueryDslUtil.getSortedColumn(direction, schedule, "viewCount");
             }
             default -> throw new IllegalStateException("정렬 조건이 올바르지 않습니다.");
         }

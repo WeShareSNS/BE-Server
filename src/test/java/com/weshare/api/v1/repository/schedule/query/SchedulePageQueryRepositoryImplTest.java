@@ -1,7 +1,8 @@
 package com.weshare.api.v1.repository.schedule.query;
 
+import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
+import com.weshare.api.v1.repository.schedule.query.dto.ScheduleConditionPageDto;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,9 @@ class SchedulePageQueryRepositoryImplTest extends ScheduleTestSupport {
         // given
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("createdDate").descending());
         // when
-        Page<SchedulePageFlatDto> schedulePage = schedulePageQueryRepository.findSchedulePage(pageRequest);
-        List<SchedulePageFlatDto> content = schedulePage.getContent();
+        ScheduleConditionPageDto pageDto = ScheduleConditionPageDto.builder().pageable(pageRequest).build();
+        Page<Schedule> schedulePage = schedulePageQueryRepository.findSchedulePage(pageDto);
+        List<Schedule> content = schedulePage.getContent();
         // then
         assertThat(content).hasSize(0);
         assertThat(schedulePage.getTotalPages()).isEqualTo(0);
@@ -44,8 +46,9 @@ class SchedulePageQueryRepositoryImplTest extends ScheduleTestSupport {
         ScheduleIds scheduleIds = getIdsAndSaveSchedule();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("createdDate").descending());
         // when
-        Page<SchedulePageFlatDto> schedulePage = schedulePageQueryRepository.findSchedulePage(pageRequest);
-        List<SchedulePageFlatDto> content = schedulePage.getContent();
+        ScheduleConditionPageDto pageDto = ScheduleConditionPageDto.builder().pageable(pageRequest).build();
+        Page<Schedule> schedulePage = schedulePageQueryRepository.findSchedulePage(pageDto);
+        List<Schedule> content = schedulePage.getContent();
         // then
         assertThat(content)
                 .hasSize(2)
@@ -66,8 +69,9 @@ class SchedulePageQueryRepositoryImplTest extends ScheduleTestSupport {
                     //given
                     Pageable pageRequest = PageRequest.of(0, 1, Sort.by("createdDate").descending());
                     // when
-                    Page<SchedulePageFlatDto> schedulePage = schedulePageQueryRepository.findSchedulePage(pageRequest);
-                    List<SchedulePageFlatDto> content = schedulePage.getContent();
+                    ScheduleConditionPageDto pageDto = ScheduleConditionPageDto.builder().pageable(pageRequest).build();
+                    Page<Schedule> schedulePage = schedulePageQueryRepository.findSchedulePage(pageDto);
+                    List<Schedule> content = schedulePage.getContent();
                     // then
                     assertThat(content)
                             .hasSize(1)
@@ -83,8 +87,9 @@ class SchedulePageQueryRepositoryImplTest extends ScheduleTestSupport {
                     //given
                     Pageable pageRequest = PageRequest.of(1, 1, Sort.by("createdDate").descending());
                     // when
-                    Page<SchedulePageFlatDto> schedulePage = schedulePageQueryRepository.findSchedulePage(pageRequest);
-                    List<SchedulePageFlatDto> content = schedulePage.getContent();
+                    ScheduleConditionPageDto pageDto = ScheduleConditionPageDto.builder().pageable(pageRequest).build();
+                    Page<Schedule> schedulePage = schedulePageQueryRepository.findSchedulePage(pageDto);
+                    List<Schedule> content = schedulePage.getContent();
                     // then
                     assertThat(content)
                             .hasSize(1)

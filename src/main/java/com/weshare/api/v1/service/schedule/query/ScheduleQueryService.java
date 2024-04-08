@@ -1,19 +1,26 @@
 package com.weshare.api.v1.service.schedule.query;
 
+import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
+import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
+import com.weshare.api.v1.repository.schedule.query.ExpenseCondition;
 import com.weshare.api.v1.repository.schedule.query.ScheduleDetailQueryRepository;
 import com.weshare.api.v1.repository.schedule.query.SchedulePageQueryRepository;
-import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
+import com.weshare.api.v1.repository.schedule.query.SearchCondition;
+import com.weshare.api.v1.repository.schedule.query.dto.ScheduleConditionPageDto;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
+import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
+import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +30,68 @@ public class ScheduleQueryService {
     private final ScheduleDetailQueryRepository detailQueryRepository;
     private final ScheduleRepository scheduleRepository;
 
-    public Page<SchedulePageDto> getSchedulePage(Pageable pageable) {
-        Page<SchedulePageFlatDto> schedulePage = pageQueryRepository.findSchedulePage(pageable);
-        return schedulePage.map(SchedulePageDto::from);
+    public Page<SchedulePageDto> getSchedulePage(ScheduleFilterPageDto scheduleFilterPageDto) {
+
+        ScheduleConditionPageDto scheduleConditionPageDto = getScheduleConditionPageDto(scheduleFilterPageDto);
+        final Page<Schedule> schedulePage = pageQueryRepository.findSchedulePage(scheduleConditionPageDto);
+        final List<Long> scheduleIds = getScheduleIds(schedulePage);
+
+        final Map<Long, StatisticsScheduleDetails> statisticsDetailsScheduleIdMap = pageQueryRepository.findStatisticsDetailsScheduleIdMap(scheduleIds);
+        final Map<Long, Boolean> likedSchedulesMap = pageQueryRepository.findLikedSchedulesMap(scheduleIds, scheduleConditionPageDto.getUserId());
+
+        return schedulePage.map(s -> convertSchedulePageDto(s, statisticsDetailsScheduleIdMap, likedSchedulesMap));
+    }
+    private ScheduleConditionPageDto getScheduleConditionPageDto(ScheduleFilterPageDto scheduleFilterPageDto) {
+        final List<Destination> destinations = getDestinations(scheduleFilterPageDto.getDestinations());
+        ExpenseCondition expenseCondition = ExpenseCondition.convert(scheduleFilterPageDto.getExpenseCondition());
+        SearchCondition searchCondition = new SearchCondition(scheduleFilterPageDto.getSearch());
+
+        return ScheduleConditionPageDto.builder()
+                .userId(scheduleFilterPageDto.getUserId())
+                .destinations(destinations)
+                .expenseCondition(expenseCondition)
+                .searchCondition(searchCondition)
+                .pageable(scheduleFilterPageDto.getPageable())
+                .build();
+    }
+
+    private List<Destination> getDestinations(Set<String> destinations) {
+        if (destinations == null) {
+            return List.of(Destination.EMPTY);
+        }
+        return destinations.stream()
+                .map(Destination::findDestinationByName)
+                .toList();
+    }
+
+    private List<Long> getScheduleIds(Page<Schedule> schedulePage) {
+        return schedulePage.getContent().stream()
+                .map(Schedule::getId)
+                .toList();
+    }
+
+    private SchedulePageDto convertSchedulePageDto(
+            Schedule schedule,
+            Map<Long, StatisticsScheduleDetails> statisticsScheduleDetailsMap,
+            Map<Long, Boolean> likedSchedulesMap
+    ) {
+        final Long scheduleId = schedule.getId();
+        final StatisticsScheduleDetails statisticsScheduleDetails = statisticsScheduleDetailsMap.get(scheduleId);
+
+        return SchedulePageDto.builder()
+                .scheduleId(schedule.getId())
+                .title(schedule.getTitle())
+                .destination(schedule.getDestination())
+                .expense(statisticsScheduleDetails.getTotalExpense())
+                .userName(schedule.getUser().getName())
+                .likesCount(statisticsScheduleDetails.getTotalLikeCount())
+                .commentsCount(statisticsScheduleDetails.getTotalCommentCount())
+                .viewCount(statisticsScheduleDetails.getTotalViewCount())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .createdDate(LocalDate.from(schedule.getCreatedDate()))
+                .isLiked(likedSchedulesMap.get(scheduleId))
+                .build();
     }
 
     public ScheduleDetailDto getScheduleDetails(Long scheduleId) {
@@ -33,17 +99,17 @@ public class ScheduleQueryService {
             throw new IllegalArgumentException("게시물에 접근할 수 없습니다.");
         }
         final Schedule scheduleDetail = detailQueryRepository.findScheduleDetail(scheduleId);
-        // service에서 변환하지 않고 dto 정적 메서드 이용하기
         return ScheduleDetailDto.from(scheduleDetail);
     }
 
     public List<UserScheduleDto> findAllScheduleByUserId(Long userId) {
         List<Schedule> findSchedules = scheduleRepository.findByUserId(userId);
         return findSchedules.stream()
-                .map(this::from)
+                .map(this::createUserScheduleDto)
                 .toList();
     }
-    private UserScheduleDto from(Schedule schedule) {
+
+    private UserScheduleDto createUserScheduleDto(Schedule schedule) {
         return new UserScheduleDto(schedule.getId(), schedule.getTitle(), schedule.getCreatedDate());
     }
 }

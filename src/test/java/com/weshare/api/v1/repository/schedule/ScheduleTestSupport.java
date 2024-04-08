@@ -1,7 +1,7 @@
 package com.weshare.api.v1.repository.schedule;
 
-import com.weshare.api.v1.domain.comment.Comment;
-import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.schedule.comment.Comment;
+import com.weshare.api.v1.domain.schedule.like.Like;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;

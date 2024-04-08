@@ -1,8 +1,11 @@
 package com.weshare.api.v1.domain.schedule;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public enum Destination {
+
+    EMPTY(null),
     SEOUL("서울"),
     GYEONGGI("경기"),
     BUSAN("부산"),
@@ -22,10 +25,18 @@ public enum Destination {
         this.name = name;
     }
 
-    public static Destination findDestinationByName(String name) {
+    public static Destination findDestinationByNameOrElseThrow(String name) {
         return Arrays.stream(Destination.values())
+                .filter(d -> Objects.equals(d.name, name))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("목적지 이름이 올바르지 않습니다."));
+    }
+
+    public static Destination findDestinationByName(String name) {
+        return Arrays.stream(Destination.values())
+                .filter(d -> Objects.equals(d.name, name))
+                .findAny()
+                .orElse(EMPTY);
     }
 
 }

@@ -29,7 +29,7 @@ public class ScheduleService {
     private Schedule createSchedule(CreateScheduleDto createScheduleDto) {
         return Schedule.builder()
                 .title(createScheduleDto.getTitle())
-                .destination(Destination.findDestinationByName(createScheduleDto.getDestination()))
+                .destination(Destination.findDestinationByNameOrElseThrow(createScheduleDto.getDestination()))
                 .days(
                         new Days(
                                 createScheduleDto.getVisitDates().stream()

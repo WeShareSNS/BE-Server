@@ -3,8 +3,8 @@ package com.weshare.api.v1.service.comment;
 import com.weshare.api.v1.controller.comment.dto.DeleteCommentDto;
 import com.weshare.api.v1.controller.comment.dto.UpdateCommentDto;
 import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
-import com.weshare.api.v1.domain.comment.Comment;
-import com.weshare.api.v1.domain.comment.exception.CommentNotFoundException;
+import com.weshare.api.v1.domain.schedule.comment.Comment;
+import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.user.User;
@@ -12,13 +12,10 @@ import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -1,14 +1,13 @@
 package com.weshare.api.v1.repository.schedule.query.dto;
 
-import com.weshare.api.v1.domain.schedule.Day;
 import com.weshare.api.v1.domain.schedule.Destination;
-import com.weshare.api.v1.domain.user.User;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 
 @Getter
 @ToString
@@ -19,30 +18,28 @@ public class SchedulePageFlatDto {
     private Destination destination;
     private LocalDate startDate;
     private LocalDate endDate;
-    private User user;
+    private String username;
     private LocalDateTime createdDate;
-    private long likesCount;
-    private long commentsCount;
-    @Setter
-    private List<Day> days;
+    private Boolean isLiked;
 
     public SchedulePageFlatDto(
-            Long scheduleId, String title, Destination destination,
-            LocalDate startDate, LocalDate endDate, User user,
-            LocalDateTime createdDate, long likesCount, long commentsCount
+            Long scheduleId,
+            String title,
+            Destination destination,
+            LocalDate startDate,
+            LocalDate endDate,
+            String username,
+            LocalDateTime createdDate,
+            boolean isLiked
     ) {
         this.scheduleId = scheduleId;
         this.title = title;
         this.destination = destination;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.user = user;
-        this.likesCount = likesCount;
-        this.commentsCount = commentsCount;
+        this.username = username;
         this.createdDate = createdDate;
+        this.isLiked = isLiked;
     }
 
-    public List<Day> getDays() {
-        return Collections.unmodifiableList(days);
-    }
 }

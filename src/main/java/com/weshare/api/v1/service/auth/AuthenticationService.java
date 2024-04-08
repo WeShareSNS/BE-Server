@@ -42,7 +42,7 @@ public class AuthenticationService {
 
     public User join(SignupRequest request) {
         checkDuplicateEmailForSignup(request.email());
-        checkDuplicateNameForSignup(request.name());
+        checkDuplicateNameForSignup(request.userName());
         return repository.save(createUser(request));
     }
 
@@ -76,7 +76,7 @@ public class AuthenticationService {
         return User.builder()
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .name(request.name())
+                .name(request.userName())
                 .birthDate(birthDate)
                 .profileImg(DEFAULT_PROFILE_IMG_URL)
                 .role(Role.USER)

@@ -1,7 +1,7 @@
-package com.weshare.api.v1.config;
+package com.weshare.api.v1.init.schedule;
 
-import com.weshare.api.v1.domain.comment.Comment;
-import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.schedule.comment.Comment;
+import com.weshare.api.v1.domain.schedule.like.Like;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;
@@ -48,7 +48,7 @@ public class InitSchedule {
             User user2 = createUserAndSave("test2@asd.com", "test2", "test1234");
 
             for (int i = 1; i <= 100; i++) {
-                Schedule schedule = createSchedule("제목" + i);
+                Schedule schedule = createSchedule("제목 " + i);
                 schedule.setUser(user2);
                 if (i % 2 == 0) {
                     schedule.setUser(user1);
@@ -73,7 +73,7 @@ public class InitSchedule {
         private Schedule createSchedule(String title) {
             return Schedule.builder()
                     .title(title)
-                    .destination(Destination.findDestinationByName("서울"))
+                    .destination(Destination.findDestinationByNameOrElseThrow("서울"))
                     .days(createDays())
                     .build();
         }

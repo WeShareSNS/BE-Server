@@ -2,7 +2,7 @@ package com.weshare.api.v1.controller.comment.advice;
 
 import com.weshare.api.v1.common.Response;
 import com.weshare.api.v1.controller.comment.CommentErrorCode;
-import com.weshare.api.v1.domain.comment.exception.CommentNotFoundException;
+import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundException;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

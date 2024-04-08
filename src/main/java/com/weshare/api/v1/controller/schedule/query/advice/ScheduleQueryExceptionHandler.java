@@ -1,6 +1,7 @@
 package com.weshare.api.v1.controller.schedule.query.advice;
 
 import com.weshare.api.v1.common.Response;
+import com.weshare.api.v1.controller.schedule.command.advice.ScheduleCommendErrorCode;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,20 @@ import static com.weshare.api.v1.controller.schedule.query.advice.ScheduleQueryE
 public class ScheduleQueryExceptionHandler {
 
     private final Response response;
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity illegalArgumentExceptionHandler (IllegalArgumentException e){
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(ScheduleCommendErrorCode.BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity illegalStateExceptionHandler (IllegalStateException e){
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(ScheduleCommendErrorCode.BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, e.getMessage());
+    }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ScheduleNotFoundException.class)

@@ -21,4 +21,8 @@ public class StatisticsScheduleTotalCount extends BaseTimeEntity {
         totalCount += 1;
     }
 
+    public void syncScheduleTotalCount(long totalCount) {
+        this.totalCount = totalCount;
+    }
+
 }

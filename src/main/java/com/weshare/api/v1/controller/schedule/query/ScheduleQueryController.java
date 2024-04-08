@@ -1,9 +1,11 @@
 package com.weshare.api.v1.controller.schedule.query;
 
 import com.weshare.api.v1.common.Response;
-import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
+import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.schedule.query.ScheduleQueryService;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
+import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
+import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -14,10 +16,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @Tag(name = "schedule-query-controller", description = "여행일정 조회 컨트롤러")
 @RestController
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ScheduleQueryController {
 
+    private final ScheduleQueryValidator validator;
     private final ScheduleQueryService scheduleQueryService;
     private final Response response;
 
@@ -34,9 +37,33 @@ public class ScheduleQueryController {
     })
     @GetMapping("/schedules")
     public Page<SchedulePageDto> getSchedule(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String expense,
+            @RequestParam(name = "destination", required = false) Set<String> destinations,
             @PageableDefault(size = 12, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return scheduleQueryService.getSchedulePage(pageable);
+        validator.validateExpenseCondition(expense);
+
+        ScheduleFilterPageDto scheduleFilterPageDto =
+                createScheduleFilterPageDto(user, search, expense, destinations, pageable);
+        return scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
+    }
+
+    private ScheduleFilterPageDto createScheduleFilterPageDto(
+            User user,
+            String search,
+            String expense,
+            Set<String> destinations,
+            Pageable pageable
+    ) {
+        return ScheduleFilterPageDto.builder()
+                .userId(user == null ? null : user.getId())
+                .search(search)
+                .expenseCondition(expense)
+                .destinations(destinations)
+                .pageable(pageable)
+                .build();
     }
 
     @Operation(summary = "여행일정 상세보기 API", description = "특정 ")

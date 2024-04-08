@@ -1,6 +1,6 @@
 package com.weshare.api.v1.repository.like;
 
-import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.schedule.like.Like;
 import com.weshare.api.v1.domain.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -21,9 +21,16 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     Slice<Like> findAllLikeBySchedule(Long ScheduleId, Pageable pageable);
 
     Optional<Like> findLikeByUser(User user);
+
     @Query("""
-    select l from Like l  
-    where l.schedule.id in :scheduleIds or l.user.id = :userId
-    """)
-    List<Like> findLikeByScheduleIds(List<Long> scheduleIds, Long userId);
+            select l from Like l  
+            where l.schedule.id in :scheduleIds or l.user.id = :userId
+            """)
+    List<Like> findLikeByScheduleIdsAndUserId(List<Long> scheduleIds, Long userId);
+
+    @Query("""
+            select l from Like l  
+            where l.schedule.id in :scheduleIds
+            """)
+    List<Like> findLikeByScheduleIds(List<Long> scheduleIds);
 }

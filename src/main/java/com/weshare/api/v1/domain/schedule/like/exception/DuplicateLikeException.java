@@ -1,4 +1,4 @@
-package com.weshare.api.v1.domain.like.exception;
+package com.weshare.api.v1.domain.schedule.like.exception;
 
 public class DuplicateLikeException extends RuntimeException {
     public DuplicateLikeException() {

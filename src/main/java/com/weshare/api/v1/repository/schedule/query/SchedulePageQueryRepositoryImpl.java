@@ -1,31 +1,32 @@
 package com.weshare.api.v1.repository.schedule.query;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.weshare.api.v1.domain.schedule.Day;
-import com.weshare.api.v1.domain.schedule.Expense;
-import com.weshare.api.v1.domain.schedule.Location;
-import com.weshare.api.v1.domain.schedule.Place;
-import com.weshare.api.v1.repository.schedule.query.dto.DayKey;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
+import com.weshare.api.v1.domain.schedule.Destination;
+import com.weshare.api.v1.domain.schedule.Schedule;
+import com.weshare.api.v1.domain.schedule.like.Like;
+import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
+import com.weshare.api.v1.repository.schedule.query.dto.ScheduleConditionPageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-import static com.weshare.api.v1.domain.comment.QComment.comment;
-import static com.weshare.api.v1.domain.like.QLike.like;
-import static com.weshare.api.v1.domain.schedule.QDayWithPlaceDetailsView.dayWithPlaceDetailsView;
 import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
+import static com.weshare.api.v1.domain.schedule.like.QLike.like;
+import static com.weshare.api.v1.domain.schedule.statistics.QStatisticsScheduleDetails.statisticsScheduleDetails;
+import static com.weshare.api.v1.domain.schedule.statistics.QStatisticsScheduleTotalCount.statisticsScheduleTotalCount;
+import static java.util.stream.Collectors.toMap;
 
 @Repository
 @Transactional(readOnly = true)
@@ -36,127 +37,91 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
     private final ScheduleOrderSpecifierHelper orderSpecifierHelper;
 
     @Override
-    public Page<SchedulePageFlatDto> findSchedulePage(Pageable pageable) {
-        List<OrderSpecifier> orders = orderSpecifierHelper.getOrderSpecifiers(pageable);
+    public Map<Long, StatisticsScheduleDetails> findStatisticsDetailsScheduleIdMap(List<Long> scheduleIds) {
+        final List<StatisticsScheduleDetails> scheduleDetails = queryFactory.selectFrom(statisticsScheduleDetails)
+                .where(statisticsScheduleDetails.scheduleId.in(scheduleIds))
+                .fetch();
+
+        return scheduleDetails.stream()
+                .collect(toMap(StatisticsScheduleDetails::getScheduleId, Function.identity()));
+    }
+
+    @Override
+    public Map<Long, Boolean> findLikedSchedulesMap(final List<Long> scheduleIds, Long userId) {
+        if (userId == null) {
+            return scheduleIds.stream()
+                    .collect(toMap(Function.identity(), user -> false));
+        }
+
+        final List<Like> likes = queryFactory.selectFrom(like)
+                .where(like.schedule.id.in(scheduleIds), like.user.id.eq(userId))
+                .fetch();
+
+        return scheduleIds.stream()
+                .collect(toMap(
+                        Function.identity(),
+                        id -> likes.stream().anyMatch(l -> l.isSameScheduleId(id))
+                ));
+    }
+
+    @Override
+    public Page<Schedule> findSchedulePage(ScheduleConditionPageDto scheduleConditionPageDto) {
         // count query
-        final JPAQuery<Long> scheduleCountQuery = getScheduleCountQuery();
+        final JPAQuery<Long> countQuery = getCountQuery();
         // content query
-        final List<SchedulePageFlatDto> content = getContent(pageable, orders);
-
-        Set<Long> scheduleIds = getScheduleIds(content);
-        final Map<Long, List<Day>> scheduleWithDayDetailsMap = getScheduleWithDayDetailsMap(scheduleIds);
-        setDayDetails(content, scheduleWithDayDetailsMap);
-
-        return PageableExecutionUtils.getPage(content, pageable, scheduleCountQuery::fetchOne);
+        final List<Schedule> content = getContent(scheduleConditionPageDto);
+        return PageableExecutionUtils.getPage(content, scheduleConditionPageDto.getPageable(), countQuery::fetchOne);
     }
 
-    private JPAQuery<Long> getScheduleCountQuery() {
-        return queryFactory.select(schedule.count())
-                .from(schedule);
+    private JPAQuery<Long> getCountQuery() {
+        return queryFactory.select(statisticsScheduleTotalCount.totalCount)
+                .from(statisticsScheduleTotalCount)
+                .orderBy(statisticsScheduleTotalCount.modifiedDate.asc())
+                .limit(1);
     }
 
-    private List<SchedulePageFlatDto> getContent(Pageable pageable, List<OrderSpecifier> orders) {
-        return queryFactory.select(
-                        Projections.constructor(SchedulePageFlatDto.class,
-                                schedule.id,
-                                schedule.title,
-                                schedule.destination,
-                                schedule.days.startDate,
-                                schedule.days.endDate,
-                                schedule.user,
-                                schedule.createdDate,
-                                JPAExpressions.select(like.count())
-                                        .from(like)
-                                        .join(like.schedule)
-                                        .where(like.schedule.eq(schedule)),
-                                JPAExpressions.select(comment.count())
-                                        .from(comment)
-                                        .join(comment.schedule)
-                                        .where(comment.schedule.eq(schedule))
-                        ))
-                .from(schedule)
-                .join(schedule.user)
+    private List<Schedule> getContent(ScheduleConditionPageDto scheduleConditionPageDto) {
+        final Pageable pageable = scheduleConditionPageDto.getPageable();
+        final List<OrderSpecifier> orders = orderSpecifierHelper.getOrderSpecifiers(pageable);
+
+        return queryFactory.selectFrom(schedule)
+                .join(schedule.user).fetchJoin()
+                .where(
+                        destinationIn(scheduleConditionPageDto.getDestinations()),
+                        titleLike(scheduleConditionPageDto.getSearchCondition()),
+                        totalExpenseBetween(scheduleConditionPageDto.getExpenseCondition())
+                )
                 .orderBy(orders.toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
-    private Set<Long> getScheduleIds(List<SchedulePageFlatDto> content) {
-        return content.stream()
-                .map(SchedulePageFlatDto::getScheduleId)
-                .collect(Collectors.toUnmodifiableSet());
-    }
-
-    private Map<Long, List<Day>> getScheduleWithDayDetailsMap(Set<Long> scheduleIds) {
-        final List<Tuple> allDayWithPlaces = queryFactory
-                .select(
-                        dayWithPlaceDetailsView.dayId,
-                        dayWithPlaceDetailsView.travelDate,
-                        dayWithPlaceDetailsView.title,
-                        dayWithPlaceDetailsView.time,
-                        dayWithPlaceDetailsView.memo,
-                        dayWithPlaceDetailsView.expense,
-                        dayWithPlaceDetailsView.latitude,
-                        dayWithPlaceDetailsView.longitude,
-                        dayWithPlaceDetailsView.scheduleId
-                )
-                .from(dayWithPlaceDetailsView)
-                .where(dayWithPlaceDetailsView.scheduleId.in(scheduleIds))
-                .fetch();
-
-        final Map<Long, Map<DayKey, List<Place>>> scheduleIdWithDayToPlaceMap = getScheduleIdWithDayToPlaceMap(allDayWithPlaces);
-        return scheduleIdWithDayToPlaceMap.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> createDayDetails(entry.getValue())));
-    }
-
-    private List<Day> createDayDetails(Map<DayKey, List<Place>> dayIdWithPlacesMap) {
-        return dayIdWithPlacesMap.entrySet().stream()
-                .map(entry -> Day.builder()
-                        .id(entry.getKey().dayId())
-                        .travelDate(entry.getKey().travelDate())
-                        .places(Collections.unmodifiableList(entry.getValue()))
-                        .build())
-                .toList();
-    }
-
-    private Map<Long, Map<DayKey, List<Place>>> getScheduleIdWithDayToPlaceMap(List<Tuple> allDayWithPlaces) {
-        final Map<Long, Map<DayKey, List<Place>>> scheduleIdWithDayToPlaceMap = new HashMap<>();
-        for (Tuple allDayWithPlace : allDayWithPlaces) {
-            Long scheduleId = allDayWithPlace.get(dayWithPlaceDetailsView.scheduleId);
-
-            DayKey dayKey = createKey(allDayWithPlace);
-            Place place = createPlace(allDayWithPlace);
-
-            Map<DayKey, List<Place>> dayToPlaceMap = scheduleIdWithDayToPlaceMap.getOrDefault(scheduleId, new HashMap<>());
-            List<Place> places = dayToPlaceMap.getOrDefault(dayKey, new ArrayList<>());
-            places.add(place);
-            dayToPlaceMap.put(dayKey, places);
-            scheduleIdWithDayToPlaceMap.put(scheduleId, dayToPlaceMap);
+    private BooleanExpression totalExpenseBetween(ExpenseCondition expenseCondition) {
+        if (expenseCondition.isNotCondition()) {
+            return null;
         }
-        return scheduleIdWithDayToPlaceMap;
+        return schedule.id.in(
+                JPAExpressions.select(statisticsScheduleDetails.scheduleId)
+                        .from(statisticsScheduleDetails)
+                        .where(statisticsScheduleDetails.totalExpense.between(
+                                expenseCondition.minExpense(),
+                                expenseCondition.maxExpense()
+                        )));
     }
 
-    private DayKey createKey(Tuple allDayWithPlace) {
-        return new DayKey(
-                allDayWithPlace.get(dayWithPlaceDetailsView.dayId),
-                allDayWithPlace.get(dayWithPlaceDetailsView.travelDate));
+    private BooleanExpression titleLike(SearchCondition searchCondition) {
+        if (!StringUtils.hasText(searchCondition.search())) {
+            return null;
+        }
+        return schedule.title.like("%" + searchCondition.search() + "%");
     }
 
-    private Place createPlace(Tuple allDayWithPlace) {
-        return Place.builder()
-                .title(allDayWithPlace.get(dayWithPlaceDetailsView.title))
-                .time(allDayWithPlace.get(dayWithPlaceDetailsView.time))
-                .memo(allDayWithPlace.get(dayWithPlaceDetailsView.memo))
-                .expense(new Expense(allDayWithPlace.get(dayWithPlaceDetailsView.expense)))
-                .location(new Location(allDayWithPlace.get(dayWithPlaceDetailsView.latitude),
-                        allDayWithPlace.get(dayWithPlaceDetailsView.longitude)))
-                .build();
+    private BooleanExpression destinationIn(List<Destination> destinations) {
+        if (destinations.contains(Destination.EMPTY)) {
+            return null;
+        }
+        return schedule.destination.in(destinations);
     }
 
-    private void setDayDetails(List<SchedulePageFlatDto> content, Map<Long, List<Day>> scheduleWithDayDetailsMap) {
-        content.forEach(
-                c -> c.setDays(scheduleWithDayDetailsMap.get(c.getScheduleId()))
-        );
-    }
 }

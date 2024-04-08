@@ -1,8 +1,8 @@
 package com.weshare.api.v1.event.schedule;
 
-import com.weshare.api.v1.domain.comment.Comment;
+import com.weshare.api.v1.domain.schedule.comment.Comment;
 import com.weshare.api.v1.event.user.UserDeletedEvent;
-import com.weshare.api.v1.domain.like.Like;
+import com.weshare.api.v1.domain.schedule.like.Like;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.like.LikeRepository;
@@ -44,12 +44,12 @@ public class ScheduleEventHandler {
     }
 
     private void deleteAllCommentByScheduleIds(List<Long> scheduleIds, Long commenterId) {
-        final List<Comment> commentByScheduleIds = commentRepository.findCommentByScheduleIds(scheduleIds, commenterId);
+        final List<Comment> commentByScheduleIds = commentRepository.findCommentByScheduleIdsAndCommenterId(scheduleIds, commenterId);
         commentRepository.deleteAll(commentByScheduleIds);
     }
 
     private void deleteAllLikeByScheduleIds(List<Long> scheduleIds, Long userId) {
-        final List<Like> likeByScheduleIds = likeRepository.findLikeByScheduleIds(scheduleIds, userId);
+        final List<Like> likeByScheduleIds = likeRepository.findLikeByScheduleIdsAndUserId(scheduleIds, userId);
         likeRepository.deleteAll(likeByScheduleIds);
     }
 

@@ -240,7 +240,7 @@ class AuthenticationServiceTest extends IntegrationTestSupport {
     private SignupRequest createJoinRequest(String email,String name, String password, String birthDate) {
         return SignupRequest.builder()
                 .email(email)
-                .name(name)
+                .userName(name)
                 .password(password)
                 .birthDate(birthDate)
                 .build();

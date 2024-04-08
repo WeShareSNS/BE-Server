@@ -2,8 +2,8 @@ package com.weshare.api.v1.controller.like.advice;
 
 import com.weshare.api.v1.common.Response;
 import com.weshare.api.v1.controller.like.LikeErrorCode;
-import com.weshare.api.v1.domain.like.exception.DuplicateLikeException;
-import com.weshare.api.v1.domain.like.exception.LikeNotFoundException;
+import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
+import com.weshare.api.v1.domain.schedule.like.exception.LikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

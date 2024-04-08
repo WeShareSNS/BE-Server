@@ -1,24 +1,22 @@
-package com.weshare.api.v1.domain.like;
+package com.weshare.api.v1.domain.schedule.like;
 
 import com.weshare.api.v1.domain.BaseTimeEntity;
 import com.weshare.api.v1.domain.schedule.Schedule;
+import com.weshare.api.v1.domain.schedule.ScheduleIdProvider;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @Table(name = "schedule_like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like extends BaseTimeEntity {
+public class Like extends BaseTimeEntity implements ScheduleIdProvider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "schedule_like_id")
     private Long id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -37,5 +35,10 @@ public class Like extends BaseTimeEntity {
 
     public boolean isSameScheduleId(Long scheduleId) {
         return schedule.getId() == scheduleId;
+    }
+
+    @Override
+    public Long getScheduleId() {
+        return schedule.getId();
     }
 }

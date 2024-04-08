@@ -69,9 +69,9 @@ public class AuthenticationController {
           @ApiResponse(responseCode = "409", description = "사용자 닉네임이 중복되었습니다.")
   })
   @GetMapping("/signup/duplicate-name")
-  public ResponseEntity duplicateName(@RequestParam String name) {
-    validator.validateNameLength(name);
-    service.checkDuplicateNameForSignup(name);
+  public ResponseEntity duplicateName(@RequestParam String userName) {
+    validator.validateNameLength(userName);
+    service.checkDuplicateNameForSignup(userName);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
