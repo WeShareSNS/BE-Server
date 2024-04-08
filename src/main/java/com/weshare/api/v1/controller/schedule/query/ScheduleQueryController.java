@@ -33,7 +33,8 @@ public class ScheduleQueryController {
 
     @Operation(summary = "여행일정 전체 조회 API", description = "기본값으로 12개 기준으로 pagination이 적용되며 최신글으로 정렬됩니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "여행일정 조회 성공")
+            @ApiResponse(responseCode = "200", description = "여행일정 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "쿼리 파라미터 요청을 확인해주세요")
     })
     @GetMapping("/schedules")
     public Page<SchedulePageDto> getSchedule(
