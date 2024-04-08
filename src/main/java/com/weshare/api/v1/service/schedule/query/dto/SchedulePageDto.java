@@ -2,7 +2,6 @@ package com.weshare.api.v1.service.schedule.query.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.weshare.api.v1.domain.schedule.Destination;
-import com.weshare.api.v1.repository.schedule.query.dto.SchedulePageFlatDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
