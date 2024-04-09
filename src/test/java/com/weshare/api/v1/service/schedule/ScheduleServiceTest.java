@@ -1,13 +1,14 @@
 package com.weshare.api.v1.service.schedule;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.weshare.api.v1.controller.schedule.command.CreateScheduleDto;
-import com.weshare.api.v1.controller.schedule.command.CreateScheduleRequest;
+import com.weshare.api.v1.controller.schedule.command.dto.CreateScheduleDto;
+import com.weshare.api.v1.controller.schedule.command.dto.CreateScheduleRequest;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
+import com.weshare.api.v1.service.schedule.command.ScheduleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +33,9 @@ class ScheduleServiceTest extends ScheduleTestSupport {
         // given
         User user = createUserAndSave("test@asdf.com","asdfa","password");
         CreateScheduleRequest request = objectMapper.readValue(getRequestJson(), CreateScheduleRequest.class);
-        CreateScheduleDto createScheduleDto = CreateScheduleDto.from(request);
+        CreateScheduleDto createScheduleDto = CreateScheduleDto.of(request, user);
         // when
-        Schedule schedule = scheduleService.saveSchedule(createScheduleDto, user);
+        Schedule schedule = scheduleService.saveSchedule(createScheduleDto);
         Long scheduleId = schedule.getId();
         // then
         Schedule findSchedule = scheduleRepository.findById(scheduleId).orElseThrow();

@@ -56,7 +56,7 @@ public class ScheduleDetailDto {
     }
 
     private static List<DayDetailDto> createDayDetails(Schedule schedule) {
-        return schedule.getDays().stream()
+        return schedule.getDays().getDays().stream()
                 .map(DayDetailDto::from)
                 .toList();
     }

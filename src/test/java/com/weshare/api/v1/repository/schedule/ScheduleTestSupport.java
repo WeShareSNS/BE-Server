@@ -43,10 +43,10 @@ public abstract class ScheduleTestSupport {
     public Schedule createAndSaveSchedule(String title, Destination destination, User user) {
         Schedule schedule = Schedule.builder()
                 .title(title)
+                .user(user)
                 .destination(destination)
                 .days(createDays())
                 .build();
-        schedule.setUser(user);
         return repository.save(schedule);
     }
 

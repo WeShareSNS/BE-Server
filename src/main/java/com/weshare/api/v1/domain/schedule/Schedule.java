@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @ToString
@@ -28,7 +27,6 @@ public class Schedule extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int viewCount;
 
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -37,9 +35,19 @@ public class Schedule extends BaseTimeEntity {
     private Days days;
 
     @Builder
-    private Schedule(String title, Destination destination, Days days) {
+    public Schedule(
+            Long id,
+            String title,
+            Destination destination,
+            int viewCount,
+            User user,
+            Days days
+    ) {
+        this.id = id;
         this.title = title;
         this.destination = destination;
+        this.viewCount = viewCount;
+        this.user = user;
         this.days = days;
     }
 
@@ -76,10 +84,6 @@ public class Schedule extends BaseTimeEntity {
 
     public long getTotalScheduleExpense() {
         return days.getTotalDaysExpense();
-    }
-
-    public List<Day> getDays() {
-        return days.getDays();
     }
 
     public LocalDate getStartDate() {

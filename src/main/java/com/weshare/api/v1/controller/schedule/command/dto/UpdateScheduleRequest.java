@@ -1,14 +1,11 @@
-package com.weshare.api.v1.controller.schedule.command;
+package com.weshare.api.v1.controller.schedule.command.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,8 +13,11 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreateScheduleRequest {
+public class UpdateScheduleRequest {
+    @NotNull
+    private Long scheduleId;
 
     @NotBlank
     private String title;
@@ -35,14 +35,22 @@ public class CreateScheduleRequest {
 
     @NotNull
     @Valid
-    private List<VisitDate> dayDetail;
+    private List<UpdateDay> dayDetail;
 
-    public List<VisitDate> getDayDetail() {
+    public List<UpdateDay> getDayDetail() {
         return Collections.unmodifiableList(dayDetail);
     }
 
     @Builder
-    private CreateScheduleRequest(String title, String destination, LocalDate startDate, LocalDate endDate, List<VisitDate> dayDetail) {
+    private UpdateScheduleRequest(
+            Long scheduleId,
+            String title,
+            String destination,
+            LocalDate startDate,
+            LocalDate endDate,
+            List<UpdateDay> dayDetail
+    ) {
+        this.scheduleId = scheduleId;
         this.title = title;
         this.destination = destination;
         this.startDate = startDate;
@@ -51,28 +59,28 @@ public class CreateScheduleRequest {
     }
 
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    static class VisitDate {
+    static class UpdateDay {
         @Getter
         @NotNull
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate travelDate;
         @NotNull
         @Valid
-        private List<VisitPlace> places;
+        private List<UpdatePlace> places;
 
         @Builder
-        private VisitDate(LocalDate travelDate, List<VisitPlace> places) {
+        private UpdateDay(LocalDate travelDate, List<UpdatePlace> places) {
             this.travelDate = travelDate;
             this.places = places;
         }
 
-        public List<VisitPlace> getPlaces() {
+        public List<UpdatePlace> getPlaces() {
             return Collections.unmodifiableList(places);
         }
 
         @Getter
         @NoArgsConstructor(access = AccessLevel.PROTECTED)
-        static class VisitPlace {
+        static class UpdatePlace {
             @NotBlank
             private String title;
             @NotNull
@@ -89,7 +97,7 @@ public class CreateScheduleRequest {
             @NotNull
             private Double longitude;
             @Builder
-            private VisitPlace(String title, LocalTime time, String memo, long expense, Double latitude, Double longitude) {
+            private UpdatePlace(String title, LocalTime time, String memo, long expense, Double latitude, Double longitude) {
                 this.title = title;
                 this.time = time;
                 this.memo = memo;

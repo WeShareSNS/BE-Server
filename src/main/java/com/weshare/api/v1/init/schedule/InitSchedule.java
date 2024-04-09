@@ -44,15 +44,10 @@ public class InitSchedule {
 
         @Transactional
         public void init() {
-            User user1 = createUserAndSave("test1@asd.com", "test1", "test1234");
-            User user2 = createUserAndSave("test2@asd.com", "test2", "test1234");
+            User user = createUserAndSave("test1@asd.com", "test1", "test1234");
 
             for (int i = 1; i <= 100; i++) {
-                Schedule schedule = createSchedule("제목 " + i);
-                schedule.setUser(user2);
-                if (i % 2 == 0) {
-                    schedule.setUser(user1);
-                }
+                Schedule schedule = createSchedule("제목 " + i, user);
                 entityManager.persist(schedule);
             }
         }
@@ -70,9 +65,10 @@ public class InitSchedule {
             return user;
         }
 
-        private Schedule createSchedule(String title) {
+        private Schedule createSchedule(String title, User user) {
             return Schedule.builder()
                     .title(title)
+                    .user(user)
                     .destination(Destination.findDestinationByNameOrElseThrow("서울"))
                     .days(createDays())
                     .build();

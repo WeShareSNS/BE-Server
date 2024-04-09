@@ -1,6 +1,7 @@
 package com.weshare.api.v1.controller;
 
 import com.weshare.api.v1.common.Response;
+import com.weshare.api.v1.service.exception.AccessDeniedModificationException;
 import com.weshare.api.v1.token.exception.InvalidTokenException;
 import com.weshare.api.v1.token.exception.TokenNotFoundException;
 import com.weshare.api.v1.token.exception.TokenTimeOutException;
@@ -17,11 +18,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
 
-import static com.weshare.api.v1.controller.ErrorCode.TOKEN_TIME_OUT_ERROR;
-import static com.weshare.api.v1.controller.ErrorCode.TOKEN_NOT_FOUND_ERROR;
-import static com.weshare.api.v1.controller.ErrorCode.INVALID_TOKEN_ERROR;
-import static com.weshare.api.v1.controller.ErrorCode.PARAMETER_BAD_REQUEST_ERROR;
-
 
 @Slf4j
 @RestControllerAdvice
@@ -34,7 +30,7 @@ public class GlobalExceptionAdvisor {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity methodArgumentNotValidExceptionHandler (MethodArgumentNotValidException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(PARAMETER_BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, getDefaultErrorMessage(e));
+        return response.fail(ErrorCode.PARAMETER_BAD_REQUEST_ERROR.getCode(), HttpStatus.BAD_REQUEST, getDefaultErrorMessage(e));
     }
 
     private String getDefaultErrorMessage(BindException e) {
@@ -51,20 +47,27 @@ public class GlobalExceptionAdvisor {
     @ExceptionHandler(TokenTimeOutException.class)
     public ResponseEntity tokenTimeOutExceptionHandler (TokenTimeOutException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(TOKEN_TIME_OUT_ERROR.getCode(), HttpStatus.UNAUTHORIZED, TOKEN_TIME_OUT_ERROR.getMessage());
+        return response.fail(ErrorCode.TOKEN_TIME_OUT_ERROR.getCode(), HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_TIME_OUT_ERROR.getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity tokenNotFoundExceptionHandler (TokenNotFoundException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(TOKEN_NOT_FOUND_ERROR.getCode(), HttpStatus.UNAUTHORIZED, TOKEN_NOT_FOUND_ERROR.getMessage());
+        return response.fail(ErrorCode.TOKEN_NOT_FOUND_ERROR.getCode(), HttpStatus.UNAUTHORIZED, ErrorCode.TOKEN_NOT_FOUND_ERROR.getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity invalidTokenExceptionHandler (InvalidTokenException  e){
         log.error("[exceptionHandler] ex", e);
-        return response.fail(INVALID_TOKEN_ERROR.getCode(), HttpStatus.UNAUTHORIZED, INVALID_TOKEN_ERROR.getMessage());
+        return response.fail(ErrorCode.INVALID_TOKEN_ERROR.getCode(), HttpStatus.UNAUTHORIZED, ErrorCode.INVALID_TOKEN_ERROR.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedModificationException.class)
+    public ResponseEntity accessDeniedModificationExceptionHandler (AccessDeniedModificationException  e){
+        log.error("[exceptionHandler] ex", e);
+        return response.fail(ErrorCode.ACCESS_DENIED_ERROR.getCode(), HttpStatus.FORBIDDEN, ErrorCode.ACCESS_DENIED_ERROR.getMessage());
     }
 }
