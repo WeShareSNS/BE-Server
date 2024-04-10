@@ -1,10 +1,12 @@
 package com.weshare.api.v1.domain.schedule;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -12,13 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
-@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Days {
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "schedule_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "schedule")
     private List<Day> days;
     @Column(name = "start_date",nullable = false)
     private LocalDate startDate;
@@ -61,5 +61,9 @@ public class Days {
 
     public List<Day> getDays() {
         return Collections.unmodifiableList(days);
+    }
+
+    public void initDays(Schedule schedule) {
+        days.forEach(d -> d.initSchedule(schedule));
     }
 }

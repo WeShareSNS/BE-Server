@@ -23,6 +23,7 @@ public class ScheduleService {
 
     public Schedule saveSchedule(final CreateScheduleDto createScheduleDto) {
         Schedule schedule = createScheduleDto.toEntity();
+        schedule.initDays();
         Schedule save = scheduleRepository.save(schedule);
         eventPublisher.publishEvent(new ScheduleCreatedEvent(schedule.getId(), schedule.getTotalScheduleExpense()));
         return save;

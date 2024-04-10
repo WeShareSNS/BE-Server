@@ -82,6 +82,10 @@ public class Schedule extends BaseTimeEntity {
                 .conversionBuild();
     }
 
+    public void initDays() {
+        days.initDays(this);
+    }
+
     public long getTotalScheduleExpense() {
         return days.getTotalDaysExpense();
     }

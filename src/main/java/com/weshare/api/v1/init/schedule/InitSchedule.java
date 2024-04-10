@@ -66,12 +66,14 @@ public class InitSchedule {
         }
 
         private Schedule createSchedule(String title, User user) {
-            return Schedule.builder()
+            Schedule schedule = Schedule.builder()
                     .title(title)
                     .user(user)
                     .destination(Destination.findDestinationByNameOrElseThrow("서울"))
                     .days(createDays())
                     .build();
+            schedule.initDays();
+            return schedule;
         }
 
         private Days createDays() {

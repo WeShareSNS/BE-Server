@@ -47,6 +47,7 @@ public abstract class ScheduleTestSupport {
                 .destination(destination)
                 .days(createDays())
                 .build();
+        schedule.initDays();
         return repository.save(schedule);
     }
 

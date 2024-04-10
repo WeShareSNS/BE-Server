@@ -9,7 +9,6 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Day {
 
@@ -24,11 +23,18 @@ public class Day {
     @Column(name = "travel_date", nullable = false)
     private LocalDate travelDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
     @Builder
     private Day(Long id, List<Place> places, LocalDate travelDate) {
         this.id = id;
         this.places = places;
         this.travelDate = travelDate;
+    }
+
+    public void initSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 
     public Expense getTotalDayExpense() {
