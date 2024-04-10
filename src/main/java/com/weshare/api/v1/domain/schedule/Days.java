@@ -20,16 +20,16 @@ public class Days {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "schedule")
     private List<Day> days;
-    @Column(name = "start_date",nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
-    @Column(name = "end_date",nullable = false)
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
     public Days(List<Day> days, LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("시작, 종료 날짜가 올바르지 않습니다.");
         }
-        if (!areAllDistinctDaysWithinRange(days,startDate, endDate) || !isDayCountMatching(days, startDate, endDate)) {
+        if (!areAllDistinctDaysWithinRange(days, startDate, endDate) || !isDayCountMatching(days, startDate, endDate)) {
             throw new IllegalArgumentException("날짜 정보가 올바르지 않습니다.");
         }
         this.startDate = startDate;
@@ -59,11 +59,16 @@ public class Days {
                 .getExpense();
     }
 
-    public List<Day> getDays() {
-        return Collections.unmodifiableList(days);
-    }
-
     public void initDays(Schedule schedule) {
         days.forEach(d -> d.initSchedule(schedule));
+    }
+
+    public boolean isContainDays(List<Day> updateDays) {
+        return updateDays.stream()
+                .allMatch(u -> days.stream().anyMatch(u::isSameDayId));
+    }
+
+    public List<Day> getDays() {
+        return Collections.unmodifiableList(days);
     }
 }

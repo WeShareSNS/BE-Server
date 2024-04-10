@@ -43,4 +43,8 @@ public enum Destination {
                 .orElse(EMPTY);
     }
 
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
+
 }

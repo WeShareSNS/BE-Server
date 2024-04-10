@@ -4,6 +4,7 @@ import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.repository.schedule.ScheduleDetailRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
+class ScheduleDetailRepositoryImplTest extends ScheduleTestSupport {
 
     @Autowired
-    private ScheduleDetailQueryRepository scheduleDetailQueryRepository;
+    private ScheduleDetailRepository scheduleDetailRepository;
 
     @Test
     @Transactional
@@ -27,7 +28,7 @@ class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
         Schedule schedule = createAndSaveSchedule(title, destination, user);
         // when
         Long scheduleId = schedule.getId();
-        Schedule findSchedule = scheduleDetailQueryRepository.findScheduleDetail(scheduleId);
+        Schedule findSchedule = scheduleDetailRepository.findScheduleDetailById(scheduleId).orElseThrow();
         // then
         assertThat(findSchedule.getId()).isEqualTo(scheduleId);
         assertThat(findSchedule.getTitle()).isEqualTo(title);
@@ -38,7 +39,7 @@ class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
     public void 존재하지_않는_여행일정_조회시_예외발생() {
         // when // then
         long scheduleId = 0L;
-        assertThatThrownBy(() -> scheduleDetailQueryRepository.findScheduleDetail(scheduleId))
+        assertThatThrownBy(() -> scheduleDetailRepository.findScheduleDetailById(scheduleId))
                 .isInstanceOf(ScheduleNotFoundException.class);
     }
 

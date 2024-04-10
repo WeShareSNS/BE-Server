@@ -19,10 +19,7 @@ public class UpdateScheduleRequest {
     @NotNull
     private Long scheduleId;
 
-    @NotBlank
     private String title;
-
-    @NotBlank
     private String destination;
 
     @NotNull
@@ -33,13 +30,8 @@ public class UpdateScheduleRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
 
-    @NotNull
     @Valid
     private List<UpdateDay> dayDetail;
-
-    public List<UpdateDay> getDayDetail() {
-        return Collections.unmodifiableList(dayDetail);
-    }
 
     @Builder
     private UpdateScheduleRequest(
@@ -58,9 +50,11 @@ public class UpdateScheduleRequest {
         this.dayDetail = dayDetail;
     }
 
+    @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     static class UpdateDay {
-        @Getter
+        @NotNull
+        private Long travelDateId;
         @NotNull
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate travelDate;
@@ -69,7 +63,8 @@ public class UpdateScheduleRequest {
         private List<UpdatePlace> places;
 
         @Builder
-        private UpdateDay(LocalDate travelDate, List<UpdatePlace> places) {
+        private UpdateDay(Long travelDateId, LocalDate travelDate, List<UpdatePlace> places) {
+            this.travelDateId = travelDateId;
             this.travelDate = travelDate;
             this.places = places;
         }

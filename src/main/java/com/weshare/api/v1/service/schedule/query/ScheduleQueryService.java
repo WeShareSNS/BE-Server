@@ -2,10 +2,10 @@ package com.weshare.api.v1.service.schedule.query;
 
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
+import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.query.ExpenseCondition;
-import com.weshare.api.v1.repository.schedule.query.ScheduleDetailQueryRepository;
 import com.weshare.api.v1.repository.schedule.query.SchedulePageQueryRepository;
 import com.weshare.api.v1.repository.schedule.query.SearchCondition;
 import com.weshare.api.v1.repository.schedule.query.dto.ScheduleConditionPageDto;
@@ -27,7 +27,6 @@ import java.util.Set;
 public class ScheduleQueryService {
 
     private final SchedulePageQueryRepository pageQueryRepository;
-    private final ScheduleDetailQueryRepository detailQueryRepository;
     private final ScheduleRepository scheduleRepository;
 
     public Page<SchedulePageDto> getSchedulePage(ScheduleFilterPageDto scheduleFilterPageDto) {
@@ -98,7 +97,8 @@ public class ScheduleQueryService {
         if (scheduleId == null) {
             throw new IllegalArgumentException("게시물에 접근할 수 없습니다.");
         }
-        final Schedule scheduleDetail = detailQueryRepository.findScheduleDetail(scheduleId);
+        final Schedule scheduleDetail = scheduleRepository.findScheduleDetailById(scheduleId)
+                .orElseThrow(ScheduleNotFoundException::new);
         return ScheduleDetailDto.from(scheduleDetail);
     }
 

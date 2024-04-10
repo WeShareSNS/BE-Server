@@ -1,4 +1,4 @@
-package com.weshare.api.v1.repository.schedule.query;
+package com.weshare.api.v1.repository.schedule;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,14 +16,14 @@ import static com.weshare.api.v1.domain.schedule.QDayWithPlaceDetailsView.dayWit
 import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
 
 @Repository
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
-public class ScheduleDetailQueryRepositoryImpl implements ScheduleDetailQueryRepository {
+public class ScheduleDetailRepositoryImpl implements ScheduleDetailRepository {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Schedule findScheduleDetail(Long id) {
+    public Optional<Schedule> findScheduleDetailById(Long id) {
         // schedule fetch join day
         final Optional<Schedule> scheduleWithAllDay = getScheduleWithAllDay(id);
         final Schedule schedule = scheduleWithAllDay.orElseThrow(ScheduleNotFoundException::new);
@@ -33,10 +33,11 @@ public class ScheduleDetailQueryRepositoryImpl implements ScheduleDetailQueryRep
         final List<Tuple> allDayWithPlaces = getDaysWithPlace(dayIds);
         final List<Day> dayWithPlaceDetails = createDayWithPlaceDetails(allDayWithPlaces);
 
-        return schedule.createSelfInstanceWithDays(
-                new Days(dayWithPlaceDetails,
-                        schedule.getStartDate(),
-                        schedule.getEndDate()));
+        return Optional.ofNullable(
+                schedule.createSelfInstanceWithDays(
+                        new Days(dayWithPlaceDetails,
+                                schedule.getStartDate(),
+                                schedule.getEndDate())));
     }
 
     private Optional<Schedule> getScheduleWithAllDay(Long scheduleId) {

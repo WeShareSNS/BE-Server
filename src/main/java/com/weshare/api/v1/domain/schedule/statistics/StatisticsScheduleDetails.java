@@ -41,4 +41,11 @@ public class StatisticsScheduleDetails extends BaseTimeEntity {
         this.totalLikeCount = totalLikeCount;
         this.totalExpense = totalExpense;
     }
+
+    public void updateScheduleTotalExpense(Long totalExpense) {
+        if (totalExpense == null) {
+            throw new IllegalStateException("통계테이블에 업데이트할 총 금액이 존재하지 않습니다.");
+        }
+        this.totalExpense = totalExpense;
+    }
 }

@@ -47,7 +47,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "400", description = "요청을 확인해주세요"),
             @ApiResponse(responseCode = "403", description = "사용자를 확인해주세요"),
     })
-    @PutMapping("/schedules")
+    @PatchMapping("/schedules")
     public ResponseEntity updateSchedule(@Valid @RequestBody UpdateScheduleRequest updateScheduleRequest,
                                        @AuthenticationPrincipal User user) {
         UpdateScheduleDto updateScheduleDto = UpdateScheduleDto.of(updateScheduleRequest, user);

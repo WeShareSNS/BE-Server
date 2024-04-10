@@ -51,6 +51,10 @@ public class Day {
         return isBeforeEnd && isAfterStart;
     }
 
+    public boolean isSameDayId(Day otherDay) {
+        return id.equals(otherDay.id);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -62,5 +66,12 @@ public class Day {
     @Override
     public int hashCode() {
         return Objects.hash(id, places, travelDate);
+    }
+
+    public void updatePlaces(Day updateDay) {
+        if (!travelDate.equals(updateDay.travelDate)) {
+            throw new IllegalStateException("여행일정이 올바르지 않습니다.");
+        }
+        this.places = updateDay.places;
     }
 }

@@ -9,17 +9,18 @@ import lombok.ToString;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @ToString
 public class UpdateScheduleDto {
     private final User user;
     private final Long scheduleId;
-    private final String title;
+    private final Optional<String> title;
     private final String destination;
     private final LocalDate startDate;
     private final LocalDate endDate;
-    private final List<UpdateDayDto> visitDates;
+    private final Optional<List<UpdateDayDto>> visitDates;
 
     @Builder
     private UpdateScheduleDto(
@@ -29,11 +30,11 @@ public class UpdateScheduleDto {
             String destination,
             LocalDate startDate,
             LocalDate endDate,
-            List<UpdateDayDto> visitDates
+            Optional<List<UpdateDayDto>> visitDates
     ) {
         this.user = user;
         this.scheduleId = scheduleId;
-        this.title = title;
+        this.title = Optional.ofNullable(title);
         this.destination = destination;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -48,26 +49,35 @@ public class UpdateScheduleDto {
                 .destination(updateScheduleRequest.getDestination())
                 .startDate(updateScheduleRequest.getStartDate())
                 .endDate(updateScheduleRequest.getEndDate())
-                .visitDates(
-                        updateScheduleRequest.getDayDetail()
-                                .stream()
-                                .map(UpdateDayDto::from)
-                                .toList())
+                .visitDates(getVisitDates(updateScheduleRequest))
                 .build();
+    }
+
+    private static Optional<List<UpdateDayDto>> getVisitDates(UpdateScheduleRequest updateScheduleRequest) {
+        if (updateScheduleRequest.getDayDetail() == null) {
+            return Optional.empty();
+        }
+        return Optional.of(updateScheduleRequest.getDayDetail()
+                .stream()
+                .map(UpdateDayDto::from)
+                .toList());
     }
 
     private static class UpdateDayDto {
         private final LocalDate travelDate;
+        private final Long dayId;
         private final List<UpdatePlaceDto> updatePlaceDtos;
 
         @Builder
-        private UpdateDayDto(LocalDate travelDate, List<UpdatePlaceDto> visitPlaces) {
+        private UpdateDayDto(LocalDate travelDate, Long dayId, List<UpdatePlaceDto> visitPlaces) {
+            this.dayId = dayId;
             this.travelDate = travelDate;
             this.updatePlaceDtos = visitPlaces;
         }
 
         private static UpdateDayDto from(final UpdateScheduleRequest.UpdateDay updateDay) {
             return UpdateDayDto.builder()
+                    .dayId(updateDay.getTravelDateId())
                     .travelDate(updateDay.getTravelDate())
                     .visitPlaces(
                             updateDay.getPlaces().stream()
@@ -106,21 +116,17 @@ public class UpdateScheduleDto {
             }
         }
     }
-    public Schedule toEntity() {
-        return Schedule.builder()
-                .id(this.scheduleId)
-                .user(this.user)
-                .title(this.title)
-                .destination(Destination.findDestinationByNameOrElseThrow(this.destination))
-                .days(new Days(
-                        this.visitDates.stream().map(this::createDay).toList(),
-                        this.startDate,
-                        this.endDate))
-                .build();
+
+    public Optional<List<Day>> toDayEntity() {
+        return visitDates.map(updateDays ->
+                updateDays.stream()
+                        .map(this::createDay)
+                        .toList());
     }
 
     private Day createDay(UpdateDayDto updateDayDto) {
         return Day.builder()
+                .id(updateDayDto.dayId)
                 .travelDate(updateDayDto.travelDate)
                 .places(updateDayDto.updatePlaceDtos
                         .stream()

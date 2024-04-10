@@ -7,9 +7,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule extends BaseTimeEntity {
@@ -86,6 +86,10 @@ public class Schedule extends BaseTimeEntity {
         days.initDays(this);
     }
 
+    public boolean isContainDays(List<Day> updateDays) {
+        return days.isContainDays(updateDays);
+    }
+
     public long getTotalScheduleExpense() {
         return days.getTotalDaysExpense();
     }
@@ -97,4 +101,12 @@ public class Schedule extends BaseTimeEntity {
     public LocalDate getEndDate() {
         return days.getEndDate();
     }
+
+    public void updateDestinationOrTitle(Destination destination, String title) {
+        this.title = title;
+        if (!destination.isEmpty()) {
+            this.destination = destination;
+        }
+    }
+
 }
