@@ -81,9 +81,9 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     public void 목적지로_여행일정을_조회할_수_있다() {
         // given
         User user = createUserAndSave("test14@test.com", "test14", "password");
-        Destination destination = Destination.SUWON;
+        Destination destination = Destination.GYEONGGI;
         Schedule schedule1 = createAndSaveSchedule("제목1", destination, user);
-        createAndSaveSchedule("제목2", Destination.BUSAN, user);
+        createAndSaveSchedule("제목2", Destination.SEOUL, user);
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
         // when
         ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
@@ -105,7 +105,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     Collection<DynamicTest> 여행비용_범위로_여행일정을_조회할_수_있다() {
         // given
         User user = createUserAndSave("test14@test.com", "test14", "password");
-        Schedule schedule = createAndSaveSchedule("제목1", Destination.SUWON, user);
+        Schedule schedule = createAndSaveSchedule("제목1", Destination.GYEONGGI, user);
         initStatisticsScheduleDetails.init();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
         return List.of(
@@ -175,7 +175,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     Collection<DynamicTest> 여행비용_범위를_넘어가면_여행일정을_조회할_수_없다() {
         // given
         User user = createUserAndSave("test14@test.com", "test14", "password");
-        Schedule schedule = createAndSaveSchedule("제목1", Destination.SUWON, user);
+        Schedule schedule = createAndSaveSchedule("제목1", Destination.GYEONGGI, user);
         initStatisticsScheduleDetails.init();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
         return List.of(
@@ -275,8 +275,8 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     public void 사용자가_작성한_게시물을_조회할_수_있다() {
         // given
         User user = createUserAndSave("test13@test.com", "test13", "password");
-        createAndSaveSchedule("title1", Destination.BUSAN, user);
-        createAndSaveSchedule("title2", Destination.GANGNEUNG, user);
+        createAndSaveSchedule("title1", Destination.SEOUL, user);
+        createAndSaveSchedule("title2", Destination.JEJU, user);
         // when
         List<UserScheduleDto> allScheduleByUserId = scheduleQueryService.findAllScheduleByUserId(user.getId());
         // then

@@ -30,7 +30,7 @@ class StatisticsScheduleEventHandlerTest extends ScheduleTestSupport {
     public void 여행일정을_저장시_통계테이블이_저장된다() {
         // given
         User user = createUserAndSave("email@test.com", "testt", "password");
-        Schedule schedule = createAndSaveSchedule("title", Destination.BUSAN, user);
+        Schedule schedule = createAndSaveSchedule("title", Destination.JEJU, user);
         ScheduleCreatedEvent scheduleCreatedEvent = new ScheduleCreatedEvent(schedule.getId(), schedule.getTotalScheduleExpense());
 
         // JPA는 java 컬렉션 처럼 동작하기 때문에 before, after는 같은 참조값이라서 할당으로 해결

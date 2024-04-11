@@ -29,7 +29,7 @@ class LikeServiceTest extends ScheduleTestSupport {
     public void 특정_게시물에_좋아요를_등록할_수_있다() {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
-        Schedule schedule = createAndSaveSchedule("title", Destination.DAEGU, user);
+        Schedule schedule = createAndSaveSchedule("title", Destination.SEOUL, user);
         CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
         // when
         CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
@@ -42,7 +42,7 @@ class LikeServiceTest extends ScheduleTestSupport {
     public void 사용자가_이미_좋아요를_등록한_여행일정에_좋아요를_등록하면_예외가_발생한다() {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
-        Schedule schedule = createAndSaveSchedule("title", Destination.DAEGU, user);
+        Schedule schedule = createAndSaveSchedule("title", Destination.GYEONGGI, user);
         CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
         likeService.saveScheduleLike(createLikeDto);
         // when // then
@@ -66,7 +66,7 @@ class LikeServiceTest extends ScheduleTestSupport {
     public void 사용자는_특정_게시물에_등록한_좋아요를_삭제할_수_있다() {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
-        Schedule schedule = createAndSaveSchedule("title", Destination.DAEGU, user);
+        Schedule schedule = createAndSaveSchedule("title", Destination.GYEONGGI, user);
         CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
         CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
         // when
@@ -83,7 +83,7 @@ class LikeServiceTest extends ScheduleTestSupport {
     public void 특정_게시물에_좋아요_정보를_확인할_수_있다() {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
-        Schedule schedule = createAndSaveSchedule("title", Destination.DAEGU, user);
+        Schedule schedule = createAndSaveSchedule("title", Destination.GYEONGGI, user);
         CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
         CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
         PageRequest pageRequest = PageRequest.of(0, 1);
