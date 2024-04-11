@@ -32,4 +32,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
             where l.scheduleId in :scheduleIds
             """)
     List<Like> findLikeByScheduleIds(List<Long> scheduleIds);
+
+    void deleteByScheduleId(Long scheduleId);
 }

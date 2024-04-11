@@ -8,6 +8,7 @@ import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.event.schedule.ScheduleCreatedEvent;
+import com.weshare.api.v1.event.schedule.ScheduleDeletedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUpdatedEvent;
 import com.weshare.api.v1.repository.schedule.DayRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
@@ -104,5 +105,6 @@ public class ScheduleService {
         }
 
         scheduleRepository.delete(schedule);
+        eventPublisher.publishEvent(new ScheduleDeletedEvent(schedule.getId()));
     }
 }

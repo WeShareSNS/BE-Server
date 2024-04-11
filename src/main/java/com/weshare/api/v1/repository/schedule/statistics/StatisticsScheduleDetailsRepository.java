@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface StatisticsScheduleDetailsRepository extends JpaRepository<StatisticsScheduleDetails, Long> {
     Optional<StatisticsScheduleDetails> findByScheduleId(Long scheduleId);
+
+    void deleteByScheduleId(Long scheduleId);
 }

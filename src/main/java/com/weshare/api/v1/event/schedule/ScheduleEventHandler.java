@@ -1,9 +1,9 @@
 package com.weshare.api.v1.event.schedule;
 
-import com.weshare.api.v1.domain.schedule.comment.Comment;
-import com.weshare.api.v1.event.user.UserDeletedEvent;
-import com.weshare.api.v1.domain.schedule.like.Like;
 import com.weshare.api.v1.domain.schedule.Schedule;
+import com.weshare.api.v1.domain.schedule.comment.Comment;
+import com.weshare.api.v1.domain.schedule.like.Like;
+import com.weshare.api.v1.event.user.UserDeletedEvent;
 import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.like.LikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -28,7 +30,7 @@ public class ScheduleEventHandler {
 
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void deletedEvent(UserDeletedEvent deletedEvent) {
+    public void userDeletedEvent(UserDeletedEvent deletedEvent) {
         log.info("schedule event 진입");
         final List<Schedule> schedules = scheduleRepository.findByUserId(deletedEvent.userId());
         final List<Long> scheduleIds = getScheduleIds(schedules);
@@ -53,4 +55,13 @@ public class ScheduleEventHandler {
         likeRepository.deleteAll(likeByScheduleIds);
     }
 
+
+    // 이것도 데이터 많을 때 생각해서 처리해야함
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void scheduleDeletedEvent(ScheduleDeletedEvent scheduleDeletedEvent) {
+        final Long scheduleId = scheduleDeletedEvent.scheduleId();
+        commentRepository.deleteByScheduleId(scheduleId);
+        likeRepository.deleteByScheduleId(scheduleId);
+    }
 }

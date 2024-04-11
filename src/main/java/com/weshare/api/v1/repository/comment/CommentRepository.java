@@ -28,4 +28,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
                 where c.scheduleId in :scheduleIds
             """)
     List<Comment> findCommentByScheduleIds(List<Long> scheduleIds);
+
+    void deleteByScheduleId(Long scheduleId);
 }
