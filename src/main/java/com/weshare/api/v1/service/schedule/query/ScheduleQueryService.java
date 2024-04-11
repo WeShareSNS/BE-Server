@@ -8,7 +8,6 @@ import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.query.ExpenseCondition;
 import com.weshare.api.v1.repository.schedule.query.SchedulePageQueryRepository;
 import com.weshare.api.v1.repository.schedule.query.ScheduleQueryRepository;
-import com.weshare.api.v1.repository.schedule.query.SearchCondition;
 import com.weshare.api.v1.repository.schedule.query.dto.ScheduleConditionPageDto;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
@@ -45,13 +44,11 @@ public class ScheduleQueryService {
     private ScheduleConditionPageDto getScheduleConditionPageDto(ScheduleFilterPageDto scheduleFilterPageDto) {
         final List<Destination> destinations = getDestinations(scheduleFilterPageDto.getDestinations());
         ExpenseCondition expenseCondition = ExpenseCondition.convert(scheduleFilterPageDto.getExpenseCondition());
-        SearchCondition searchCondition = new SearchCondition(scheduleFilterPageDto.getSearch());
 
         return ScheduleConditionPageDto.builder()
                 .userId(scheduleFilterPageDto.getUserId())
                 .destinations(destinations)
                 .expenseCondition(expenseCondition)
-                .searchCondition(searchCondition)
                 .pageable(scheduleFilterPageDto.getPageable())
                 .build();
     }

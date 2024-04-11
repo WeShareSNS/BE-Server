@@ -38,28 +38,24 @@ public class ScheduleQueryController {
     @GetMapping("/schedules")
     public Page<SchedulePageDto> getSchedule(
             @AuthenticationPrincipal User user,
-            @RequestParam(required = false) String search,
             @RequestParam(required = false) String expense,
             @RequestParam(name = "destination", required = false) Set<String> destinations,
             @PageableDefault(size = 12, sort = "created-date", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         validator.validateExpenseCondition(expense);
 
-        ScheduleFilterPageDto scheduleFilterPageDto =
-                createScheduleFilterPageDto(user, search, expense, destinations, pageable);
+        ScheduleFilterPageDto scheduleFilterPageDto = createScheduleFilterPageDto(user, expense, destinations, pageable);
         return scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
     }
 
     private ScheduleFilterPageDto createScheduleFilterPageDto(
             User user,
-            String search,
             String expense,
             Set<String> destinations,
             Pageable pageable
     ) {
         return ScheduleFilterPageDto.builder()
                 .userId(user == null ? null : user.getId())
-                .search(search)
                 .expenseCondition(expense)
                 .destinations(destinations)
                 .pageable(pageable)

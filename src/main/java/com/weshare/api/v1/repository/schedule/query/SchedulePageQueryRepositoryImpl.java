@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -94,7 +93,6 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .join(schedule.user).fetchJoin()
                 .where(
                         destinationIn(scheduleConditionPageDto.getDestinations()),
-                        titleLike(scheduleConditionPageDto.getSearchCondition()),
                         totalExpenseBetween(scheduleConditionPageDto.getExpenseCondition())
                 )
                 .orderBy(orders.toArray(OrderSpecifier[]::new))
@@ -114,13 +112,6 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                                 expenseCondition.minExpense(),
                                 expenseCondition.maxExpense()
                         )));
-    }
-
-    private BooleanExpression titleLike(SearchCondition searchCondition) {
-        if (!StringUtils.hasText(searchCondition.search())) {
-            return null;
-        }
-        return schedule.title.like("%" + searchCondition.search() + "%");
     }
 
     private BooleanExpression destinationIn(List<Destination> destinations) {

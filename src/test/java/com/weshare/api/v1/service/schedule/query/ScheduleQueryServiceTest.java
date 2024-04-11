@@ -78,29 +78,6 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
 
     @Test
     @Transactional
-    public void 제목으로_여행일정을_조회할_수_있다() {
-        // given
-        String title = "제목2";
-        User user = createUserAndSave("test14@test.com", "test14", "password");
-        createAndSaveSchedule("제목1", Destination.BUSAN, user);
-        Schedule schedule2 = createAndSaveSchedule(title, Destination.BUSAN, user);
-        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
-        // when
-        ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
-                .pageable(pageRequest)
-                .search(title)
-                .build();
-        Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
-        List<SchedulePageDto> content = schedulePage.getContent();
-        // then
-        assertThat(content)
-                .hasSize(1)
-                .extracting("scheduleId", "title", "userName", "destination")
-                .containsExactly(tuple(schedule2.getId(), title, schedule2.getUser().getName(), schedule2.getDestination()));
-    }
-
-    @Test
-    @Transactional
     public void 목적지로_여행일정을_조회할_수_있다() {
         // given
         User user = createUserAndSave("test14@test.com", "test14", "password");
