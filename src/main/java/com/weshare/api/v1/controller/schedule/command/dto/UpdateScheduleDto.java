@@ -1,7 +1,9 @@
 package com.weshare.api.v1.controller.schedule.command.dto;
 
-import com.weshare.api.v1.domain.schedule.*;
-import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.domain.schedule.Day;
+import com.weshare.api.v1.domain.schedule.Expense;
+import com.weshare.api.v1.domain.schedule.Location;
+import com.weshare.api.v1.domain.schedule.Place;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,7 +16,7 @@ import java.util.Optional;
 @Getter
 @ToString
 public class UpdateScheduleDto {
-    private final User user;
+    private final Long userId;
     private final Long scheduleId;
     private final Optional<String> title;
     private final String destination;
@@ -24,7 +26,7 @@ public class UpdateScheduleDto {
 
     @Builder
     private UpdateScheduleDto(
-            User user,
+            Long userId,
             Long scheduleId,
             String title,
             String destination,
@@ -32,7 +34,7 @@ public class UpdateScheduleDto {
             LocalDate endDate,
             Optional<List<UpdateDayDto>> visitDates
     ) {
-        this.user = user;
+        this.userId = userId;
         this.scheduleId = scheduleId;
         this.title = Optional.ofNullable(title);
         this.destination = destination;
@@ -41,9 +43,9 @@ public class UpdateScheduleDto {
         this.visitDates = visitDates;
     }
 
-    public static UpdateScheduleDto of(final UpdateScheduleRequest updateScheduleRequest, User user) {
+    public static UpdateScheduleDto of(final UpdateScheduleRequest updateScheduleRequest, Long userId) {
         return UpdateScheduleDto.builder()
-                .user(user)
+                .userId(userId)
                 .scheduleId(updateScheduleRequest.getScheduleId())
                 .title(updateScheduleRequest.getTitle())
                 .destination(updateScheduleRequest.getDestination())

@@ -110,15 +110,9 @@ public class User extends BaseTimeEntity implements UserDetails {
         return passwordEncoder.matches(password, this.password);
     }
 
-    public boolean isSameUser(User user) {
-        return this.equals(user);
+    public boolean isSameId(Long userId) {
+        return id.equals(userId);
     }
-
-    // deletedAt 까지 받아서 JPA 콜백 이벤트로 로그 처리나 할 수 있을거 같음
-//    public void deleteUser() {
-//        this.isDeleted = true;
-//    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

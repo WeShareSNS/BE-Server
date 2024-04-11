@@ -11,6 +11,7 @@ import com.weshare.api.v1.event.schedule.ScheduleCreatedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUpdatedEvent;
 import com.weshare.api.v1.repository.schedule.DayRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
+import com.weshare.api.v1.repository.schedule.query.ScheduleQueryRepository;
 import com.weshare.api.v1.service.exception.AccessDeniedModificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScheduleService {
 
+    private final ScheduleQueryRepository scheduleQueryRepository;
     private final DayRepository dayRepository;
     private final ScheduleRepository scheduleRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -51,7 +53,7 @@ public class ScheduleService {
                 .orElseThrow(ScheduleNotFoundException::new);
 
         User user = findSchedule.getUser();
-        if (!user.isSameUser(updateScheduleDto.getUser())) {
+        if (!user.isSameId(updateScheduleDto.getUserId())) {
             throw new AccessDeniedModificationException();
         }
         Destination destination = Destination.findDestinationByName(updateScheduleDto.getDestination());
@@ -90,5 +92,17 @@ public class ScheduleService {
         updateDays.forEach(u ->
                 Optional.ofNullable(dayMap.get(u.getId()))
                         .ifPresent(d -> d.updatePlaces(u)));
+    }
+
+    public void deleteSchedule(DeleteScheduleDto deleteScheduleDto) {
+        Schedule schedule = scheduleQueryRepository.findScheduleDetailById(deleteScheduleDto.scheduleId())
+                .orElseThrow(ScheduleNotFoundException::new);
+
+        User user = schedule.getUser();
+        if (!user.isSameId(deleteScheduleDto.userId())) {
+            throw new AccessDeniedModificationException();
+        }
+
+        scheduleRepository.delete(schedule);
     }
 }
