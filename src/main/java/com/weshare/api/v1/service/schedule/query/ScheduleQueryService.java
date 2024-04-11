@@ -1,5 +1,6 @@
 package com.weshare.api.v1.service.schedule.query;
 
+import com.weshare.api.v1.controller.schedule.query.SearchScheduleDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
@@ -110,5 +111,38 @@ public class ScheduleQueryService {
 
     private UserScheduleDto createUserScheduleDto(Schedule schedule) {
         return new UserScheduleDto(schedule.getId(), schedule.getTitle(), schedule.getCreatedDate());
+    }
+
+    public Page<SearchScheduleDto> searchSchedule(ScheduleSearchCondition searchCondition) {
+        final Page<Schedule> searchSchedule = pageQueryRepository.searchSchedulePage(searchCondition);
+        final List<Long> scheduleIds = getScheduleIds(searchSchedule);
+
+        final Map<Long, StatisticsScheduleDetails> statisticsDetailsScheduleIdMap = pageQueryRepository.findStatisticsDetailsScheduleIdMap(scheduleIds);
+        final Map<Long, Boolean> likedSchedulesMap = pageQueryRepository.findLikedSchedulesMap(scheduleIds, searchCondition.userId());
+        return searchSchedule.map(s -> convertSearchScheduleDto(s, statisticsDetailsScheduleIdMap, likedSchedulesMap));
+    }
+
+    private SearchScheduleDto convertSearchScheduleDto(
+            Schedule schedule,
+            Map<Long, StatisticsScheduleDetails> statisticsScheduleDetailsMap,
+            Map<Long, Boolean> likedSchedulesMap
+    ) {
+        final Long scheduleId = schedule.getId();
+        final StatisticsScheduleDetails statisticsScheduleDetails = statisticsScheduleDetailsMap.get(scheduleId);
+
+        return SearchScheduleDto.builder()
+                .scheduleId(schedule.getId())
+                .title(schedule.getTitle())
+                .destination(schedule.getDestination())
+                .expense(statisticsScheduleDetails.getTotalExpense())
+                .userName(schedule.getUser().getName())
+                .likesCount(statisticsScheduleDetails.getTotalLikeCount())
+                .commentsCount(statisticsScheduleDetails.getTotalCommentCount())
+                .viewCount(statisticsScheduleDetails.getTotalViewCount())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .createdDate(LocalDate.from(schedule.getCreatedDate()))
+                .isLiked(likedSchedulesMap.get(scheduleId))
+                .build();
     }
 }
