@@ -15,8 +15,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     @Query("""
             select l from Like l 
                 join fetch l.user 
-                join fetch l.schedule 
-                    where l.schedule.id = :ScheduleId
+                    where l.scheduleId = :ScheduleId
             """)
     Slice<Like> findAllLikeBySchedule(Long ScheduleId, Pageable pageable);
 
@@ -24,13 +23,13 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     @Query("""
             select l from Like l  
-            where l.schedule.id in :scheduleIds or l.user.id = :userId
+            where l.scheduleId in :scheduleIds or l.user.id = :userId
             """)
     List<Like> findLikeByScheduleIdsAndUserId(List<Long> scheduleIds, Long userId);
 
     @Query("""
             select l from Like l  
-            where l.schedule.id in :scheduleIds
+            where l.scheduleId in :scheduleIds
             """)
     List<Like> findLikeByScheduleIds(List<Long> scheduleIds);
 }

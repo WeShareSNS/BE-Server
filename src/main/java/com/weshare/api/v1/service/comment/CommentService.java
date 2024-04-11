@@ -29,15 +29,15 @@ public class CommentService {
     public CreateCommentResponse saveScheduleComment(CreateCommentDto createCommentDto) {
         final Schedule findSchedule = scheduleRepository.findById(createCommentDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
-        final Comment comment = createComment(createCommentDto, findSchedule);
+        final Comment comment = createComment(createCommentDto, findSchedule.getId());
 
         Comment savedComment = commentRepository.save(comment);
         return getCreateCommentResponse(savedComment);
     }
 
-    private Comment createComment(CreateCommentDto createCommentDto, Schedule findSchedule) {
+    private Comment createComment(CreateCommentDto createCommentDto, Long scheduleId) {
         return Comment.builder()
-                .schedule(findSchedule)
+                .scheduleId(scheduleId)
                 .commenter(createCommentDto.commenter())
                 .content(createCommentDto.content())
                 .build();

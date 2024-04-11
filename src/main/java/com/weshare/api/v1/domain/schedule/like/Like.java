@@ -1,11 +1,13 @@
 package com.weshare.api.v1.domain.schedule.like;
 
 import com.weshare.api.v1.domain.BaseTimeEntity;
-import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.ScheduleIdProvider;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -19,14 +21,13 @@ public class Like extends BaseTimeEntity implements ScheduleIdProvider {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
-    private Schedule schedule;
+    @Column(name = "schedule_id", nullable = false)
+    private Long scheduleId;
 
     @Builder
-    public Like(User user, Schedule schedule) {
+    public Like(User user, Long scheduleId) {
         this.user = user;
-        this.schedule = schedule;
+        this.scheduleId = scheduleId;
     }
 
     public boolean isSameLiker(User liker) {
@@ -34,11 +35,11 @@ public class Like extends BaseTimeEntity implements ScheduleIdProvider {
     }
 
     public boolean isSameScheduleId(Long scheduleId) {
-        return schedule.getId() == scheduleId;
+        return this.scheduleId.equals(scheduleId);
     }
 
     @Override
     public Long getScheduleId() {
-        return schedule.getId();
+        return scheduleId;
     }
 }

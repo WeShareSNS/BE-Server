@@ -60,7 +60,7 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
         }
 
         final List<Like> likes = queryFactory.selectFrom(like)
-                .where(like.schedule.id.in(scheduleIds), like.user.id.eq(userId))
+                .where(like.scheduleId.in(scheduleIds), like.user.id.eq(userId))
                 .fetch();
 
         return scheduleIds.stream()

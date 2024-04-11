@@ -127,7 +127,7 @@ public class InitSchedule {
                 Schedule schedule = entityManager.find(Schedule.class, 1L);
                 Comment comment = Comment.builder()
                         .commenter(user)
-                        .schedule(schedule)
+                        .scheduleId(schedule.getId())
                         .content("메롱" + "i").build();
                 entityManager.persist(comment);
             }
@@ -145,7 +145,7 @@ public class InitSchedule {
             Schedule schedule = entityManager.find(Schedule.class, 1L);
             Like like = Like.builder()
                     .user(user)
-                    .schedule(schedule)
+                    .scheduleId(schedule.getId())
                     .build();
             entityManager.persist(like);
         }
