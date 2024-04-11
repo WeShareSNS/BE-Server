@@ -1,4 +1,4 @@
-package com.weshare.api.v1.repository.schedule;
+package com.weshare.api.v1.repository.schedule.query;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -16,12 +16,11 @@ import static com.weshare.api.v1.domain.schedule.QDayWithPlaceDetailsView.dayWit
 import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ScheduleDetailRepositoryImpl implements ScheduleDetailRepository {
+public class SimpleScheduleQueryRepository implements ScheduleQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-
     @Override
     public Optional<Schedule> findScheduleDetailById(Long id) {
         // schedule fetch join day

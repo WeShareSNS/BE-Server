@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ScheduleRepository extends JpaRepository<Schedule, Long>, ScheduleDetailRepository {
+public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("""
     select s from Schedule s 
