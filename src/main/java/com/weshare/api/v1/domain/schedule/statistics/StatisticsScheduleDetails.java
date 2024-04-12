@@ -11,7 +11,7 @@ public class StatisticsScheduleDetails extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private Long scheduleId;
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int totalViewCount;

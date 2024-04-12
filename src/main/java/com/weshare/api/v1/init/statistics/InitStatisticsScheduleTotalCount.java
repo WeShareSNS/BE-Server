@@ -5,9 +5,11 @@ import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.statistics.StatisticsScheduleTotalCountRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Profile("local")
 @Component
 @RequiredArgsConstructor
 public class InitStatisticsScheduleTotalCount {

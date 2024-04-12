@@ -9,6 +9,7 @@ import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.statistics.StatisticsScheduleDetailsRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
+@Profile("local")
 @Component
 @RequiredArgsConstructor
 public class InitStatisticsScheduleDetails {
@@ -48,7 +50,6 @@ public class InitStatisticsScheduleDetails {
             // Map으로 바꾸기
             final Map<Long, Long> likeCountMap = convertCountMap(likeRepository.findLikeByScheduleIds(scheduleIds));
             final Map<Long, Long> commentCountMap = convertCountMap(commentRepository.findCommentByScheduleIds(scheduleIds));
-
 
             for (Map.Entry<Long, Schedule> scheduleEntry : scheduleMap.entrySet()) {
                 Long scheduleId = scheduleEntry.getKey();
