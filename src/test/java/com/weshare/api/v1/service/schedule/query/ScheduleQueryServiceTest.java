@@ -1,5 +1,6 @@
 package com.weshare.api.v1.service.schedule.query;
 
+import com.weshare.api.v1.controller.schedule.query.SearchScheduleDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;
@@ -11,6 +12,7 @@ import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
 import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -281,5 +283,41 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
         List<UserScheduleDto> allScheduleByUserId = scheduleQueryService.findAllScheduleByUserId(user.getId());
         // then
         assertThat(allScheduleByUserId).hasSize(2);
+    }
+
+    @Test
+    @Transactional
+    public void 검색을_통해서_게시물을_조회할_수_있다() {
+        // given
+        User user = createUserAndSave("test13@test.com", "test13", "password");
+        createAndSaveSchedule("title1", Destination.SEOUL, user);
+        String findTitle = "title2";
+        createAndSaveSchedule(findTitle, Destination.JEJU, user);
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        // when
+        ScheduleSearchCondition scheduleSearchCondition = new ScheduleSearchCondition(user.getId(), findTitle, pageRequest);
+        List<SearchScheduleDto> searchSchedules = scheduleQueryService.searchSchedule(scheduleSearchCondition)
+                .getContent();
+        // then
+        assertThat(searchSchedules).hasSize(1)
+                .extracting("title", "destination")
+                .containsExactly(Tuple.tuple(findTitle, Destination.JEJU));
+    }
+
+    @Test
+    @Transactional
+    public void 검색에_해당하는_게시물이_없을_수_있다() {
+        // given
+        User user = createUserAndSave("test13@test.com", "test13", "password");
+        createAndSaveSchedule("title1", Destination.SEOUL, user);
+        createAndSaveSchedule("title1", Destination.JEJU, user);
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        // when
+        String notContentTitle = "메롱";
+        ScheduleSearchCondition scheduleSearchCondition = new ScheduleSearchCondition(user.getId(), notContentTitle, pageRequest);
+        List<SearchScheduleDto> searchSchedules = scheduleQueryService.searchSchedule(scheduleSearchCondition)
+                .getContent();
+        // then
+        assertThat(searchSchedules).hasSize(0);
     }
 }
