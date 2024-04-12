@@ -11,17 +11,19 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DayDetailDto {
+    private Long travelDateId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate travelDate;
     private List<PlaceDetailDto> places;
 
-    private DayDetailDto(LocalDate travelDate, List<PlaceDetailDto> places) {
+    public DayDetailDto(Long travelDateId, LocalDate travelDate, List<PlaceDetailDto> places) {
+        this.travelDateId = travelDateId;
         this.travelDate = travelDate;
         this.places = places;
     }
 
     public static DayDetailDto from(Day day) {
-        return new DayDetailDto(day.getTravelDate(), createPlaceDetails(day));
+        return new DayDetailDto(day.getId(), day.getTravelDate(), createPlaceDetails(day));
     }
 
     private static List<PlaceDetailDto> createPlaceDetails(Day day) {
