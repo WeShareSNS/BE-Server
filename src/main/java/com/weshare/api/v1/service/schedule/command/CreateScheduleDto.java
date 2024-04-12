@@ -1,5 +1,6 @@
-package com.weshare.api.v1.controller.schedule.command.dto;
+package com.weshare.api.v1.service.schedule.command;
 
+import com.weshare.api.v1.controller.schedule.command.CreateScheduleRequest;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.User;
 import lombok.Builder;

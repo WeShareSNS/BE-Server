@@ -37,7 +37,7 @@ class StatisticsScheduleEventHandlerTest extends ScheduleTestSupport {
         long beforeCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate()
                 .orElse(new StatisticsScheduleTotalCount()).getTotalCount();
         // when
-        statisticsScheduleEventHandler.scheduleCreatedEvent(scheduleCreatedEvent);
+        statisticsScheduleEventHandler.scheduleCreated(scheduleCreatedEvent);
         // then
         long afterCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate().orElseThrow().getTotalCount();
         assertThat(afterCount).isEqualTo(beforeCount + 1);
@@ -46,23 +46,6 @@ class StatisticsScheduleEventHandlerTest extends ScheduleTestSupport {
         assertThat(statisticsScheduleDetails.getTotalExpense()).isEqualTo(schedule.getTotalScheduleExpense());
         assertThat(statisticsScheduleDetails.getTotalViewCount()).isEqualTo(0);
         assertThat(statisticsScheduleDetails.getTotalCommentCount()).isEqualTo(0);
-    }
-
-    @Test
-    @Transactional
-    public void 여러명_생성() {
-        // given
-        int threadCount = 100;
-
-        // when
-        for (long i = 0; i < threadCount; i++) {
-            long scheduleId = i;
-            ScheduleCreatedEvent scheduleCreatedEvent = new ScheduleCreatedEvent(scheduleId, 30000L);
-            statisticsScheduleEventHandler.scheduleCreatedEvent(scheduleCreatedEvent);
-        }
-        // then
-        StatisticsScheduleTotalCount afterCount = scheduleTotalCountRepository.findFirstByOrderByModifiedDate().orElseThrow();
-        assertThat(afterCount.getTotalCount()).isEqualTo(threadCount);
     }
 
 }

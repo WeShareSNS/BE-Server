@@ -90,6 +90,17 @@ public class Schedule extends BaseTimeEntity {
         return days.isContainDays(updateDays);
     }
 
+    public void updateDestinationOrTitle(Destination destination, String title) {
+        this.title = title;
+        if (!destination.isEmpty()) {
+            this.destination = destination;
+        }
+    }
+
+    public List<Day> getDays() {
+        return days.getDays();
+    }
+
     public long getTotalScheduleExpense() {
         return days.getTotalDaysExpense();
     }
@@ -100,13 +111,6 @@ public class Schedule extends BaseTimeEntity {
 
     public LocalDate getEndDate() {
         return days.getEndDate();
-    }
-
-    public void updateDestinationOrTitle(Destination destination, String title) {
-        this.title = title;
-        if (!destination.isEmpty()) {
-            this.destination = destination;
-        }
     }
 
 }

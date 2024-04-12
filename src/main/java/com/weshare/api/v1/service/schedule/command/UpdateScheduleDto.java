@@ -1,5 +1,6 @@
-package com.weshare.api.v1.controller.schedule.command.dto;
+package com.weshare.api.v1.service.schedule.command;
 
+import com.weshare.api.v1.controller.schedule.command.UpdateScheduleRequest;
 import com.weshare.api.v1.domain.schedule.Day;
 import com.weshare.api.v1.domain.schedule.Expense;
 import com.weshare.api.v1.domain.schedule.Location;
@@ -65,7 +66,7 @@ public class UpdateScheduleDto {
                 .toList());
     }
 
-    private static class UpdateDayDto {
+    static class UpdateDayDto {
         private final LocalDate travelDate;
         private final Long dayId;
         private final List<UpdatePlaceDto> updatePlaceDtos;
@@ -88,7 +89,7 @@ public class UpdateScheduleDto {
                     .build();
         }
 
-        private static class UpdatePlaceDto {
+        static class UpdatePlaceDto {
             private final String title;
             private final LocalTime time;
             private final String memo;

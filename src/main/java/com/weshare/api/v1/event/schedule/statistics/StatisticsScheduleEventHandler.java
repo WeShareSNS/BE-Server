@@ -26,7 +26,7 @@ public class StatisticsScheduleEventHandler {
     private final ScheduleQueryRepository queryRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void scheduleCreatedEvent(ScheduleCreatedEvent createdEvent) {
+    public void scheduleCreated(ScheduleCreatedEvent createdEvent) {
         StatisticsScheduleDetails statisticsScheduleDetails = createStatisticsScheduleDetails(createdEvent);
         scheduleDetailsRepository.save(statisticsScheduleDetails);
 
@@ -48,7 +48,7 @@ public class StatisticsScheduleEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void scheduleCreatedEvent(ScheduleUpdatedEvent updatedEvent) {
+    public void scheduleUpdated(ScheduleUpdatedEvent updatedEvent) {
         final Long scheduleId = updatedEvent.scheduleId();
         final StatisticsScheduleDetails statisticsScheduleDetails = scheduleDetailsRepository.findByScheduleId(scheduleId)
                 .orElseThrow(() -> new ScheduleNotFoundException("통계테이블에서 수정한 여행일정이 없습니다."));
@@ -61,7 +61,7 @@ public class StatisticsScheduleEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void scheduleDeletedEvent(ScheduleDeletedEvent scheduleDeletedEvent) {
+    public void scheduleDeleted(ScheduleDeletedEvent scheduleDeletedEvent) {
         final Long scheduleId = scheduleDeletedEvent.scheduleId();
         scheduleDetailsRepository.deleteByScheduleId(scheduleId);
 

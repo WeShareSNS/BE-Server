@@ -51,7 +51,7 @@ public class SimpleScheduleQueryRepository implements ScheduleQueryRepository {
     }
 
     private Set<Long> getDayIds(Schedule scheduleWithAllDay) {
-        return scheduleWithAllDay.getDays().getDays().stream()
+        return scheduleWithAllDay.getDays().stream()
                 .map(Day::getId)
                 .collect(Collectors.toUnmodifiableSet());
     }

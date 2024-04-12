@@ -1,9 +1,7 @@
 package com.weshare.api.v1.controller.schedule.command;
 
-import com.weshare.api.v1.controller.schedule.command.dto.CreateScheduleDto;
-import com.weshare.api.v1.controller.schedule.command.dto.CreateScheduleRequest;
-import com.weshare.api.v1.controller.schedule.command.dto.UpdateScheduleDto;
-import com.weshare.api.v1.controller.schedule.command.dto.UpdateScheduleRequest;
+import com.weshare.api.v1.service.schedule.command.CreateScheduleDto;
+import com.weshare.api.v1.service.schedule.command.UpdateScheduleDto;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.schedule.command.DeleteScheduleDto;
 import com.weshare.api.v1.service.schedule.command.ScheduleService;

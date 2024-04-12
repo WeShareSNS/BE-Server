@@ -1,7 +1,5 @@
 package com.weshare.api.v1.service.schedule.command;
 
-import com.weshare.api.v1.controller.schedule.command.dto.CreateScheduleDto;
-import com.weshare.api.v1.controller.schedule.command.dto.UpdateScheduleDto;
 import com.weshare.api.v1.domain.schedule.Day;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
@@ -12,7 +10,6 @@ import com.weshare.api.v1.event.schedule.ScheduleDeletedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUpdatedEvent;
 import com.weshare.api.v1.repository.schedule.DayRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
-import com.weshare.api.v1.repository.schedule.query.ScheduleQueryRepository;
 import com.weshare.api.v1.service.exception.AccessDeniedModificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,7 +27,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final ScheduleQueryRepository scheduleQueryRepository;
     private final DayRepository dayRepository;
     private final ScheduleRepository scheduleRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -96,7 +92,7 @@ public class ScheduleService {
     }
 
     public void deleteSchedule(DeleteScheduleDto deleteScheduleDto) {
-        Schedule schedule = scheduleQueryRepository.findScheduleDetailById(deleteScheduleDto.scheduleId())
+        Schedule schedule = scheduleRepository.findById(deleteScheduleDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
 
         User user = schedule.getUser();
