@@ -1,5 +1,6 @@
 package com.weshare.api.v1.service.schedule.query;
 
+import com.weshare.api.v1.controller.schedule.query.SearchScheduleDto;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.user.User;
@@ -11,6 +12,7 @@ import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
 import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
 import com.weshare.api.v1.service.schedule.query.dto.UserScheduleDto;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -78,35 +80,12 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
 
     @Test
     @Transactional
-    public void 제목으로_여행일정을_조회할_수_있다() {
-        // given
-        String title = "제목2";
-        User user = createUserAndSave("test14@test.com", "test14", "password");
-        createAndSaveSchedule("제목1", Destination.BUSAN, user);
-        Schedule schedule2 = createAndSaveSchedule(title, Destination.BUSAN, user);
-        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
-        // when
-        ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
-                .pageable(pageRequest)
-                .search(title)
-                .build();
-        Page<SchedulePageDto> schedulePage = scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
-        List<SchedulePageDto> content = schedulePage.getContent();
-        // then
-        assertThat(content)
-                .hasSize(1)
-                .extracting("scheduleId", "title", "userName", "destination")
-                .containsExactly(tuple(schedule2.getId(), title, schedule2.getUser().getName(), schedule2.getDestination()));
-    }
-
-    @Test
-    @Transactional
     public void 목적지로_여행일정을_조회할_수_있다() {
         // given
         User user = createUserAndSave("test14@test.com", "test14", "password");
-        Destination destination = Destination.SUWON;
+        Destination destination = Destination.GYEONGGI;
         Schedule schedule1 = createAndSaveSchedule("제목1", destination, user);
-        createAndSaveSchedule("제목2", Destination.BUSAN, user);
+        createAndSaveSchedule("제목2", Destination.SEOUL, user);
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
         // when
         ScheduleFilterPageDto scheduleFilterPageDto = ScheduleFilterPageDto.builder()
@@ -128,7 +107,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     Collection<DynamicTest> 여행비용_범위로_여행일정을_조회할_수_있다() {
         // given
         User user = createUserAndSave("test14@test.com", "test14", "password");
-        Schedule schedule = createAndSaveSchedule("제목1", Destination.SUWON, user);
+        Schedule schedule = createAndSaveSchedule("제목1", Destination.GYEONGGI, user);
         initStatisticsScheduleDetails.init();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
         return List.of(
@@ -198,7 +177,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     Collection<DynamicTest> 여행비용_범위를_넘어가면_여행일정을_조회할_수_없다() {
         // given
         User user = createUserAndSave("test14@test.com", "test14", "password");
-        Schedule schedule = createAndSaveSchedule("제목1", Destination.SUWON, user);
+        Schedule schedule = createAndSaveSchedule("제목1", Destination.GYEONGGI, user);
         initStatisticsScheduleDetails.init();
         Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
         return List.of(
@@ -298,11 +277,47 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
     public void 사용자가_작성한_게시물을_조회할_수_있다() {
         // given
         User user = createUserAndSave("test13@test.com", "test13", "password");
-        createAndSaveSchedule("title1", Destination.BUSAN, user);
-        createAndSaveSchedule("title2", Destination.GANGNEUNG, user);
+        createAndSaveSchedule("title1", Destination.SEOUL, user);
+        createAndSaveSchedule("title2", Destination.JEJU, user);
         // when
         List<UserScheduleDto> allScheduleByUserId = scheduleQueryService.findAllScheduleByUserId(user.getId());
         // then
         assertThat(allScheduleByUserId).hasSize(2);
+    }
+
+    @Test
+    @Transactional
+    public void 검색을_통해서_게시물을_조회할_수_있다() {
+        // given
+        User user = createUserAndSave("test13@test.com", "test13", "password");
+        createAndSaveSchedule("title1", Destination.SEOUL, user);
+        String findTitle = "title2";
+        createAndSaveSchedule(findTitle, Destination.JEJU, user);
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        // when
+        ScheduleSearchCondition scheduleSearchCondition = new ScheduleSearchCondition(user.getId(), findTitle, pageRequest);
+        List<SearchScheduleDto> searchSchedules = scheduleQueryService.searchSchedule(scheduleSearchCondition)
+                .getContent();
+        // then
+        assertThat(searchSchedules).hasSize(1)
+                .extracting("title", "destination")
+                .containsExactly(Tuple.tuple(findTitle, Destination.JEJU));
+    }
+
+    @Test
+    @Transactional
+    public void 검색에_해당하는_게시물이_없을_수_있다() {
+        // given
+        User user = createUserAndSave("test13@test.com", "test13", "password");
+        createAndSaveSchedule("title1", Destination.SEOUL, user);
+        createAndSaveSchedule("title1", Destination.JEJU, user);
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("created-date").descending());
+        // when
+        String notContentTitle = "메롱";
+        ScheduleSearchCondition scheduleSearchCondition = new ScheduleSearchCondition(user.getId(), notContentTitle, pageRequest);
+        List<SearchScheduleDto> searchSchedules = scheduleQueryService.searchSchedule(scheduleSearchCondition)
+                .getContent();
+        // then
+        assertThat(searchSchedules).hasSize(0);
     }
 }

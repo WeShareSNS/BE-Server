@@ -32,7 +32,7 @@ class CommentServiceTest extends ScheduleTestSupport {
     public void 특정_여행일정에_댓글을_남길_수_있다() {
         // given
         User user = createUserAndSave("test@na.com", "test", "test");
-        Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
+        Schedule schedule = createAndSaveSchedule("제목", Destination.GYEONGGI, user);
         String content = "댓글";
         CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
         // when
@@ -63,7 +63,7 @@ class CommentServiceTest extends ScheduleTestSupport {
     public void 해당하는_여행일정_댓글을_최신순으로_조회할_수_있다() {
         // given
         User user = createUserAndSave("test@na.com", "test", "test");
-        Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
+        Schedule schedule = createAndSaveSchedule("제목", Destination.GYEONGGI, user);
         String content = "댓글";
         CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
         commentService.saveScheduleComment(createCommentDto);
@@ -91,7 +91,7 @@ class CommentServiceTest extends ScheduleTestSupport {
     public void 해당하는_여행일정_댓글을_삭제할_수_있다() {
         // given
         User user = createUserAndSave("test@na.com", "test", "test");
-        Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
+        Schedule schedule = createAndSaveSchedule("제목", Destination.JEJU, user);
         String content  = "댓글";
         CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
         CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
@@ -109,7 +109,7 @@ class CommentServiceTest extends ScheduleTestSupport {
     public void 해당하는_여행일정_댓글을_수정할_수_있다() {
         // given
         User user = createUserAndSave("test@na.com", "test", "test");
-        Schedule schedule = createAndSaveSchedule("제목", Destination.BUSAN, user);
+        Schedule schedule = createAndSaveSchedule("제목", Destination.JEJU, user);
         CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), "댓글");
         CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
         String updateContent = "수정한 댓글 입니다.";

@@ -9,7 +9,6 @@ import java.util.Objects;
 
 @Entity
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Day {
 
@@ -24,11 +23,18 @@ public class Day {
     @Column(name = "travel_date", nullable = false)
     private LocalDate travelDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
+    private Schedule schedule;
     @Builder
     private Day(Long id, List<Place> places, LocalDate travelDate) {
         this.id = id;
         this.places = places;
         this.travelDate = travelDate;
+    }
+
+    public void initSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 
     public Expense getTotalDayExpense() {
@@ -45,6 +51,10 @@ public class Day {
         return isBeforeEnd && isAfterStart;
     }
 
+    public boolean isSameDayId(Day otherDay) {
+        return id.equals(otherDay.id);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -56,5 +66,12 @@ public class Day {
     @Override
     public int hashCode() {
         return Objects.hash(id, places, travelDate);
+    }
+
+    public void updatePlaces(Day updateDay) {
+        if (!travelDate.equals(updateDay.travelDate)) {
+            throw new IllegalStateException("여행일정이 올바르지 않습니다.");
+        }
+        this.places = updateDay.places;
     }
 }

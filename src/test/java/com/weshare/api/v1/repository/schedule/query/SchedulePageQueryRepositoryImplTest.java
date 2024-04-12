@@ -46,7 +46,6 @@ class SchedulePageQueryRepositoryImplTest extends ScheduleTestSupport {
     private ScheduleConditionPageDto createScheduleConditionPageDto(Pageable pageRequest) {
         return ScheduleConditionPageDto.builder()
                 .destinations(List.of(Destination.EMPTY))
-                .searchCondition(new SearchCondition(null))
                 .expenseCondition(new ExpenseCondition(null, null))
                 .pageable(pageRequest).build();
     }

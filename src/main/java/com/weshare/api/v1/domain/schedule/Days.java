@@ -1,10 +1,12 @@
 package com.weshare.api.v1.domain.schedule;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -12,24 +14,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
-@ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Days {
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "schedule_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "schedule")
     private List<Day> days;
-    @Column(name = "start_date",nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
-    @Column(name = "end_date",nullable = false)
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
     public Days(List<Day> days, LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("시작, 종료 날짜가 올바르지 않습니다.");
         }
-        if (!areAllDistinctDaysWithinRange(days,startDate, endDate) || !isDayCountMatching(days, startDate, endDate)) {
+        if (!areAllDistinctDaysWithinRange(days, startDate, endDate) || !isDayCountMatching(days, startDate, endDate)) {
             throw new IllegalArgumentException("날짜 정보가 올바르지 않습니다.");
         }
         this.startDate = startDate;
@@ -57,6 +57,15 @@ public class Days {
                 .reduce(Expense::sum)
                 .orElseThrow(() -> new IllegalStateException("금액을 반환할 수 없습니다."))
                 .getExpense();
+    }
+
+    public void initDays(Schedule schedule) {
+        days.forEach(d -> d.initSchedule(schedule));
+    }
+
+    public boolean isContainDays(List<Day> updateDays) {
+        return updateDays.stream()
+                .allMatch(u -> days.stream().anyMatch(u::isSameDayId));
     }
 
     public List<Day> getDays() {

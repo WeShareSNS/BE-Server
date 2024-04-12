@@ -44,7 +44,7 @@ public class LikeService {
                 .ifPresent((like -> {
                     throw new DuplicateLikeException();}));
 
-        final Like like = createLike(createLikeDto, findSchedule);
+        final Like like = createLike(createLikeDto, findSchedule.getId());
         Like savedLike = likeRepository.save(like);
         return getCreateLikeResponse(savedLike);
     }
@@ -56,10 +56,10 @@ public class LikeService {
                 savedLike.getCreatedDate());
     }
 
-    private Like createLike(CreateLikeDto createLikeDto, Schedule findSchedule) {
+    private Like createLike(CreateLikeDto createLikeDto, Long scheduleId) {
         return Like.builder()
                 .user(createLikeDto.liker())
-                .schedule(findSchedule)
+                .scheduleId(scheduleId)
                 .build();
     }
 

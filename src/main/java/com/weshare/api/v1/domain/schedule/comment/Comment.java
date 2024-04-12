@@ -1,7 +1,6 @@
 package com.weshare.api.v1.domain.schedule.comment;
 
 import com.weshare.api.v1.domain.BaseTimeEntity;
-import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.ScheduleIdProvider;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
@@ -28,15 +27,14 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
     @JoinColumn(name = "commenter_id", nullable = false)
     private User commenter;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+    @Column(name = "schedule_id", nullable = false)
+    private Long scheduleId;
 
     @Builder
-    private Comment(String content, User commenter, Schedule schedule) {
+    private Comment(String content, User commenter, Long scheduleId) {
         this.content = content;
         this.commenter = commenter;
-        this.schedule = schedule;
+        this.scheduleId = scheduleId;
     }
 
     public void updateContent(String content) {
@@ -48,11 +46,11 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
     }
 
     public boolean isSameScheduleId(Long scheduleId) {
-        return schedule.getId() == scheduleId;
+        return this.scheduleId.equals(scheduleId);
     }
 
     @Override
     public Long getScheduleId() {
-        return schedule.getId();
+        return scheduleId;
     }
 }

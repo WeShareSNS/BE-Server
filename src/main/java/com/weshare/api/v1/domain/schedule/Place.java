@@ -38,6 +38,14 @@ public class Place {
         this.location = location;
     }
 
+    public Double getLatitude() {
+        return location.getLatitude();
+    }
+
+    public Double getLongitude() {
+        return location.getLongitude();
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

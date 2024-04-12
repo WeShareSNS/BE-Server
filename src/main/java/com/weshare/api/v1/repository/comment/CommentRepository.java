@@ -13,19 +13,21 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query(value = """
             select c from Comment c
                  join fetch c.commenter 
-                     where c.schedule.id = :scheduleId
+                     where c.scheduleId = :scheduleId
             """)
     Slice<Comment> findAllByScheduleId(Long scheduleId, Pageable pageable);
 
     @Query("""
                 select c from Comment c
-                where c.schedule.id in :scheduleIds or c.commenter.id = :commenterId
+                where c.scheduleId in :scheduleIds or c.commenter.id = :commenterId
             """)
     List<Comment> findCommentByScheduleIdsAndCommenterId(List<Long> scheduleIds, Long commenterId);
 
     @Query("""
                 select c from Comment c
-                where c.schedule.id in :scheduleIds
+                where c.scheduleId in :scheduleIds
             """)
     List<Comment> findCommentByScheduleIds(List<Long> scheduleIds);
+
+    void deleteByScheduleId(Long scheduleId);
 }

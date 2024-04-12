@@ -21,6 +21,13 @@ public class StatisticsScheduleTotalCount extends BaseTimeEntity {
         totalCount += 1;
     }
 
+    public void decrementTotalCount() {
+        if (totalCount <= 0) {
+            throw new IllegalStateException("총 카운트 수는 음수일 수 없습니다.");
+        }
+        totalCount -= 1;
+    }
+
     public void syncScheduleTotalCount(long totalCount) {
         this.totalCount = totalCount;
     }

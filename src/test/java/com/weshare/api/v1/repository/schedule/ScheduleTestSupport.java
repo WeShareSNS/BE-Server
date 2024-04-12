@@ -43,10 +43,11 @@ public abstract class ScheduleTestSupport {
     public Schedule createAndSaveSchedule(String title, Destination destination, User user) {
         Schedule schedule = Schedule.builder()
                 .title(title)
+                .user(user)
                 .destination(destination)
                 .days(createDays())
                 .build();
-        schedule.setUser(user);
+        schedule.initDays();
         return repository.save(schedule);
     }
 
@@ -94,7 +95,7 @@ public abstract class ScheduleTestSupport {
         User user = entityManager.find(User.class, userId);
         Like like = Like.builder()
                 .user(user)
-                .schedule(schedule)
+                .scheduleId(schedule.getId())
                 .build();
         entityManager.persist(like);
         return like;
@@ -107,7 +108,7 @@ public abstract class ScheduleTestSupport {
         Comment comment = Comment.builder()
                 .content("메롱")
                 .commenter(user)
-                .schedule(schedule)
+                .scheduleId(schedule.getId())
                 .build();
         entityManager.persist(comment);
         return comment;

@@ -9,15 +9,13 @@ import java.util.Set;
 @Getter
 public class ScheduleFilterPageDto {
     private final Long userId;
-    private final String search;
     private final String expenseCondition;
     private final Set<String> destinations;
     private final Pageable pageable;
 
     @Builder
-    private ScheduleFilterPageDto(Long userId, String search, String expenseCondition, Set<String> destinations, Pageable pageable) {
+    private ScheduleFilterPageDto(Long userId, String expenseCondition, Set<String> destinations, Pageable pageable) {
         this.userId = userId;
-        this.search = search;
         this.expenseCondition = expenseCondition;
         this.destinations = destinations;
         this.pageable = pageable;

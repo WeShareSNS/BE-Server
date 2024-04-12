@@ -18,12 +18,11 @@ import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
 @Repository
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ScheduleDetailQueryRepositoryImpl implements ScheduleDetailQueryRepository {
+public class SimpleScheduleQueryRepository implements ScheduleQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-
     @Override
-    public Schedule findScheduleDetail(Long id) {
+    public Optional<Schedule> findScheduleDetailById(Long id) {
         // schedule fetch join day
         final Optional<Schedule> scheduleWithAllDay = getScheduleWithAllDay(id);
         final Schedule schedule = scheduleWithAllDay.orElseThrow(ScheduleNotFoundException::new);
@@ -33,10 +32,11 @@ public class ScheduleDetailQueryRepositoryImpl implements ScheduleDetailQueryRep
         final List<Tuple> allDayWithPlaces = getDaysWithPlace(dayIds);
         final List<Day> dayWithPlaceDetails = createDayWithPlaceDetails(allDayWithPlaces);
 
-        return schedule.createSelfInstanceWithDays(
-                new Days(dayWithPlaceDetails,
-                        schedule.getStartDate(),
-                        schedule.getEndDate()));
+        return Optional.ofNullable(
+                schedule.createSelfInstanceWithDays(
+                        new Days(dayWithPlaceDetails,
+                                schedule.getStartDate(),
+                                schedule.getEndDate())));
     }
 
     private Optional<Schedule> getScheduleWithAllDay(Long scheduleId) {

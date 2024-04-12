@@ -10,13 +10,13 @@ import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.like.Like;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
 import com.weshare.api.v1.repository.schedule.query.dto.ScheduleConditionPageDto;
+import com.weshare.api.v1.service.schedule.query.ScheduleSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
         }
 
         final List<Like> likes = queryFactory.selectFrom(like)
-                .where(like.schedule.id.in(scheduleIds), like.user.id.eq(userId))
+                .where(like.scheduleId.in(scheduleIds), like.user.id.eq(userId))
                 .fetch();
 
         return scheduleIds.stream()
@@ -94,7 +94,6 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                 .join(schedule.user).fetchJoin()
                 .where(
                         destinationIn(scheduleConditionPageDto.getDestinations()),
-                        titleLike(scheduleConditionPageDto.getSearchCondition()),
                         totalExpenseBetween(scheduleConditionPageDto.getExpenseCondition())
                 )
                 .orderBy(orders.toArray(OrderSpecifier[]::new))
@@ -116,13 +115,6 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                         )));
     }
 
-    private BooleanExpression titleLike(SearchCondition searchCondition) {
-        if (!StringUtils.hasText(searchCondition.search())) {
-            return null;
-        }
-        return schedule.title.like("%" + searchCondition.search() + "%");
-    }
-
     private BooleanExpression destinationIn(List<Destination> destinations) {
         if (destinations.contains(Destination.EMPTY)) {
             return null;
@@ -130,4 +122,31 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
         return schedule.destination.in(destinations);
     }
 
+    @Override
+    public Page<Schedule> searchSchedulePage(ScheduleSearchCondition searchCondition) {
+        // count query 다음에 최적화 해보기
+        final JPAQuery<Long> countQuery = getSearchCountQuery(searchCondition.search());
+        // content query
+        final List<Schedule> searchContent = searchContent(searchCondition);
+        return PageableExecutionUtils.getPage(searchContent, searchCondition.pageable(), countQuery::fetchOne);
+    }
+
+    private JPAQuery<Long> getSearchCountQuery(String search) {
+        return queryFactory.select(schedule.count())
+                .from(schedule)
+                .where(schedule.title.like("%" + search + "%"));
+    }
+
+    private List<Schedule> searchContent(ScheduleSearchCondition searchCondition) {
+        final Pageable pageable = searchCondition.pageable();
+        final List<OrderSpecifier> orders = orderSpecifierHelper.getOrderSpecifiers(pageable);
+
+        return queryFactory.selectFrom(schedule)
+                .join(schedule.user).fetchJoin()
+                .where(schedule.title.like("%" + searchCondition.search() + "%"))
+                .orderBy(orders.toArray(OrderSpecifier[]::new))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
 }

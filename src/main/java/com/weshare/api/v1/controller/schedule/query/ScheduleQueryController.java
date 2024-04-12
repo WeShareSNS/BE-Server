@@ -3,6 +3,7 @@ package com.weshare.api.v1.controller.schedule.query;
 import com.weshare.api.v1.common.Response;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.schedule.query.ScheduleQueryService;
+import com.weshare.api.v1.service.schedule.query.ScheduleSearchCondition;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleFilterPageDto;
 import com.weshare.api.v1.service.schedule.query.dto.SchedulePageDto;
@@ -39,35 +40,48 @@ public class ScheduleQueryController {
     @GetMapping("/schedules")
     public Page<SchedulePageDto> getSchedule(
             @AuthenticationPrincipal User user,
-            @RequestParam(required = false) String search,
             @RequestParam(required = false) String expense,
             @RequestParam(name = "destination", required = false) Set<String> destinations,
             @PageableDefault(size = 12, sort = "created-date", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         validator.validateExpenseCondition(expense);
 
-        ScheduleFilterPageDto scheduleFilterPageDto =
-                createScheduleFilterPageDto(user, search, expense, destinations, pageable);
+        ScheduleFilterPageDto scheduleFilterPageDto = createScheduleFilterPageDto(user, expense, destinations, pageable);
         return scheduleQueryService.getSchedulePage(scheduleFilterPageDto);
     }
 
     private ScheduleFilterPageDto createScheduleFilterPageDto(
             User user,
-            String search,
             String expense,
             Set<String> destinations,
             Pageable pageable
     ) {
         return ScheduleFilterPageDto.builder()
                 .userId(user == null ? null : user.getId())
-                .search(search)
                 .expenseCondition(expense)
                 .destinations(destinations)
                 .pageable(pageable)
                 .build();
     }
 
-    @Operation(summary = "여행일정 상세보기 API", description = "특정 ")
+    @Operation(summary = "여행일정 검색 조회 API", description = "특정 키워드를 통해서 제목과 일치한 글을 조회할 수 있습니다.")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "여행일정 검색 성공")})
+    @GetMapping("/schedules/search")
+    public Page<SearchScheduleDto> searchSchedule(
+            @PageableDefault(size = 12, sort = "created-date", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam("q") String search,
+            @AuthenticationPrincipal User user
+    ) {
+        ScheduleSearchCondition scheduleSearchCondition = createScheduleSearchCondition(pageable, search, user);
+        return scheduleQueryService.searchSchedule(scheduleSearchCondition);
+    }
+
+    private static ScheduleSearchCondition createScheduleSearchCondition(Pageable pageable, String search, User user) {
+        final Long userId = user == null ? null : user.getId();
+        return new ScheduleSearchCondition(userId, search, pageable);
+    }
+
+    @Operation(summary = "여행일정 상세보기 API", description = "특정 여행일정을 상세조회 할 수 있습니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "여행일정 조회 성공"),
             @ApiResponse(responseCode = "400", description = "조회하는 여행일정이 올바르지 않습니다."),

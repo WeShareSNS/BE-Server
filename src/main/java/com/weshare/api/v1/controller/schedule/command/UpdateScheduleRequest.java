@@ -5,10 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,13 +13,13 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreateScheduleRequest {
+public class UpdateScheduleRequest {
+    @NotNull
+    private Long scheduleId;
 
-    @NotBlank
     private String title;
-
-    @NotBlank
     private String destination;
 
     @NotNull
@@ -33,16 +30,19 @@ public class CreateScheduleRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
 
-    @NotNull
     @Valid
-    private List<CreateDay> dayDetail;
-
-    public List<CreateDay> getDayDetail() {
-        return Collections.unmodifiableList(dayDetail);
-    }
+    private List<UpdateDay> dayDetail;
 
     @Builder
-    private CreateScheduleRequest(String title, String destination, LocalDate startDate, LocalDate endDate, List<CreateDay> dayDetail) {
+    private UpdateScheduleRequest(
+            Long scheduleId,
+            String title,
+            String destination,
+            LocalDate startDate,
+            LocalDate endDate,
+            List<UpdateDay> dayDetail
+    ) {
+        this.scheduleId = scheduleId;
         this.title = title;
         this.destination = destination;
         this.startDate = startDate;
@@ -50,29 +50,32 @@ public class CreateScheduleRequest {
         this.dayDetail = dayDetail;
     }
 
+    @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class CreateDay {
-        @Getter
+    public static class UpdateDay {
+        @NotNull
+        private Long travelDateId;
         @NotNull
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
         private LocalDate travelDate;
         @NotNull
         @Valid
-        private List<CreatePlace> places;
+        private List<UpdatePlace> places;
 
         @Builder
-        private CreateDay(LocalDate travelDate, List<CreatePlace> places) {
+        private UpdateDay(Long travelDateId, LocalDate travelDate, List<UpdatePlace> places) {
+            this.travelDateId = travelDateId;
             this.travelDate = travelDate;
             this.places = places;
         }
 
-        public List<CreatePlace> getPlaces() {
+        public List<UpdatePlace> getPlaces() {
             return Collections.unmodifiableList(places);
         }
 
         @Getter
         @NoArgsConstructor(access = AccessLevel.PROTECTED)
-        public static class CreatePlace {
+        public static class UpdatePlace {
             @NotBlank
             private String title;
             @NotNull
@@ -89,7 +92,7 @@ public class CreateScheduleRequest {
             @NotNull
             private Double longitude;
             @Builder
-            private CreatePlace(String title, LocalTime time, String memo, long expense, Double latitude, Double longitude) {
+            private UpdatePlace(String title, LocalTime time, String memo, long expense, Double latitude, Double longitude) {
                 this.title = title;
                 this.time = time;
                 this.memo = memo;

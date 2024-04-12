@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 @Component
 public class ScheduleQueryValidator {
-    private static Pattern EXPENSE_PATTERN = Pattern.compile("^\\d*~\\d*$");
+    private static final Pattern EXPENSE_PATTERN = Pattern.compile("^\\d*~\\d*$");
 
     public void validateExpenseCondition(String expenseCondition) {
         if (expenseCondition != null && !EXPENSE_PATTERN.matcher(expenseCondition).matches()) {

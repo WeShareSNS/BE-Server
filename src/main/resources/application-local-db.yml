@@ -6,7 +6,6 @@ spring:
     password: ENC(68iE/ZMMYSsUkFY0Bi3R7lOEA7RoXfsP)
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
     show-sql: true
     hibernate:

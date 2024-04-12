@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
+class SimpleScheduleQueryRepositoryTest extends ScheduleTestSupport {
 
     @Autowired
-    private ScheduleDetailQueryRepository scheduleDetailQueryRepository;
+    private ScheduleQueryRepository scheduleQueryRepository;
 
     @Test
     @Transactional
@@ -27,7 +27,7 @@ class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
         Schedule schedule = createAndSaveSchedule(title, destination, user);
         // when
         Long scheduleId = schedule.getId();
-        Schedule findSchedule = scheduleDetailQueryRepository.findScheduleDetail(scheduleId);
+        Schedule findSchedule = scheduleQueryRepository.findScheduleDetailById(scheduleId).orElseThrow();
         // then
         assertThat(findSchedule.getId()).isEqualTo(scheduleId);
         assertThat(findSchedule.getTitle()).isEqualTo(title);
@@ -38,7 +38,7 @@ class ScheduleDetailQueryRepositoryImplTest extends ScheduleTestSupport {
     public void 존재하지_않는_여행일정_조회시_예외발생() {
         // when // then
         long scheduleId = 0L;
-        assertThatThrownBy(() -> scheduleDetailQueryRepository.findScheduleDetail(scheduleId))
+        assertThatThrownBy(() -> scheduleQueryRepository.findScheduleDetailById(scheduleId))
                 .isInstanceOf(ScheduleNotFoundException.class);
     }
 

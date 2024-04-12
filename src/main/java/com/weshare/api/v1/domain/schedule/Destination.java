@@ -10,17 +10,11 @@ public enum Destination {
     EMPTY(null),
     SEOUL("서울"),
     GYEONGGI("경기"),
-    BUSAN("부산"),
-    GANGNEUNG("강릉"),
-    INCHEON("인천"),
-    SUWON("수원"),
-    DAEGU("대구"),
-    DAEJEON("대전"),
-    JEJU("제주"),
-    GWANGJU("광주"),
-    ULSAN("울산"),
-    JEONJU("전주"),
-    CHUNCHEON("춘천");
+    GANGWON("강원도"),
+    CHUNGCHEONG("충청도"),
+    JEOLLA("전라도"),
+    GYEONGSANG("경상도"),
+    JEJU("제주도");
 
     @Getter
     private final String name;
@@ -41,6 +35,10 @@ public enum Destination {
                 .filter(d -> Objects.equals(d.name, name))
                 .findAny()
                 .orElse(EMPTY);
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY;
     }
 
 }
