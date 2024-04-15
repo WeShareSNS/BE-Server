@@ -1,7 +1,9 @@
 package com.weshare.api.v1.controller.schedule.query;
 
 import com.weshare.api.v1.common.Response;
+import com.weshare.api.v1.controller.schedule.ViewCountManager;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.service.schedule.query.FindScheduleDetailDto;
 import com.weshare.api.v1.service.schedule.query.ScheduleQueryService;
 import com.weshare.api.v1.service.schedule.query.ScheduleSearchCondition;
 import com.weshare.api.v1.service.schedule.query.dto.ScheduleDetailDto;
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Tag(name = "schedule-query-controller", description = "여행일정 조회 컨트롤러")
@@ -28,6 +33,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ScheduleQueryController {
 
+    private final ViewCountManager viewCountManager;
     private final ScheduleQueryValidator validator;
     private final ScheduleQueryService scheduleQueryService;
     private final Response response;
@@ -88,8 +94,21 @@ public class ScheduleQueryController {
             @ApiResponse(responseCode = "404", description = "여행일정이 존재하지 않습니다.")
     })
     @GetMapping("/schedules/{scheduleId}")
-    public ResponseEntity<ScheduleDetailDto> getScheduleDetails(@PathVariable Long scheduleId) {
-        ScheduleDetailDto scheduleDetails = scheduleQueryService.getScheduleDetails(scheduleId);
+    public ResponseEntity<ScheduleDetailDto> getScheduleDetails(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long scheduleId,
+            HttpServletRequest request,
+            HttpServletResponse servletResponse
+    ) {
+        FindScheduleDetailDto findScheduleDetailDto = new FindScheduleDetailDto(
+                scheduleId,
+                Optional.ofNullable(user).map(User::getId)
+        );
+
+        final ScheduleDetailDto scheduleDetails = scheduleQueryService.getScheduleDetails(findScheduleDetailDto);
+        viewCountManager.viewCountUp(scheduleId, request, servletResponse);
         return response.success(scheduleDetails);
     }
+
+
 }

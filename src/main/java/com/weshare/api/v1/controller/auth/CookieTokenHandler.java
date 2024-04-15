@@ -1,4 +1,4 @@
-package com.weshare.api.v1.common;
+package com.weshare.api.v1.controller.auth;
 
 import com.weshare.api.v1.token.TokenType;
 import com.weshare.api.v1.token.exception.TokenNotFoundException;

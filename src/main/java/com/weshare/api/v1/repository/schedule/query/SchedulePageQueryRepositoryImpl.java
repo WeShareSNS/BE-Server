@@ -37,6 +37,24 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
     private final ScheduleOrderSpecifierHelper orderSpecifierHelper;
 
     @Override
+    public boolean existsLikeByUserAndScheduleId(Long scheduleId, Long userId) {
+        if (userId == null) {
+            return false;
+        }
+
+        final Integer fetchOne = queryFactory
+                .selectOne()
+                .from(like)
+                .where(
+                        like.scheduleId.eq(scheduleId),
+                        like.user.id.eq(userId)
+                )
+                .fetchFirst();
+
+        return fetchOne != null;
+    }
+
+    @Override
     public Map<Long, StatisticsScheduleDetails> findStatisticsDetailsScheduleIdMap(List<Long> scheduleIds) {
         final List<StatisticsScheduleDetails> scheduleDetails = queryFactory.selectFrom(statisticsScheduleDetails)
                 .where(statisticsScheduleDetails.scheduleId.in(scheduleIds))

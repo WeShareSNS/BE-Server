@@ -1,6 +1,5 @@
 package com.weshare.api.v1.controller.auth;
 
-import com.weshare.api.v1.common.CookieTokenHandler;
 import com.weshare.api.v1.controller.auth.dto.AuthenticationResponse;
 import com.weshare.api.v1.controller.auth.dto.LoginRequest;
 import com.weshare.api.v1.controller.auth.dto.SignupRequest;

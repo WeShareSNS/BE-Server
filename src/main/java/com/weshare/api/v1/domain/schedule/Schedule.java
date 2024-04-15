@@ -113,4 +113,7 @@ public class Schedule extends BaseTimeEntity {
         return days.getEndDate();
     }
 
+    public void incrementViewCount() {
+        this.viewCount += 1;
+    }
 }

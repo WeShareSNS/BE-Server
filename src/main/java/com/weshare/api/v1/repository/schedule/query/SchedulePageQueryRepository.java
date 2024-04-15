@@ -15,4 +15,6 @@ public interface SchedulePageQueryRepository {
     Map<Long, StatisticsScheduleDetails> findStatisticsDetailsScheduleIdMap(List<Long> scheduleIds);
     Map<Long, Boolean> findLikedSchedulesMap(List<Long> scheduleIds, Long userId);
     Page<Schedule> searchSchedulePage(ScheduleSearchCondition searchCondition);
+
+    boolean existsLikeByUserAndScheduleId(Long scheduleId, Long userId);
 }

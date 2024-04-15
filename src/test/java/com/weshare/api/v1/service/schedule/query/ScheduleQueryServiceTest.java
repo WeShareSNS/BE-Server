@@ -53,7 +53,7 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
         // when
         ScheduleDetailDto findScheduleDetails = scheduleQueryService.getScheduleDetails(scheduleId);
         // then
-        assertThat(findScheduleDetails.getId()).isEqualTo(scheduleId);
+        assertThat(findScheduleDetails.getScheduleId()).isEqualTo(scheduleId);
         assertThat(findScheduleDetails.getTitle()).isEqualTo(title);
         assertThat(findScheduleDetails.getUserName()).isEqualTo(userName);
     }

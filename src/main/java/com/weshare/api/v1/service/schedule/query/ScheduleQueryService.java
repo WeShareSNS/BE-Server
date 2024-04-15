@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -93,13 +94,23 @@ public class ScheduleQueryService {
                 .build();
     }
 
-    public ScheduleDetailDto getScheduleDetails(Long scheduleId) {
+    public ScheduleDetailDto getScheduleDetails(FindScheduleDetailDto findScheduleDetailDto) {
+        final Long scheduleId = findScheduleDetailDto.getScheduleId();
         if (scheduleId == null) {
             throw new IllegalArgumentException("게시물에 접근할 수 없습니다.");
         }
+
         final Schedule scheduleDetail = scheduleQueryRepository.findScheduleDetailById(scheduleId)
                 .orElseThrow(ScheduleNotFoundException::new);
-        return ScheduleDetailDto.from(scheduleDetail);
+
+        ScheduleDetailDto scheduleDetailDto = ScheduleDetailDto.from(scheduleDetail);
+
+        Optional<Long> userId = findScheduleDetailDto.getUserId();
+        userId.ifPresent(id -> {
+            boolean isLiked = pageQueryRepository.existsLikeByUserAndScheduleId(scheduleId, id);
+            scheduleDetailDto.setLiked(isLiked);
+        });
+        return scheduleDetailDto;
     }
 
     public List<UserScheduleDto> findAllScheduleByUserId(Long userId) {

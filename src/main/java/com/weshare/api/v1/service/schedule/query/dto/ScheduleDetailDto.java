@@ -1,23 +1,24 @@
 package com.weshare.api.v1.service.schedule.query.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScheduleDetailDto {
-    private Long id;
+    private Long scheduleId;
     private String title;
-    private Destination destination;
+    private String destination;
     private String userName;
+    @Setter
+    private boolean isLiked;
+    private int viewCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -28,26 +29,34 @@ public class ScheduleDetailDto {
 
     @Builder(access = AccessLevel.PRIVATE)
     private ScheduleDetailDto(
-            Long id, String title, Destination destination,
-            String username, LocalDateTime createdDate , LocalDate startDate,
-            LocalDate endDate, List<DayDetailDto> dayDetail
+            Long scheduleId,
+            String title,
+            String destination,
+            String username,
+            LocalDateTime createdDate,
+            LocalDate startDate,
+            LocalDate endDate,
+            List<DayDetailDto> dayDetail,
+            int viewCount
     ) {
-        this.id = id;
+        this.scheduleId = scheduleId;
         this.title = title;
         this.destination = destination;
         this.userName = username;
         this.startDate = startDate;
         this.endDate = endDate;
         this.dayDetail = dayDetail;
+        this.viewCount = viewCount;
         this.createdDate = LocalDate.from(createdDate);
     }
 
     public static ScheduleDetailDto from(Schedule schedule) {
         return ScheduleDetailDto.builder()
-                .id(schedule.getId())
+                .scheduleId(schedule.getId())
                 .title(schedule.getTitle())
-                .destination(schedule.getDestination())
+                .destination(schedule.getDestination().getName())
                 .username(schedule.getUser().getName())
+                .viewCount(schedule.getViewCount())
                 .startDate(schedule.getStartDate())
                 .endDate(schedule.getEndDate())
                 .dayDetail(createDayDetails(schedule))
@@ -59,9 +68,5 @@ public class ScheduleDetailDto {
         return schedule.getDays().stream()
                 .map(DayDetailDto::from)
                 .toList();
-    }
-
-    public List<DayDetailDto> getDayDetail() {
-        return Collections.unmodifiableList(dayDetail);
     }
 }

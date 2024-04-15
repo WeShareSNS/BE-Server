@@ -103,4 +103,11 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
         eventPublisher.publishEvent(new ScheduleDeletedEvent(schedule.getId()));
     }
+
+    public void viewCount(Long id) {
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(ScheduleNotFoundException::new);
+
+        schedule.incrementViewCount();
+    }
 }
