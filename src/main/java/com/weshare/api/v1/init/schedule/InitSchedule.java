@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Profile("init")
+@Profile("local")
 @Component
 @RequiredArgsConstructor
 public class InitSchedule {

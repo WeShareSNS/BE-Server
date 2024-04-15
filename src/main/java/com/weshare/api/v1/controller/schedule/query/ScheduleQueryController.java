@@ -102,12 +102,11 @@ public class ScheduleQueryController {
     ) {
         final FindScheduleDetailDto findScheduleDetailDto =
                 new FindScheduleDetailDto(scheduleId, Optional.ofNullable(user).map(User::getId));
-
         final ScheduleDetailDto scheduleDetails = scheduleQueryService.getScheduleDetails(findScheduleDetailDto);
+
         /* ip + mac address로 redis로 조회수 중복을 관리할 수 있지만 간단하게 쿠키로 해결 */
         viewCountManager.viewCountUp(scheduleId, request, servletResponse);
         return response.success(scheduleDetails);
     }
-
 
 }

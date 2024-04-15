@@ -17,7 +17,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles(value = {"test", "init"})
 public abstract class ScheduleTestSupport {
 
     @Autowired
