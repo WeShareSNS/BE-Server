@@ -87,7 +87,7 @@ public class ScheduleQueryController {
         return new ScheduleSearchCondition(userId, search, pageable);
     }
 
-    @Operation(summary = "여행일정 상세보기 API", description = "특정 여행일정을 상세조회 할 수 있습니다.")
+    @Operation(summary = "여행일정 상세보기 API", description = "특정 여행 일정을 상세조회할 수 있으며 조회 수를 기록합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "여행일정 조회 성공"),
             @ApiResponse(responseCode = "400", description = "조회하는 여행일정이 올바르지 않습니다."),
@@ -100,12 +100,11 @@ public class ScheduleQueryController {
             HttpServletRequest request,
             HttpServletResponse servletResponse
     ) {
-        FindScheduleDetailDto findScheduleDetailDto = new FindScheduleDetailDto(
-                scheduleId,
-                Optional.ofNullable(user).map(User::getId)
-        );
+        final FindScheduleDetailDto findScheduleDetailDto =
+                new FindScheduleDetailDto(scheduleId, Optional.ofNullable(user).map(User::getId));
 
         final ScheduleDetailDto scheduleDetails = scheduleQueryService.getScheduleDetails(findScheduleDetailDto);
+        /* ip + mac address로 redis로 조회수 중복을 관리할 수 있지만 간단하게 쿠키로 해결 */
         viewCountManager.viewCountUp(scheduleId, request, servletResponse);
         return response.success(scheduleDetails);
     }
