@@ -21,8 +21,16 @@ public final class ViewCountManager {
 
     private final ScheduleService scheduleService;
 
+    /* 암호화 로직 작성하거나 레디스로 처리하기*/
     public void viewCountUp(Long id, HttpServletRequest request, HttpServletResponse response) {
-        Optional<Cookie> cookie = Arrays.stream(request.getCookies())
+        final Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            scheduleService.viewCount(id);
+            setResponseCookie(id, response, Optional.empty());
+            return;
+        }
+
+        final Optional<Cookie> cookie = Arrays.stream(cookies)
                 .filter(c -> KEY.equals(c.getName()))
                 .findAny();
 
@@ -31,6 +39,7 @@ public final class ViewCountManager {
             updateCookieAndViewCount(id, response, oldCookie);
             return;
         }
+
         scheduleService.viewCount(id);
         setResponseCookie(id, response, Optional.empty());
     }
