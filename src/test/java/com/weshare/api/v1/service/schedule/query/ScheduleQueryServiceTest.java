@@ -22,15 +22,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 
+@ActiveProfiles("init")
 class ScheduleQueryServiceTest extends ScheduleTestSupport {
 
     @Autowired
@@ -51,7 +54,8 @@ class ScheduleQueryServiceTest extends ScheduleTestSupport {
         Schedule schedule = createAndSaveSchedule(title, destination, user);
         Long scheduleId = schedule.getId();
         // when
-        ScheduleDetailDto findScheduleDetails = scheduleQueryService.getScheduleDetails(scheduleId);
+        FindScheduleDetailDto findScheduleDetailDto = new FindScheduleDetailDto(scheduleId, Optional.ofNullable(user).map(User::getId));
+        ScheduleDetailDto findScheduleDetails = scheduleQueryService.getScheduleDetails(findScheduleDetailDto);
         // then
         assertThat(findScheduleDetails.getScheduleId()).isEqualTo(scheduleId);
         assertThat(findScheduleDetails.getTitle()).isEqualTo(title);
