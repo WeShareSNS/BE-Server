@@ -2,10 +2,10 @@ package com.weshare.api.v1.event.schedule;
 
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.comment.Comment;
-import com.weshare.api.v1.domain.schedule.like.Like;
+import com.weshare.api.v1.domain.schedule.like.ScheduleLike;
 import com.weshare.api.v1.event.user.UserDeletedEvent;
 import com.weshare.api.v1.repository.comment.CommentRepository;
-import com.weshare.api.v1.repository.like.LikeRepository;
+import com.weshare.api.v1.repository.like.ScheduleLikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class ScheduleEventHandler {
 
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
-    private final LikeRepository likeRepository;
+    private final ScheduleLikeRepository scheduleLikeRepository;
 
     @Order(Ordered.HIGHEST_PRECEDENCE)
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
@@ -51,8 +51,8 @@ public class ScheduleEventHandler {
     }
 
     private void deleteAllLikeByScheduleIds(List<Long> scheduleIds, Long userId) {
-        final List<Like> likeByScheduleIds = likeRepository.findLikeByScheduleIdsAndUserId(scheduleIds, userId);
-        likeRepository.deleteAll(likeByScheduleIds);
+        final List<ScheduleLike> scheduleLikeByScheduleIds = scheduleLikeRepository.findLikeByScheduleIdsAndUserId(scheduleIds, userId);
+        scheduleLikeRepository.deleteAll(scheduleLikeByScheduleIds);
     }
 
 
@@ -62,6 +62,6 @@ public class ScheduleEventHandler {
     public void scheduleDeletedEvent(ScheduleDeletedEvent scheduleDeletedEvent) {
         final Long scheduleId = scheduleDeletedEvent.scheduleId();
         commentRepository.deleteByScheduleId(scheduleId);
-        likeRepository.deleteByScheduleId(scheduleId);
+        scheduleLikeRepository.deleteByScheduleId(scheduleId);
     }
 }

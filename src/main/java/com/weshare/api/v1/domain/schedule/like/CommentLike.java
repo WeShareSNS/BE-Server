@@ -1,7 +1,6 @@
 package com.weshare.api.v1.domain.schedule.like;
 
 import com.weshare.api.v1.domain.BaseTimeEntity;
-import com.weshare.api.v1.domain.schedule.ScheduleIdProvider;
 import com.weshare.api.v1.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,35 +10,25 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "schedule_like")
+@Table(name = "comment_like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like extends BaseTimeEntity implements ScheduleIdProvider {
+public class CommentLike extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schedule_like_id")
+    @Column(name = "comment_like_id")
     private Long id;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
     @Column(name = "schedule_id", nullable = false)
     private Long scheduleId;
+    @Column(name = "comment_id", nullable = false)
+    private Long commentId;
 
     @Builder
-    public Like(User user, Long scheduleId) {
+    private CommentLike(User user, Long scheduleId, Long commentId) {
         this.user = user;
         this.scheduleId = scheduleId;
-    }
-
-    public boolean isSameLiker(User liker) {
-        return user.equals(liker);
-    }
-
-    public boolean isSameScheduleId(Long scheduleId) {
-        return this.scheduleId.equals(scheduleId);
-    }
-
-    @Override
-    public Long getScheduleId() {
-        return scheduleId;
+        this.commentId = commentId;
     }
 }

@@ -1,7 +1,7 @@
 package com.weshare.api.v1.init.schedule;
 
 import com.weshare.api.v1.domain.schedule.comment.Comment;
-import com.weshare.api.v1.domain.schedule.like.Like;
+import com.weshare.api.v1.domain.schedule.like.ScheduleLike;
 import com.weshare.api.v1.domain.schedule.*;
 import com.weshare.api.v1.domain.user.Role;
 import com.weshare.api.v1.domain.user.Social;
@@ -143,11 +143,11 @@ public class InitSchedule {
         public void init() {
             User user = entityManager.find(User.class, 1L);
             Schedule schedule = entityManager.find(Schedule.class, 1L);
-            Like like = Like.builder()
+            ScheduleLike scheduleLike = ScheduleLike.builder()
                     .user(user)
                     .scheduleId(schedule.getId())
                     .build();
-            entityManager.persist(like);
+            entityManager.persist(scheduleLike);
         }
     }
 }

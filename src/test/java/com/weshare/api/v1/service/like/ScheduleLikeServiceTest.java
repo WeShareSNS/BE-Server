@@ -19,7 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class LikeServiceTest extends ScheduleTestSupport {
+class ScheduleLikeServiceTest extends ScheduleTestSupport {
 
     @Autowired
     private LikeService likeService;

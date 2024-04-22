@@ -1,6 +1,6 @@
 package com.weshare.api.v1.repository.like;
 
-import com.weshare.api.v1.domain.schedule.like.Like;
+import com.weshare.api.v1.domain.schedule.like.ScheduleLike;
 import com.weshare.api.v1.domain.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -10,28 +10,28 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface LikeRepository extends JpaRepository<Like, Long> {
+public interface ScheduleLikeRepository extends JpaRepository<ScheduleLike, Long> {
 
     @Query("""
-            select l from Like l 
+            select l from ScheduleLike l 
                 join fetch l.user 
                     where l.scheduleId = :ScheduleId
             """)
-    Slice<Like> findAllLikeBySchedule(Long ScheduleId, Pageable pageable);
+    Slice<ScheduleLike> findAllLikeBySchedule(Long ScheduleId, Pageable pageable);
 
-    Optional<Like> findLikeByUser(User user);
+    Optional<ScheduleLike> findLikeByUser(User user);
 
     @Query("""
-            select l from Like l  
+            select l from ScheduleLike l  
             where l.scheduleId in :scheduleIds or l.user.id = :userId
             """)
-    List<Like> findLikeByScheduleIdsAndUserId(List<Long> scheduleIds, Long userId);
+    List<ScheduleLike> findLikeByScheduleIdsAndUserId(List<Long> scheduleIds, Long userId);
 
     @Query("""
-            select l from Like l  
+            select l from ScheduleLike l  
             where l.scheduleId in :scheduleIds
             """)
-    List<Like> findLikeByScheduleIds(List<Long> scheduleIds);
+    List<ScheduleLike> findLikeByScheduleIds(List<Long> scheduleIds);
 
     void deleteByScheduleId(Long scheduleId);
 }

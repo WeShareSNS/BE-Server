@@ -30,11 +30,23 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
     @Column(name = "schedule_id", nullable = false)
     private Long scheduleId;
 
+    @ManyToOne
+    @JoinColumn(name = "parent_commenter_id")
+    private Comment parentComment;
+
     @Builder
     private Comment(String content, User commenter, Long scheduleId) {
         this.content = content;
         this.commenter = commenter;
         this.scheduleId = scheduleId;
+    }
+
+    @Builder(builderMethodName = "parentCommentBuilder", buildMethodName = "parentCommentBuild")
+    private Comment(String content, User commenter, Long scheduleId, Comment parentComment) {
+        this.content = content;
+        this.commenter = commenter;
+        this.scheduleId = scheduleId;
+        this.parentComment = parentComment;
     }
 
     public void updateContent(String content) {

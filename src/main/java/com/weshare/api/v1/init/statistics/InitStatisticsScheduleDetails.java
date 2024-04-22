@@ -4,7 +4,7 @@ import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.ScheduleIdProvider;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
 import com.weshare.api.v1.repository.comment.CommentRepository;
-import com.weshare.api.v1.repository.like.LikeRepository;
+import com.weshare.api.v1.repository.like.ScheduleLikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import com.weshare.api.v1.repository.schedule.statistics.StatisticsScheduleDetailsRepository;
 import jakarta.annotation.PostConstruct;
@@ -37,7 +37,7 @@ public class InitStatisticsScheduleDetails {
     @RequiredArgsConstructor
     static class InitStatisticsScheduleDetailsService {
         private final ScheduleRepository scheduleRepository;
-        private final LikeRepository likeRepository;
+        private final ScheduleLikeRepository scheduleLikeRepository;
         private final CommentRepository commentRepository;
         private final StatisticsScheduleDetailsRepository scheduleDetailsRepository;
 
@@ -48,7 +48,7 @@ public class InitStatisticsScheduleDetails {
             final List<Long> scheduleIds = getScheduleIds(schedules);
             final Map<Long, Schedule> scheduleMap = getScheduleMap(scheduleIds, schedules);
             // Map으로 바꾸기
-            final Map<Long, Long> likeCountMap = convertCountMap(likeRepository.findLikeByScheduleIds(scheduleIds));
+            final Map<Long, Long> likeCountMap = convertCountMap(scheduleLikeRepository.findLikeByScheduleIds(scheduleIds));
             final Map<Long, Long> commentCountMap = convertCountMap(commentRepository.findCommentByScheduleIds(scheduleIds));
 
             for (Map.Entry<Long, Schedule> scheduleEntry : scheduleMap.entrySet()) {

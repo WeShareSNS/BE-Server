@@ -7,7 +7,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
-import com.weshare.api.v1.domain.schedule.like.Like;
+import com.weshare.api.v1.domain.schedule.like.ScheduleLike;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
 import com.weshare.api.v1.repository.schedule.query.dto.ScheduleConditionPageDto;
 import com.weshare.api.v1.service.schedule.query.ScheduleSearchCondition;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static com.weshare.api.v1.domain.schedule.QSchedule.schedule;
-import static com.weshare.api.v1.domain.schedule.like.QLike.like;
+import static com.weshare.api.v1.domain.schedule.like.QScheduleLike.scheduleLike;
 import static com.weshare.api.v1.domain.schedule.statistics.QStatisticsScheduleDetails.statisticsScheduleDetails;
 import static com.weshare.api.v1.domain.schedule.statistics.QStatisticsScheduleTotalCount.statisticsScheduleTotalCount;
 import static java.util.stream.Collectors.toMap;
@@ -44,10 +44,10 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
 
         final Integer fetchOne = queryFactory
                 .selectOne()
-                .from(like)
+                .from(scheduleLike)
                 .where(
-                        like.scheduleId.eq(scheduleId),
-                        like.user.id.eq(userId)
+                        scheduleLike.scheduleId.eq(scheduleId),
+                        scheduleLike.user.id.eq(userId)
                 )
                 .fetchFirst();
 
@@ -77,14 +77,14 @@ public class SchedulePageQueryRepositoryImpl implements SchedulePageQueryReposit
                     .collect(toMap(Function.identity(), user -> false));
         }
 
-        final List<Like> likes = queryFactory.selectFrom(like)
-                .where(like.scheduleId.in(scheduleIds), like.user.id.eq(userId))
+        final List<ScheduleLike> scheduleLikes = queryFactory.selectFrom(scheduleLike)
+                .where(scheduleLike.scheduleId.in(scheduleIds), scheduleLike.user.id.eq(userId))
                 .fetch();
 
         return scheduleIds.stream()
                 .collect(toMap(
                         Function.identity(),
-                        id -> likes.stream().anyMatch(l -> l.isSameScheduleId(id))
+                        id -> scheduleLikes.stream().anyMatch(l -> l.isSameScheduleId(id))
                 ));
     }
 
