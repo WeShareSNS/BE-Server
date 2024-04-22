@@ -1,19 +1,28 @@
 package com.weshare.api.v1.service.comment;
 
 import com.weshare.api.v1.controller.comment.dto.*;
+import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.comment.Comment;
 import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundException;
-import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
+import com.weshare.api.v1.domain.schedule.statistics.StatisticsParentCommentTotalCount;
 import com.weshare.api.v1.domain.user.User;
+import com.weshare.api.v1.event.schedule.CommentCreatedEvent;
 import com.weshare.api.v1.repository.comment.CommentRepository;
+import com.weshare.api.v1.repository.comment.CommentTotalCountRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +30,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CommentService {
 
+    private final ApplicationEventPublisher eventPublisher;
+    private final CommentTotalCountRepository commentTotalCountRepository;
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
 
     public CreateParentCommentResponse saveScheduleParentComment(CreateParentCommentDto createParentCommentDto) {
         final Schedule findSchedule = scheduleRepository.findById(createParentCommentDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
-        final Comment comment = createParentComment(createParentCommentDto, findSchedule.getId());
 
-        Comment savedComment = commentRepository.save(comment);
-        return createParentCommentResponse(savedComment);
+        final Comment comment = createParentComment(createParentCommentDto, findSchedule.getId());
+        commentRepository.save(comment);
+
+        CommentCreatedEvent commentCreatedEvent = new CommentCreatedEvent(findSchedule.getId(), null);
+        eventPublisher.publishEvent(commentCreatedEvent);
+        return createParentCommentResponse(comment);
     }
 
     private Comment createParentComment(CreateParentCommentDto createParentCommentDto, Long scheduleId) {
@@ -59,11 +73,18 @@ public class CommentService {
         if (!findSchedule.isSameScheduleId(parentComment.getScheduleId())) {
             throw new IllegalArgumentException("댓글이 요청이 올바르지 않습니다.");
         }
-
+        if (!parentComment.isRootComment()) {
+            throw new IllegalArgumentException("대댓글에 댓글을 달 수 없습니다.");
+        }
 
         final Comment comment = createChildComment(createChildCommentDto, parentComment, findSchedule.getId());
-        Comment savedComment = commentRepository.save(comment);
-        return createChildCommentResponse(savedComment);
+        commentRepository.save(comment);
+
+        final Long parentCommentId = comment.getParentComment().orElseThrow(CommentNotFoundException::new).getId();
+        CommentCreatedEvent commentCreatedEvent = new CommentCreatedEvent(findSchedule.getId(), parentCommentId);
+        eventPublisher.publishEvent(commentCreatedEvent);
+
+        return createChildCommentResponse(comment);
     }
 
     private Comment createChildComment(CreateChildCommentDto createChildCommentDto, Comment parentComment, Long scheduleId) {
@@ -79,7 +100,9 @@ public class CommentService {
     private CreateChildCommentResponse createChildCommentResponse(Comment comment) {
         return new CreateChildCommentResponse(
                 comment.getId(),
-                comment.getParentComment().getId(),
+                comment.getParentComment()
+                        .orElseThrow(CommentNotFoundException::new)
+                        .getId(),
                 comment.getCommenter().getName(),
                 comment.getContent(),
                 comment.getCreatedDate()
@@ -90,16 +113,36 @@ public class CommentService {
     @Transactional(readOnly = true)
     public Slice<FindAllCommentDto> findAllScheduleComment(Long scheduleId, Pageable pageable) {
         Slice<Comment> comments = commentRepository.findAllByScheduleId(scheduleId, pageable);
+        final List<Long> commentIds = getCommentIds(comments.getContent());
 
-        return comments.map(this::createFindAllComment);
+        final List<StatisticsParentCommentTotalCount> totalCountByIds = commentTotalCountRepository.findTotalCountByParentCommentIdIn(commentIds);
+        final Map<Long, Long> totalCountMap = getChildTotalCountMap(totalCountByIds);
+
+        return comments.map(c -> createFindAllComment(c, totalCountMap));
     }
 
-    private FindAllCommentDto createFindAllComment(Comment comment) {
+    private Map<Long, Long> getChildTotalCountMap(List<StatisticsParentCommentTotalCount> totalCountByIds) {
+        return totalCountByIds.stream()
+                .collect(toMap(
+                        StatisticsParentCommentTotalCount::getParentCommentId,
+                        StatisticsParentCommentTotalCount::getTotalCount));
+    }
+
+    private List<Long> getCommentIds(List<Comment> comments) {
+        return comments.stream()
+                .map(Comment::getId)
+                .toList();
+    }
+
+    private FindAllCommentDto createFindAllComment(Comment comment, Map<Long, Long> totalCountMap) {
+        final Long parentCommentId = comment.getId();
+
         return new FindAllCommentDto(
-                comment.getId(),
+                parentCommentId,
                 comment.getCommenter().getName(),
                 comment.getContent(),
-                comment.getCreatedDate()
+                comment.getCreatedDate(),
+                totalCountMap.getOrDefault(parentCommentId, 0L)
         );
     }
 

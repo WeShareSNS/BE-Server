@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Table(name = "schedule_comment")
 @Entity
 @Getter
@@ -31,7 +33,7 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
     private Long scheduleId;
 
     @ManyToOne
-    @JoinColumn(name = "parent_commenter_id")
+    @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
     @Builder
@@ -49,6 +51,10 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
         this.parentComment = parentComment;
     }
 
+    public boolean isRootComment() {
+        return parentComment == null;
+    }
+
     public void updateContent(String content) {
         this.content = content;
     }
@@ -59,6 +65,10 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
 
     public boolean isSameScheduleId(Long scheduleId) {
         return this.scheduleId.equals(scheduleId);
+    }
+
+    public Optional<Comment> getParentComment() {
+        return Optional.ofNullable(parentComment);
     }
 
     @Override

@@ -48,4 +48,8 @@ public class StatisticsScheduleDetails extends BaseTimeEntity {
         }
         this.totalExpense = totalExpense;
     }
+
+    public void incrementTotalCommentCount() {
+        this.totalCommentCount += 1;
+    }
 }
