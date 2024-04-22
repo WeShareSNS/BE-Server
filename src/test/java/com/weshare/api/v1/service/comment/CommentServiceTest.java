@@ -1,6 +1,7 @@
 package com.weshare.api.v1.service.comment;
 
-import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
+import com.weshare.api.v1.controller.comment.dto.CreateParentCommentDto;
+import com.weshare.api.v1.controller.comment.dto.CreateParentCommentResponse;
 import com.weshare.api.v1.controller.comment.dto.DeleteCommentDto;
 import com.weshare.api.v1.controller.comment.dto.UpdateCommentDto;
 import com.weshare.api.v1.domain.schedule.Destination;
@@ -34,14 +35,14 @@ class CommentServiceTest extends ScheduleTestSupport {
         User user = createUserAndSave("test@na.com", "test", "test");
         Schedule schedule = createAndSaveSchedule("제목", Destination.GYEONGGI, user);
         String content = "댓글";
-        CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
+        CreateParentCommentDto createParentCommentDto = new CreateParentCommentDto(user, schedule.getId(), content);
         // when
-        CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+        CreateParentCommentResponse createParentCommentResponse = commentService.saveScheduleParentComment(createParentCommentDto);
         // then
         assertAll(
-                () -> assertEquals(createCommentResponse.commenterName(), user.getName()),
-                () -> assertTrue(createCommentResponse.commentId() != null),
-                () -> assertEquals(createCommentResponse.content(), content)
+                () -> assertEquals(createParentCommentResponse.commenterName(), user.getName()),
+                () -> assertTrue(createParentCommentResponse.commentId() != null),
+                () -> assertEquals(createParentCommentResponse.content(), content)
         );
     }
 
@@ -52,9 +53,9 @@ class CommentServiceTest extends ScheduleTestSupport {
         User user = createUserAndSave("test@na.com", "test", "test");
         String content = "댓글";
         Long scheduleId = 0L;
-        CreateCommentDto createCommentDto = new CreateCommentDto(user, scheduleId, content);
+        CreateParentCommentDto createParentCommentDto = new CreateParentCommentDto(user, scheduleId, content);
         // when // then
-        assertThatThrownBy(() -> commentService.saveScheduleComment(createCommentDto))
+        assertThatThrownBy(() -> commentService.saveScheduleParentComment(createParentCommentDto))
                 .isInstanceOf(ScheduleNotFoundException.class);
     }
 
@@ -65,10 +66,10 @@ class CommentServiceTest extends ScheduleTestSupport {
         User user = createUserAndSave("test@na.com", "test", "test");
         Schedule schedule = createAndSaveSchedule("제목", Destination.GYEONGGI, user);
         String content = "댓글";
-        CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
-        commentService.saveScheduleComment(createCommentDto);
-        commentService.saveScheduleComment(createCommentDto);
-        CreateCommentResponse lastComment = commentService.saveScheduleComment(createCommentDto);
+        CreateParentCommentDto createParentCommentDto = new CreateParentCommentDto(user, schedule.getId(), content);
+        commentService.saveScheduleParentComment(createParentCommentDto);
+        commentService.saveScheduleParentComment(createParentCommentDto);
+        CreateParentCommentResponse lastComment = commentService.saveScheduleParentComment(createParentCommentDto);
         PageRequest pageRequest = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "createdDate"));
         // when
         Slice<FindAllCommentDto> allScheduleCommentSlice = commentService.findAllScheduleComment(schedule.getId(), pageRequest);
@@ -93,10 +94,10 @@ class CommentServiceTest extends ScheduleTestSupport {
         User user = createUserAndSave("test@na.com", "test", "test");
         Schedule schedule = createAndSaveSchedule("제목", Destination.JEJU, user);
         String content  = "댓글";
-        CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), content);
-        CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+        CreateParentCommentDto createParentCommentDto = new CreateParentCommentDto(user, schedule.getId(), content);
+        CreateParentCommentResponse createParentCommentResponse = commentService.saveScheduleParentComment(createParentCommentDto);
         // when
-        DeleteCommentDto deleteCommentDto = new DeleteCommentDto(user, schedule.getId(), createCommentResponse.commentId());
+        DeleteCommentDto deleteCommentDto = new DeleteCommentDto(user, schedule.getId(), createParentCommentResponse.commentId());
         commentService.deleteScheduleComment(deleteCommentDto);
         // then
         PageRequest pageRequest = PageRequest.of(0, 1);
@@ -110,11 +111,11 @@ class CommentServiceTest extends ScheduleTestSupport {
         // given
         User user = createUserAndSave("test@na.com", "test", "test");
         Schedule schedule = createAndSaveSchedule("제목", Destination.JEJU, user);
-        CreateCommentDto createCommentDto = new CreateCommentDto(user, schedule.getId(), "댓글");
-        CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+        CreateParentCommentDto createParentCommentDto = new CreateParentCommentDto(user, schedule.getId(), "댓글");
+        CreateParentCommentResponse createParentCommentResponse = commentService.saveScheduleParentComment(createParentCommentDto);
         String updateContent = "수정한 댓글 입니다.";
         // when
-        UpdateCommentDto updateCommentDto = new UpdateCommentDto(user, updateContent, schedule.getId(), createCommentResponse.commentId());
+        UpdateCommentDto updateCommentDto = new UpdateCommentDto(user, updateContent, schedule.getId(), createParentCommentResponse.commentId());
         commentService.updateComment(updateCommentDto);
         // then
         PageRequest pageRequest = PageRequest.of(0, 1);
@@ -123,10 +124,10 @@ class CommentServiceTest extends ScheduleTestSupport {
                 .extracting("commentId", "commenterName", "content", "createdDate")
                 .containsExactly(
                         Tuple.tuple(
-                                createCommentResponse.commentId(),
+                                createParentCommentResponse.commentId(),
                                 user.getName(),
                                 updateContent,
-                                createCommentResponse.createdDate()
+                                createParentCommentResponse.createdDate()
                         )
                 );
 

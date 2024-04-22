@@ -5,14 +5,16 @@ import io.jsonwebtoken.lang.Assert;
 
 import java.util.Objects;
 
-public record CreateCommentDto(
+public record CreateChildCommentDto(
         User commenter,
         Long scheduleId,
+        Long parentCommentId,
         String content
 ) {
-    public CreateCommentDto {
+    public CreateChildCommentDto {
         Objects.requireNonNull(commenter);
         Objects.requireNonNull(scheduleId);
+        Objects.requireNonNull(parentCommentId);
         Assert.hasText(content, "댓글을 입력해주세요");
     }
 }

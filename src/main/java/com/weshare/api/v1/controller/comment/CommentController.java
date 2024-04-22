@@ -4,7 +4,7 @@ import com.weshare.api.v1.common.Response;
 import com.weshare.api.v1.controller.comment.dto.*;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.comment.CommentService;
-import com.weshare.api.v1.service.comment.CreateCommentResponse;
+import com.weshare.api.v1.controller.comment.dto.CreateParentCommentResponse;
 import com.weshare.api.v1.service.comment.FindAllCommentDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,15 +39,36 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "해당하는 여행일정이 존재하지 않습니다.")
     })
     @PostMapping("/{scheduleId}/comments")
-    public ResponseEntity<CreateCommentResponse> saveScheduleComment(
+    public ResponseEntity<CreateParentCommentResponse> saveParentScheduleComment(
             @PathVariable Long scheduleId,
             @AuthenticationPrincipal User commenter,
             @Valid @RequestBody CreateCommentRequest createCommentRequest
     ) {
-        final CreateCommentDto createCommentDto = new CreateCommentDto(commenter, scheduleId, createCommentRequest.content());
-        CreateCommentResponse createCommentResponse = commentService.saveScheduleComment(createCommentDto);
+        final CreateParentCommentDto createParentCommentDto = new CreateParentCommentDto(commenter, scheduleId, createCommentRequest.content());
+        CreateParentCommentResponse createParentCommentResponse = commentService.saveScheduleParentComment(createParentCommentDto);
 
-        return response.success(createCommentResponse, "댓글 등록 성공", HttpStatus.CREATED);
+        return response.success(createParentCommentResponse, "댓글 등록 성공", HttpStatus.CREATED);
+    }
+
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")},
+            summary = "사용자 대 댓글 등록 API", description = "사용자는 특정 여행일정에 대 댓글을 남길 수 있다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "댓글 등록에 성공했습니다."),
+            @ApiResponse(responseCode = "400", description = "요청이 올바르지 않습니다."),
+            @ApiResponse(responseCode = "404", description = "해당하는 여행일정이 존재하지 않습니다.")
+    })
+    @PostMapping("/{scheduleId}/comments/{parentCommentId}")
+    public ResponseEntity<CreateChildCommentResponse> saveChildScheduleComment(
+            @PathVariable Long scheduleId,
+            @PathVariable Long parentCommentId,
+            @AuthenticationPrincipal User commenter,
+            @Valid @RequestBody CreateCommentRequest createCommentRequest
+    ) {
+        final CreateChildCommentDto createChildCommentDto =
+                new CreateChildCommentDto(commenter, scheduleId, parentCommentId, createCommentRequest.content());
+        CreateChildCommentResponse createParentCommentResponse = commentService.saveScheduleChildComment(createChildCommentDto);
+
+        return response.success(createParentCommentResponse, "댓글 등록 성공", HttpStatus.CREATED);
     }
 
     @Operation(summary = "여행일정 댓글 조회 API", description = "사용자는 특정 여행일정에 모든 댓글을 조회할 수 있다.")

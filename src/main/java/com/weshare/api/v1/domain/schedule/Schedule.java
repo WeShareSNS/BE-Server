@@ -116,4 +116,8 @@ public class Schedule extends BaseTimeEntity {
     public void incrementViewCount() {
         this.viewCount += 1;
     }
+
+    public boolean isSameScheduleId(Long scheduleId) {
+        return this.id.equals(scheduleId);
+    }
 }

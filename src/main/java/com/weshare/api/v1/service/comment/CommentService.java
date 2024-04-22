@@ -1,8 +1,6 @@
 package com.weshare.api.v1.service.comment;
 
-import com.weshare.api.v1.controller.comment.dto.DeleteCommentDto;
-import com.weshare.api.v1.controller.comment.dto.UpdateCommentDto;
-import com.weshare.api.v1.controller.comment.dto.CreateCommentDto;
+import com.weshare.api.v1.controller.comment.dto.*;
 import com.weshare.api.v1.domain.schedule.comment.Comment;
 import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
@@ -26,31 +24,68 @@ public class CommentService {
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
 
-    public CreateCommentResponse saveScheduleComment(CreateCommentDto createCommentDto) {
-        final Schedule findSchedule = scheduleRepository.findById(createCommentDto.scheduleId())
+    public CreateParentCommentResponse saveScheduleParentComment(CreateParentCommentDto createParentCommentDto) {
+        final Schedule findSchedule = scheduleRepository.findById(createParentCommentDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
-        final Comment comment = createComment(createCommentDto, findSchedule.getId());
+        final Comment comment = createParentComment(createParentCommentDto, findSchedule.getId());
 
         Comment savedComment = commentRepository.save(comment);
-        return getCreateCommentResponse(savedComment);
+        return createParentCommentResponse(savedComment);
     }
 
-    private Comment createComment(CreateCommentDto createCommentDto, Long scheduleId) {
+    private Comment createParentComment(CreateParentCommentDto createParentCommentDto, Long scheduleId) {
         return Comment.builder()
                 .scheduleId(scheduleId)
-                .commenter(createCommentDto.commenter())
-                .content(createCommentDto.content())
+                .commenter(createParentCommentDto.commenter())
+                .content(createParentCommentDto.content())
                 .build();
     }
 
-    private CreateCommentResponse getCreateCommentResponse(Comment comment) {
-        return new CreateCommentResponse(
+    private CreateParentCommentResponse createParentCommentResponse(Comment comment) {
+        return new CreateParentCommentResponse(
                 comment.getId(),
                 comment.getCommenter().getName(),
                 comment.getContent(),
                 comment.getCreatedDate()
         );
     }
+
+    public CreateChildCommentResponse saveScheduleChildComment(CreateChildCommentDto createChildCommentDto) {
+        final Schedule findSchedule = scheduleRepository.findById(createChildCommentDto.scheduleId())
+                .orElseThrow(ScheduleNotFoundException::new);
+        final Comment parentComment = commentRepository.findById(createChildCommentDto.parentCommentId())
+                .orElseThrow(CommentNotFoundException::new);
+
+        if (!findSchedule.isSameScheduleId(parentComment.getScheduleId())) {
+            throw new IllegalArgumentException("댓글이 요청이 올바르지 않습니다.");
+        }
+
+
+        final Comment comment = createChildComment(createChildCommentDto, parentComment, findSchedule.getId());
+        Comment savedComment = commentRepository.save(comment);
+        return createChildCommentResponse(savedComment);
+    }
+
+    private Comment createChildComment(CreateChildCommentDto createChildCommentDto, Comment parentComment, Long scheduleId) {
+
+        return Comment.childCommentBuilder()
+                .scheduleId(scheduleId)
+                .commenter(createChildCommentDto.commenter())
+                .content(createChildCommentDto.content())
+                .parentComment(parentComment)
+                .childCommentBuild();
+    }
+
+    private CreateChildCommentResponse createChildCommentResponse(Comment comment) {
+        return new CreateChildCommentResponse(
+                comment.getId(),
+                comment.getParentComment().getId(),
+                comment.getCommenter().getName(),
+                comment.getContent(),
+                comment.getCreatedDate()
+        );
+    }
+
 
     @Transactional(readOnly = true)
     public Slice<FindAllCommentDto> findAllScheduleComment(Long scheduleId, Pageable pageable) {

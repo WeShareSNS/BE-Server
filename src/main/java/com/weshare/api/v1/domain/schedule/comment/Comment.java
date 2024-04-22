@@ -41,7 +41,7 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
         this.scheduleId = scheduleId;
     }
 
-    @Builder(builderMethodName = "parentCommentBuilder", buildMethodName = "parentCommentBuild")
+    @Builder(builderMethodName = "childCommentBuilder", buildMethodName = "childCommentBuild")
     private Comment(String content, User commenter, Long scheduleId, Comment parentComment) {
         this.content = content;
         this.commenter = commenter;
