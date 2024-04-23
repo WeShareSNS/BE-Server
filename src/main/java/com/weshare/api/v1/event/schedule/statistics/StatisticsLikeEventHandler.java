@@ -1,8 +1,11 @@
 package com.weshare.api.v1.event.schedule.statistics;
 
+import com.weshare.api.v1.domain.schedule.statistics.StatisticsCommentTotalCount;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
+import com.weshare.api.v1.event.schedule.CommentLikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleLikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUnlikedEvent;
+import com.weshare.api.v1.repository.like.CommentLikeTotalCountRepository;
 import com.weshare.api.v1.repository.schedule.statistics.StatisticsScheduleDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StatisticsLikeEventHandler {
 
+    public static final int DEFAULT_TOTAL_COUNT = 0;
     private final StatisticsScheduleDetailsRepository scheduleDetailsRepository;
+    private final CommentLikeTotalCountRepository commentLikeTotalCountRepository;
 
     @EventListener
     @Transactional
@@ -36,6 +41,18 @@ public class StatisticsLikeEventHandler {
                 .orElseThrow(StatisticsScheduleNotFound::new);
 
         statisticsScheduleDetails.decrementTotalLikeCount();
+    }
+
+    @EventListener
+    @Transactional
+    @Async
+    public void incrementCommentLikeTotalCount(CommentLikedEvent likedEvent) {
+        final Long commentId = likedEvent.commentId();
+        StatisticsCommentTotalCount statisticsCommentTotalCount = commentLikeTotalCountRepository.findByCommentId(commentId)
+                .orElse(new StatisticsCommentTotalCount(commentId, DEFAULT_TOTAL_COUNT));
+
+        statisticsCommentTotalCount.incrementTotalCount();
+        commentLikeTotalCountRepository.save(statisticsCommentTotalCount);
     }
 
 }

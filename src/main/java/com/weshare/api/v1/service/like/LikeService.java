@@ -9,6 +9,7 @@ import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.schedule.like.exception.LikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
+import com.weshare.api.v1.event.schedule.CommentLikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleLikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUnlikedEvent;
 import com.weshare.api.v1.repository.comment.CommentRepository;
@@ -102,6 +103,7 @@ public class LikeService {
         CommentLike commentLike = createCommentLike(createCommentLikeDto, comment);
         commentLikeRepository.save(commentLike);
 
+        eventPublisher.publishEvent(new CommentLikedEvent(commentLike.getCommentId()));
         return getCreateCommentLikeResponse(commentLike);
     }
 
