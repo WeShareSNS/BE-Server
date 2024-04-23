@@ -19,6 +19,7 @@ public record FindAllParentCommentResponse(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm a", timezone = "Asia/Seoul", locale = "en_US")
         LocalDateTime createdDate,
         long totalChildCount,
+        long totalLikeCount,
         boolean isCommenter
 ) {
     public FindAllParentCommentResponse {

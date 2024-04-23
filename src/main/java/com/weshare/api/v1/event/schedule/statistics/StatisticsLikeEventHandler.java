@@ -1,6 +1,6 @@
 package com.weshare.api.v1.event.schedule.statistics;
 
-import com.weshare.api.v1.domain.schedule.statistics.StatisticsCommentTotalCount;
+import com.weshare.api.v1.domain.schedule.statistics.StatisticsCommentLikeTotalCount;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
 import com.weshare.api.v1.event.schedule.CommentLikedEvent;
 import com.weshare.api.v1.event.schedule.CommentUnlikedEvent;
@@ -49,11 +49,11 @@ public class StatisticsLikeEventHandler {
     @Async
     public void incrementCommentLikeTotalCount(CommentLikedEvent likedEvent) {
         final Long commentId = likedEvent.commentId();
-        StatisticsCommentTotalCount statisticsCommentTotalCount = commentLikeTotalCountRepository.findByCommentId(commentId)
-                .orElse(new StatisticsCommentTotalCount(commentId, DEFAULT_TOTAL_COUNT));
+        StatisticsCommentLikeTotalCount statisticsCommentLikeTotalCount = commentLikeTotalCountRepository.findByCommentId(commentId)
+                .orElse(new StatisticsCommentLikeTotalCount(commentId, DEFAULT_TOTAL_COUNT));
 
-        statisticsCommentTotalCount.incrementTotalCount();
-        commentLikeTotalCountRepository.save(statisticsCommentTotalCount);
+        statisticsCommentLikeTotalCount.incrementTotalCount();
+        commentLikeTotalCountRepository.save(statisticsCommentLikeTotalCount);
     }
 
     @EventListener
@@ -61,9 +61,9 @@ public class StatisticsLikeEventHandler {
     @Async
     public void decrementCommentLikeTotalCount(CommentUnlikedEvent unlikedEvent) {
         final Long commentId = unlikedEvent.commentId();
-        final StatisticsCommentTotalCount statisticsCommentTotalCount = commentLikeTotalCountRepository.findByCommentId(commentId)
+        final StatisticsCommentLikeTotalCount statisticsCommentLikeTotalCount = commentLikeTotalCountRepository.findByCommentId(commentId)
                 .orElseThrow(StatisticsCommentTotalCountNotFound::new);
 
-        statisticsCommentTotalCount.decrementTotalCount();
+        statisticsCommentLikeTotalCount.decrementTotalCount();
     }
 }

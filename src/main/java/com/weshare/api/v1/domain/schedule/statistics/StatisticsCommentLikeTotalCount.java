@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StatisticsCommentTotalCount extends BaseTimeEntity {
+public class StatisticsCommentLikeTotalCount extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,26 +17,26 @@ public class StatisticsCommentTotalCount extends BaseTimeEntity {
     @Column(name = "comment_id", nullable = false)
     private Long commentId;
     @Column(columnDefinition = "bigint default 0", nullable = false)
-    private long totalCount;
+    private long likeTotalCount;
 
-    public StatisticsCommentTotalCount(Long commentId, long totalCount) {
+    public StatisticsCommentLikeTotalCount(Long commentId, long likeTotalCount) {
         this.commentId = commentId;
-        this.totalCount = totalCount;
+        this.likeTotalCount = likeTotalCount;
     }
 
     public void incrementTotalCount() {
-        totalCount += 1;
+        likeTotalCount += 1;
     }
 
     public void decrementTotalCount() {
-        if (totalCount <= 0) {
+        if (likeTotalCount <= 0) {
             throw new IllegalStateException("총 카운트 수는 음수일 수 없습니다.");
         }
-        totalCount -= 1;
+        likeTotalCount -= 1;
     }
 
     public void syncCommentTotalCount(long totalCount) {
-        this.totalCount = totalCount;
+        this.likeTotalCount = totalCount;
     }
 
 }

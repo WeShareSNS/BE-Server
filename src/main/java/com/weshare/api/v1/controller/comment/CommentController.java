@@ -64,8 +64,8 @@ public class CommentController {
             @AuthenticationPrincipal User commenter,
             @Valid @RequestBody CreateCommentRequest createCommentRequest
     ) {
-        final CreateChildCommentDto createChildCommentDto =
-                new CreateChildCommentDto(commenter, scheduleId, parentCommentId, createCommentRequest.content());
+        final CreateChildCommentDto createChildCommentDto = new CreateChildCommentDto(
+                commenter, scheduleId, parentCommentId, createCommentRequest.content());
         CreateChildCommentResponse createParentCommentResponse = commentService.saveScheduleChildComment(createChildCommentDto);
 
         return response.success(createParentCommentResponse, "댓글 등록 성공", HttpStatus.CREATED);
@@ -134,8 +134,7 @@ public class CommentController {
             @PathVariable Long scheduleId,
             @PathVariable Long commentId
     ) {
-        final UpdateCommentDto updateCommentDto =
-                new UpdateCommentDto(commenter, updateCommentRequest.content(), scheduleId, commentId);
+        final UpdateCommentDto updateCommentDto = new UpdateCommentDto(commenter, updateCommentRequest.content(), scheduleId, commentId);
         commentService.updateComment(updateCommentDto);
 
         return response.success("댓글 수정 성공");

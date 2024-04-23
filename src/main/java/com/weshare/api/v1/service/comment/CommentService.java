@@ -5,12 +5,14 @@ import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.comment.Comment;
 import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundException;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
+import com.weshare.api.v1.domain.schedule.statistics.StatisticsCommentLikeTotalCount;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsParentCommentTotalCount;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.event.schedule.CommentCreatedEvent;
 import com.weshare.api.v1.event.schedule.CommentDeletedEvent;
 import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.comment.CommentTotalCountRepository;
+import com.weshare.api.v1.repository.like.CommentLikeTotalCountRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +35,13 @@ import static java.util.stream.Collectors.toMap;
 @Transactional
 public class CommentService {
 
+    public static final long DEFAULT_TOTAL_COUNT = 0L;
+
     private final ApplicationEventPublisher eventPublisher;
     private final CommentTotalCountRepository commentTotalCountRepository;
     private final ScheduleRepository scheduleRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeTotalCountRepository commentLikeTotalCountRepository;
 
     public CreateParentCommentResponse saveScheduleParentComment(CreateParentCommentDto createParentCommentDto) {
         final Schedule findSchedule = scheduleRepository.findById(createParentCommentDto.scheduleId())
@@ -120,7 +125,16 @@ public class CommentService {
         final List<StatisticsParentCommentTotalCount> totalCountByIds = commentTotalCountRepository.findTotalCountByParentCommentIdIn(commentIds);
         final Map<Long, Long> totalCountMap = getChildTotalCountMap(totalCountByIds);
 
-        return comments.map(c -> createFindAllComment(c, totalCountMap, parentCommentDto.userId()));
+        final List<StatisticsCommentLikeTotalCount> commentLikeTotalCounts = commentLikeTotalCountRepository.findByCommentIdIn(commentIds);
+        final Map<Long, Long> totalLikeMap = getTotalLikeMap(commentLikeTotalCounts);
+
+        return comments.map(c -> createFindAllComment(c, totalCountMap, totalLikeMap, parentCommentDto.userId()));
+    }
+
+    private List<Long> getCommentIds(List<Comment> comments) {
+        return comments.stream()
+                .map(Comment::getId)
+                .toList();
     }
 
     private Map<Long, Long> getChildTotalCountMap(List<StatisticsParentCommentTotalCount> totalCountByIds) {
@@ -130,13 +144,17 @@ public class CommentService {
                         StatisticsParentCommentTotalCount::getTotalCount));
     }
 
-    private List<Long> getCommentIds(List<Comment> comments) {
-        return comments.stream()
-                .map(Comment::getId)
-                .toList();
+    private Map<Long, Long> getTotalLikeMap(List<StatisticsCommentLikeTotalCount> commentLikeTotalCounts) {
+        return commentLikeTotalCounts.stream()
+                .collect(toMap(StatisticsCommentLikeTotalCount::getCommentId, StatisticsCommentLikeTotalCount::getLikeTotalCount));
     }
 
-    private FindAllParentCommentResponse createFindAllComment(Comment comment, Map<Long, Long> totalCountMap, Long userId) {
+    private FindAllParentCommentResponse createFindAllComment(
+            Comment comment,
+            Map<Long, Long> totalCountMap,
+            Map<Long, Long> totalLikeMap,
+            Long userId
+    ) {
         final Long parentCommentId = comment.getId();
 
         return new FindAllParentCommentResponse(
@@ -144,7 +162,8 @@ public class CommentService {
                 comment.getCommenter().getName(),
                 comment.getContent(),
                 comment.getCreatedDate(),
-                totalCountMap.getOrDefault(parentCommentId, 0L),
+                totalCountMap.getOrDefault(parentCommentId, DEFAULT_TOTAL_COUNT),
+                totalLikeMap.getOrDefault(comment.getId(), DEFAULT_TOTAL_COUNT),
                 comment.isSameCommenter(userId)
         );
     }
@@ -153,16 +172,21 @@ public class CommentService {
     public Slice<FindAllChildCommentResponse> findAllScheduleChildComment(FindAllChildCommentDto parentCommentDto) {
         Slice<Comment> comments = commentRepository.findChildAllByScheduleIdAndParentId(
                 parentCommentDto.scheduleId(), parentCommentDto.parentCommentId(), parentCommentDto.pageable());
+        final List<Long> commentIds = getCommentIds(comments.getContent());
 
-        return comments.map(c -> createFindAllChildComment(c, parentCommentDto.userId()));
+        final List<StatisticsCommentLikeTotalCount> commentLikeTotalCounts = commentLikeTotalCountRepository.findByCommentIdIn(commentIds);
+        final Map<Long, Long> totalLikeMap = getTotalLikeMap(commentLikeTotalCounts);
+
+        return comments.map(c -> createFindAllChildComment(c, totalLikeMap, parentCommentDto.userId()));
     }
 
-    private FindAllChildCommentResponse createFindAllChildComment(Comment comment, Long commenterId) {
+    private FindAllChildCommentResponse createFindAllChildComment(Comment comment, Map<Long, Long> totalLikeMap, Long commenterId) {
         return new FindAllChildCommentResponse(
                 comment.getId(),
                 comment.getCommenter().getName(),
                 comment.getContent(),
                 comment.getCreatedDate(),
+                totalLikeMap.getOrDefault(comment.getId(), DEFAULT_TOTAL_COUNT),
                 comment.isSameCommenter(commenterId)
         );
     }
