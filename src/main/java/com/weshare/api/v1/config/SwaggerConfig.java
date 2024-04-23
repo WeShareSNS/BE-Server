@@ -20,6 +20,7 @@ public class SwaggerConfig {
         String[] paths = {
                 "/api/v1/auth/**",
                 "/api/v1/trip/schedules/**",
+                "/api/v1/trip/comments/**",
                 "/api/v1/me/**",
         };
 
