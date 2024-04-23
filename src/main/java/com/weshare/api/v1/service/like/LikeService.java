@@ -6,7 +6,7 @@ import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundExcep
 import com.weshare.api.v1.domain.schedule.like.CommentLike;
 import com.weshare.api.v1.domain.schedule.like.ScheduleLike;
 import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
-import com.weshare.api.v1.domain.schedule.like.exception.LikeNotFoundException;
+import com.weshare.api.v1.domain.schedule.like.exception.ScheduleLikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.event.schedule.CommentLikedEvent;
@@ -79,7 +79,7 @@ public class LikeService {
 
     public void deleteScheduleLike(DeleteScheduleLikeDto deleteScheduleLikeDto) {
         final ScheduleLike scheduleLike = scheduleLikeRepository.findById(deleteScheduleLikeDto.likeId())
-                .orElseThrow(LikeNotFoundException::new);
+                .orElseThrow(ScheduleLikeNotFoundException::new);
 
         if (!scheduleLike.isSameLiker(deleteScheduleLikeDto.liker().getId())) {
             throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
