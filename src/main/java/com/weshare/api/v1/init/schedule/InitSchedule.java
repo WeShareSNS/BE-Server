@@ -144,7 +144,7 @@ public class InitSchedule {
             User user = entityManager.find(User.class, 1L);
             Schedule schedule = entityManager.find(Schedule.class, 1L);
             ScheduleLike scheduleLike = ScheduleLike.builder()
-                    .user(user)
+                    .liker(user)
                     .scheduleId(schedule.getId())
                     .build();
             entityManager.persist(scheduleLike);

@@ -4,12 +4,12 @@ import com.weshare.api.v1.domain.user.User;
 
 import java.util.Objects;
 
-public record DeleteLikeDto(
+public record DeleteScheduleLikeDto(
         Long scheduleId,
         Long likeId,
         User liker
 ) {
-    public DeleteLikeDto {
+    public DeleteScheduleLikeDto {
         Objects.requireNonNull(scheduleId);
         Objects.requireNonNull(likeId);
         Objects.requireNonNull(liker);

@@ -14,18 +14,16 @@ public interface ScheduleLikeRepository extends JpaRepository<ScheduleLike, Long
 
     @Query("""
             select l from ScheduleLike l 
-                join fetch l.user 
+                join fetch l.liker 
                     where l.scheduleId = :ScheduleId
             """)
     Slice<ScheduleLike> findAllLikeBySchedule(Long ScheduleId, Pageable pageable);
 
-    Optional<ScheduleLike> findLikeByUser(User user);
-
     @Query("""
             select l from ScheduleLike l  
-            where l.scheduleId in :scheduleIds or l.user.id = :userId
+            where l.scheduleId in :scheduleIds or l.liker.id = :likerId
             """)
-    List<ScheduleLike> findLikeByScheduleIdsAndUserId(List<Long> scheduleIds, Long userId);
+    List<ScheduleLike> findLikeByScheduleIdsAndLikerId(List<Long> scheduleIds, Long likerId);
 
     @Query("""
             select l from ScheduleLike l  
@@ -34,4 +32,6 @@ public interface ScheduleLikeRepository extends JpaRepository<ScheduleLike, Long
     List<ScheduleLike> findLikeByScheduleIds(List<Long> scheduleIds);
 
     void deleteByScheduleId(Long scheduleId);
+
+    Optional<Object> findByLikerAndScheduleId(User liker, Long id);
 }

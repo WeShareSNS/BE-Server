@@ -1,7 +1,9 @@
 package com.weshare.api.v1.service.like;
 
-import com.weshare.api.v1.controller.like.dto.CreateLikeDto;
-import com.weshare.api.v1.controller.like.dto.DeleteLikeDto;
+import com.weshare.api.v1.controller.like.dto.CreateScheduleLikeResponse;
+import com.weshare.api.v1.controller.like.dto.CreateScheduleLikeDto;
+import com.weshare.api.v1.controller.like.dto.DeleteScheduleLikeDto;
+import com.weshare.api.v1.controller.like.dto.FindAllScheduleLikeDto;
 import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.schedule.Destination;
 import com.weshare.api.v1.domain.schedule.Schedule;
@@ -30,11 +32,11 @@ class ScheduleLikeServiceTest extends ScheduleTestSupport {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
         Schedule schedule = createAndSaveSchedule("title", Destination.SEOUL, user);
-        CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
+        CreateScheduleLikeDto createScheduleLikeDto = new CreateScheduleLikeDto(schedule.getId(), user);
         // when
-        CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
+        CreateScheduleLikeResponse createScheduleLikeResponse = likeService.saveScheduleLike(createScheduleLikeDto);
         // then
-        assertThat(user.getName()).isEqualTo(createLikeResponse.likerName());
+        assertThat(user.getName()).isEqualTo(createScheduleLikeResponse.likerName());
     }
 
     @Test
@@ -43,10 +45,10 @@ class ScheduleLikeServiceTest extends ScheduleTestSupport {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
         Schedule schedule = createAndSaveSchedule("title", Destination.GYEONGGI, user);
-        CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
-        likeService.saveScheduleLike(createLikeDto);
+        CreateScheduleLikeDto createScheduleLikeDto = new CreateScheduleLikeDto(schedule.getId(), user);
+        likeService.saveScheduleLike(createScheduleLikeDto);
         // when // then
-        assertThatThrownBy(() -> likeService.saveScheduleLike(createLikeDto))
+        assertThatThrownBy(() -> likeService.saveScheduleLike(createScheduleLikeDto))
                 .isInstanceOf(DuplicateLikeException.class);
     }
 
@@ -55,9 +57,9 @@ class ScheduleLikeServiceTest extends ScheduleTestSupport {
     public void 존재하지_않는_게시물에_좋아요_등록시_예외가_발생한다() {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
-        CreateLikeDto createLikeDto = new CreateLikeDto(0L, user);
+        CreateScheduleLikeDto createScheduleLikeDto = new CreateScheduleLikeDto(0L, user);
         // when // then
-        assertThatThrownBy(() -> likeService.saveScheduleLike(createLikeDto))
+        assertThatThrownBy(() -> likeService.saveScheduleLike(createScheduleLikeDto))
                 .isInstanceOf(ScheduleNotFoundException.class);
     }
 
@@ -67,11 +69,11 @@ class ScheduleLikeServiceTest extends ScheduleTestSupport {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
         Schedule schedule = createAndSaveSchedule("title", Destination.GYEONGGI, user);
-        CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
-        CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
+        CreateScheduleLikeDto createScheduleLikeDto = new CreateScheduleLikeDto(schedule.getId(), user);
+        CreateScheduleLikeResponse createScheduleLikeResponse = likeService.saveScheduleLike(createScheduleLikeDto);
         // when
-        DeleteLikeDto deleteLikeDto = new DeleteLikeDto(schedule.getId(), createLikeResponse.likeId(), user);
-        likeService.deleteScheduleLike(deleteLikeDto);
+        DeleteScheduleLikeDto deleteScheduleLikeDto = new DeleteScheduleLikeDto(schedule.getId(), createScheduleLikeResponse.likeId(), user);
+        likeService.deleteScheduleLike(deleteScheduleLikeDto);
         PageRequest pageRequest = PageRequest.of(0, 1);
         // then
         List<FindAllScheduleLikeDto> allScheduleLike = likeService.findAllScheduleLike(schedule.getId(),pageRequest).getContent();
@@ -84,8 +86,8 @@ class ScheduleLikeServiceTest extends ScheduleTestSupport {
         // given
         User user = createUserAndSave("like@test.com", "like1", "like");
         Schedule schedule = createAndSaveSchedule("title", Destination.GYEONGGI, user);
-        CreateLikeDto createLikeDto = new CreateLikeDto(schedule.getId(), user);
-        CreateLikeResponse createLikeResponse = likeService.saveScheduleLike(createLikeDto);
+        CreateScheduleLikeDto createScheduleLikeDto = new CreateScheduleLikeDto(schedule.getId(), user);
+        CreateScheduleLikeResponse createScheduleLikeResponse = likeService.saveScheduleLike(createScheduleLikeDto);
         PageRequest pageRequest = PageRequest.of(0, 1);
         // when
         List<FindAllScheduleLikeDto> allScheduleLike = likeService.findAllScheduleLike(schedule.getId(),pageRequest).getContent();
@@ -93,7 +95,7 @@ class ScheduleLikeServiceTest extends ScheduleTestSupport {
         assertThat(allScheduleLike).hasSize(1)
                 .extracting("likeId", "likerName", "likedTime")
                 .containsExactly(
-                        Tuple.tuple(createLikeResponse.likeId(), user.getName(), createLikeResponse.likedTime())
+                        Tuple.tuple(createScheduleLikeResponse.likeId(), user.getName(), createScheduleLikeResponse.likedTime())
                 );
     }
 }

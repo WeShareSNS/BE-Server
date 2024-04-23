@@ -18,20 +18,20 @@ public class ScheduleLike extends BaseTimeEntity implements ScheduleIdProvider {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "schedule_like_id")
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "liker_id")
+    private User liker;
     @Column(name = "schedule_id", nullable = false)
     private Long scheduleId;
 
     @Builder
-    public ScheduleLike(User user, Long scheduleId) {
-        this.user = user;
+    public ScheduleLike(User liker, Long scheduleId) {
+        this.liker = liker;
         this.scheduleId = scheduleId;
     }
 
-    public boolean isSameLiker(User liker) {
-        return user.equals(liker);
+    public boolean isSameLiker(Long likerId) {
+        return liker.isSameId(likerId);
     }
 
     public boolean isSameScheduleId(Long scheduleId) {

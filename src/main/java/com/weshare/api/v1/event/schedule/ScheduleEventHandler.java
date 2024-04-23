@@ -51,7 +51,7 @@ public class ScheduleEventHandler {
     }
 
     private void deleteAllLikeByScheduleIds(List<Long> scheduleIds, Long userId) {
-        final List<ScheduleLike> scheduleLikeByScheduleIds = scheduleLikeRepository.findLikeByScheduleIdsAndUserId(scheduleIds, userId);
+        final List<ScheduleLike> scheduleLikeByScheduleIds = scheduleLikeRepository.findLikeByScheduleIdsAndLikerId(scheduleIds, userId);
         scheduleLikeRepository.deleteAll(scheduleLikeByScheduleIds);
     }
 

@@ -1,7 +1,9 @@
 package com.weshare.api.v1.service.like;
 
-import com.weshare.api.v1.controller.like.dto.CreateLikeDto;
-import com.weshare.api.v1.controller.like.dto.DeleteLikeDto;
+import com.weshare.api.v1.controller.like.dto.*;
+import com.weshare.api.v1.domain.schedule.comment.Comment;
+import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundException;
+import com.weshare.api.v1.domain.schedule.like.CommentLike;
 import com.weshare.api.v1.domain.schedule.like.ScheduleLike;
 import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.schedule.like.exception.LikeNotFoundException;
@@ -9,6 +11,7 @@ import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.event.schedule.ScheduleLikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUnlikedEvent;
+import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.like.CommentLikeRepository;
 import com.weshare.api.v1.repository.like.ScheduleLikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
@@ -28,6 +31,7 @@ public class LikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final ScheduleLikeRepository scheduleLikeRepository;
     private final ScheduleRepository scheduleRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public Slice<FindAllScheduleLikeDto> findAllScheduleLike(Long scheduleId, Pageable pageable) {
@@ -39,49 +43,80 @@ public class LikeService {
     private FindAllScheduleLikeDto getScheduleLikeDto(ScheduleLike scheduleLike) {
         return new FindAllScheduleLikeDto(
                 scheduleLike.getId(),
-                scheduleLike.getUser().getName(),
+                scheduleLike.getLiker().getName(),
                 scheduleLike.getCreatedDate());
     }
 
-    public CreateLikeResponse saveScheduleLike(CreateLikeDto createLikeDto) {
-        final Schedule findSchedule = scheduleRepository.findById(createLikeDto.scheduleId())
+    public CreateScheduleLikeResponse saveScheduleLike(CreateScheduleLikeDto createScheduleLikeDto) {
+        final Schedule findSchedule = scheduleRepository.findById(createScheduleLikeDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
 
-        scheduleLikeRepository.findLikeByUser(createLikeDto.liker())
+        scheduleLikeRepository.findByLikerAndScheduleId(createScheduleLikeDto.liker(), findSchedule.getId())
                 .ifPresent((like -> {
                     throw new DuplicateLikeException();}));
 
-        final ScheduleLike scheduleLike = createLike(createLikeDto, findSchedule.getId());
-        ScheduleLike savedScheduleLike = scheduleLikeRepository.save(scheduleLike);
+        final ScheduleLike scheduleLike = createScheduleLike(createScheduleLikeDto, findSchedule.getId());
+        scheduleLikeRepository.save(scheduleLike);
         eventPublisher.publishEvent(new ScheduleLikedEvent(findSchedule.getId()));
-        return getCreateLikeResponse(savedScheduleLike);
+        return getCreateScheduleLikeResponse(scheduleLike);
     }
 
-    private CreateLikeResponse getCreateLikeResponse(ScheduleLike savedScheduleLike) {
-        return new CreateLikeResponse(
-                savedScheduleLike.getId(),
-                savedScheduleLike.getUser().getName(),
-                savedScheduleLike.getCreatedDate());
+    private CreateScheduleLikeResponse getCreateScheduleLikeResponse(ScheduleLike scheduleLike) {
+        return new CreateScheduleLikeResponse(
+                scheduleLike.getScheduleId(),
+                scheduleLike.getId(),
+                scheduleLike.getLiker().getName(),
+                scheduleLike.getCreatedDate());
     }
 
-    private ScheduleLike createLike(CreateLikeDto createLikeDto, Long scheduleId) {
+    private ScheduleLike createScheduleLike(CreateScheduleLikeDto createScheduleLikeDto, Long scheduleId) {
         return ScheduleLike.builder()
-                .user(createLikeDto.liker())
+                .liker(createScheduleLikeDto.liker())
                 .scheduleId(scheduleId)
                 .build();
     }
 
-    public void deleteScheduleLike(DeleteLikeDto deleteLikeDto) {
-        final ScheduleLike scheduleLike = scheduleLikeRepository.findById(deleteLikeDto.likeId())
+    public void deleteScheduleLike(DeleteScheduleLikeDto deleteScheduleLikeDto) {
+        final ScheduleLike scheduleLike = scheduleLikeRepository.findById(deleteScheduleLikeDto.likeId())
                 .orElseThrow(LikeNotFoundException::new);
 
-        if (!scheduleLike.isSameLiker(deleteLikeDto.liker())) {
+        if (!scheduleLike.isSameLiker(deleteScheduleLikeDto.liker().getId())) {
             throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
         }
-        if (!scheduleLike.isSameScheduleId(deleteLikeDto.scheduleId())) {
+        if (!scheduleLike.isSameScheduleId(deleteScheduleLikeDto.scheduleId())) {
             throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
         }
         scheduleLikeRepository.delete(scheduleLike);
         eventPublisher.publishEvent(new ScheduleUnlikedEvent(scheduleLike.getId()));
+    }
+
+    public CreateCommentLikeResponse saveCommentLike(CreateCommentLikeDto createCommentLikeDto) {
+        Comment comment = commentRepository.findById(createCommentLikeDto.commentId())
+                .orElseThrow(CommentNotFoundException::new);
+
+        commentLikeRepository.findByLikerAndCommentId(createCommentLikeDto.liker(), comment.getId())
+                .ifPresent((like -> {
+                    throw new DuplicateLikeException();}));
+
+        CommentLike commentLike = createCommentLike(createCommentLikeDto, comment);
+        commentLikeRepository.save(commentLike);
+
+        return getCreateCommentLikeResponse(commentLike);
+    }
+
+    private CommentLike createCommentLike(CreateCommentLikeDto createCommentLikeDto, Comment comment) {
+        return CommentLike.builder()
+                .commentId(createCommentLikeDto.commentId())
+                .liker(createCommentLikeDto.liker())
+                .build();
+    }
+
+    private CreateCommentLikeResponse getCreateCommentLikeResponse(CommentLike commentLike) {
+        return new CreateCommentLikeResponse(
+                commentLike.getCommentId(),
+                commentLike.getId(),
+                commentLike.getLiker().getName(),
+                commentLike.getCreatedDate()
+        );
     }
 }
