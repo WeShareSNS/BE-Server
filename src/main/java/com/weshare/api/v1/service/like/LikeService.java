@@ -7,9 +7,13 @@ import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.schedule.like.exception.LikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
+import com.weshare.api.v1.event.schedule.ScheduleLikedEvent;
+import com.weshare.api.v1.event.schedule.ScheduleUnlikedEvent;
+import com.weshare.api.v1.repository.like.CommentLikeRepository;
 import com.weshare.api.v1.repository.like.ScheduleLikeRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -19,12 +23,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class LikeService {
-    private final ScheduleLikeRepository likeRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
+    private final CommentLikeRepository commentLikeRepository;
+    private final ScheduleLikeRepository scheduleLikeRepository;
     private final ScheduleRepository scheduleRepository;
 
     @Transactional(readOnly = true)
     public Slice<FindAllScheduleLikeDto> findAllScheduleLike(Long scheduleId, Pageable pageable) {
-        final Slice<ScheduleLike> allLikeBySchedule = likeRepository.findAllLikeBySchedule(scheduleId, pageable);
+        final Slice<ScheduleLike> allLikeBySchedule = scheduleLikeRepository.findAllLikeBySchedule(scheduleId, pageable);
 
         return allLikeBySchedule.map(this::getScheduleLikeDto);
     }
@@ -40,12 +47,13 @@ public class LikeService {
         final Schedule findSchedule = scheduleRepository.findById(createLikeDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
 
-        likeRepository.findLikeByUser(createLikeDto.liker())
+        scheduleLikeRepository.findLikeByUser(createLikeDto.liker())
                 .ifPresent((like -> {
                     throw new DuplicateLikeException();}));
 
         final ScheduleLike scheduleLike = createLike(createLikeDto, findSchedule.getId());
-        ScheduleLike savedScheduleLike = likeRepository.save(scheduleLike);
+        ScheduleLike savedScheduleLike = scheduleLikeRepository.save(scheduleLike);
+        eventPublisher.publishEvent(new ScheduleLikedEvent(findSchedule.getId()));
         return getCreateLikeResponse(savedScheduleLike);
     }
 
@@ -64,7 +72,7 @@ public class LikeService {
     }
 
     public void deleteScheduleLike(DeleteLikeDto deleteLikeDto) {
-        final ScheduleLike scheduleLike = likeRepository.findById(deleteLikeDto.likeId())
+        final ScheduleLike scheduleLike = scheduleLikeRepository.findById(deleteLikeDto.likeId())
                 .orElseThrow(LikeNotFoundException::new);
 
         if (!scheduleLike.isSameLiker(deleteLikeDto.liker())) {
@@ -73,7 +81,7 @@ public class LikeService {
         if (!scheduleLike.isSameScheduleId(deleteLikeDto.scheduleId())) {
             throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
         }
-
-        likeRepository.delete(scheduleLike);
+        scheduleLikeRepository.delete(scheduleLike);
+        eventPublisher.publishEvent(new ScheduleUnlikedEvent(scheduleLike.getId()));
     }
 }

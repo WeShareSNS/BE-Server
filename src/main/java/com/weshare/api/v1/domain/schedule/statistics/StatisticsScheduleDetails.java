@@ -59,4 +59,15 @@ public class StatisticsScheduleDetails extends BaseTimeEntity {
         }
         totalCommentCount -= deletedCount;
     }
+
+    public void incrementTotalLikeCount() {
+        this.totalLikeCount += 1;
+    }
+
+    public void decrementTotalLikeCount() {
+        if (totalCommentCount - 1 <= 0) {
+            throw new IllegalStateException("총 카운트 수는 음수일 수 없습니다.");
+        }
+        totalCommentCount -= 1;
+    }
 }
