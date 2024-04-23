@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
-@Profile("init")
+@Profile("local")
 @Component
 @RequiredArgsConstructor
 public class InitStatisticsScheduleDetails {

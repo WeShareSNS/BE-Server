@@ -1,4 +1,4 @@
-package com.weshare.api.v1.service.comment;
+package com.weshare.api.v1.controller.comment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Schema(description = "특정 여행일정의 사용자 댓글 응답")
-public record FindAllCommentDto(
+public record FindAllChildCommentResponse(
         @Schema(title = "사용자가 등록한 댓글 id", description = "사용자가 등록한 댓글 id를 응답한다.")
         Long commentId,
         @Schema(title = "댓글을 남긴 사용자 이름", description = "댓글을 남긴 사용자의 이름을 응답한다.")
@@ -18,9 +18,9 @@ public record FindAllCommentDto(
         @Schema(title = "사용자가 댓글을 작성한 시간", description = "사용자가 댓글을 작성한 시간을 응답한다.")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm a", timezone = "Asia/Seoul", locale = "en_US")
         LocalDateTime createdDate,
-        long totalChildCount
+        boolean isCommenter
 ) {
-    public FindAllCommentDto {
+    public FindAllChildCommentResponse {
         Objects.requireNonNull(commentId);
         Objects.requireNonNull(createdDate);
         if (!StringUtils.hasText(commenterName)) {

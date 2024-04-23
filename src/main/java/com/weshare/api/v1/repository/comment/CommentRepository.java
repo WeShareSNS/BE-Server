@@ -18,6 +18,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             """)
     Slice<Comment> findAllByScheduleId(Long scheduleId, Pageable pageable);
 
+    @Query(value = """
+            select c from Comment c
+                 join fetch c.commenter 
+                     where c.scheduleId = :scheduleId and c.parentComment.id = :parentId 
+            """)
+    Slice<Comment> findChildAllByScheduleIdAndParentId(Long scheduleId, Long parentId, Pageable pageable);
+
     @Query("""
                 select c from Comment c
                 where c.scheduleId in :scheduleIds or c.commenter.id = :commenterId

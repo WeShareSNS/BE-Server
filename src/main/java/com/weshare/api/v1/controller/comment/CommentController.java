@@ -5,7 +5,7 @@ import com.weshare.api.v1.controller.comment.dto.*;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.service.comment.CommentService;
 import com.weshare.api.v1.controller.comment.dto.CreateParentCommentResponse;
-import com.weshare.api.v1.service.comment.FindAllCommentDto;
+import com.weshare.api.v1.controller.comment.dto.FindAllParentCommentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -76,12 +76,49 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "댓글 조회에 성공했습니다."),
     })
     @GetMapping("/{scheduleId}/comments")
-    public Slice<FindAllCommentDto> findAllScheduleComment(
+    public Slice<FindAllParentCommentResponse> findAllScheduleParentComment(
+            @AuthenticationPrincipal User user,
             @PathVariable Long scheduleId,
             @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return commentService.findAllScheduleComment(scheduleId, pageable);
+        return commentService.findAllScheduleParentComment(createFindAllParentCommentDto(user, scheduleId, pageable));
     }
+    private FindAllParentCommentDto createFindAllParentCommentDto(User user, Long scheduleId, Pageable pageable) {
+        return new FindAllParentCommentDto(
+                user == null ? null : user.getId(),
+                scheduleId,
+                pageable
+        );
+    }
+
+    @Operation(summary = "여행일정 대 댓글 조회 API", description = "사용자는 특정 여행일정에 대 댓글을 조회할 수 있다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "댓글 조회에 성공했습니다."),
+    })
+    @GetMapping("/{scheduleId}/comments/{parentCommentId}")
+    public Slice<FindAllChildCommentResponse> findAllScheduleChildComment(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long scheduleId,
+            @PathVariable Long parentCommentId,
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return commentService.findAllScheduleChildComment(createFindAllChildCommentDto(user, scheduleId, parentCommentId, pageable));
+    }
+
+    private FindAllChildCommentDto createFindAllChildCommentDto(
+            User user,
+            Long scheduleId,
+            Long parentCommentId,
+            Pageable pageable
+    ) {
+        return new FindAllChildCommentDto(
+                user == null ? null : user.getId(),
+                scheduleId,
+                parentCommentId,
+                pageable
+        );
+    }
+
 
     @Operation(security = {@SecurityRequirement(name = "bearer-key")},
             summary = "여행일정 댓글 수정 API", description = "사용자는 특정 여행일정에 달린 댓글을 수정할 수 있다.")

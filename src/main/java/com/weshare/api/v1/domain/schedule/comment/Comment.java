@@ -59,8 +59,8 @@ public class Comment extends BaseTimeEntity implements ScheduleIdProvider {
         this.content = content;
     }
 
-    public boolean isSameCommenter(User commenter) {
-        return this.commenter.equals(commenter);
+    public boolean isSameCommenter(Long commenterId) {
+        return this.commenter.isSameId(commenterId);
     }
 
     public boolean isSameScheduleId(Long scheduleId) {

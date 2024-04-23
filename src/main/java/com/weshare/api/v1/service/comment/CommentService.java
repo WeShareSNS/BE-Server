@@ -113,14 +113,14 @@ public class CommentService {
 
 
     @Transactional(readOnly = true)
-    public Slice<FindAllCommentDto> findAllScheduleComment(Long scheduleId, Pageable pageable) {
-        Slice<Comment> comments = commentRepository.findAllByScheduleId(scheduleId, pageable);
+    public Slice<FindAllParentCommentResponse> findAllScheduleParentComment(FindAllParentCommentDto parentCommentDto) {
+        Slice<Comment> comments = commentRepository.findAllByScheduleId(parentCommentDto.scheduleId(), parentCommentDto.pageable());
         final List<Long> commentIds = getCommentIds(comments.getContent());
 
         final List<StatisticsParentCommentTotalCount> totalCountByIds = commentTotalCountRepository.findTotalCountByParentCommentIdIn(commentIds);
         final Map<Long, Long> totalCountMap = getChildTotalCountMap(totalCountByIds);
 
-        return comments.map(c -> createFindAllComment(c, totalCountMap));
+        return comments.map(c -> createFindAllComment(c, totalCountMap, parentCommentDto.userId()));
     }
 
     private Map<Long, Long> getChildTotalCountMap(List<StatisticsParentCommentTotalCount> totalCountByIds) {
@@ -136,15 +136,34 @@ public class CommentService {
                 .toList();
     }
 
-    private FindAllCommentDto createFindAllComment(Comment comment, Map<Long, Long> totalCountMap) {
+    private FindAllParentCommentResponse createFindAllComment(Comment comment, Map<Long, Long> totalCountMap, Long userId) {
         final Long parentCommentId = comment.getId();
 
-        return new FindAllCommentDto(
+        return new FindAllParentCommentResponse(
                 parentCommentId,
                 comment.getCommenter().getName(),
                 comment.getContent(),
                 comment.getCreatedDate(),
-                totalCountMap.getOrDefault(parentCommentId, 0L)
+                totalCountMap.getOrDefault(parentCommentId, 0L),
+                comment.isSameCommenter(userId)
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<FindAllChildCommentResponse> findAllScheduleChildComment(FindAllChildCommentDto parentCommentDto) {
+        Slice<Comment> comments = commentRepository.findChildAllByScheduleIdAndParentId(
+                parentCommentDto.scheduleId(), parentCommentDto.parentCommentId(), parentCommentDto.pageable());
+
+        return comments.map(c -> createFindAllChildComment(c, parentCommentDto.userId()));
+    }
+
+    private FindAllChildCommentResponse createFindAllChildComment(Comment comment, Long commenterId) {
+        return new FindAllChildCommentResponse(
+                comment.getId(),
+                comment.getCommenter().getName(),
+                comment.getContent(),
+                comment.getCreatedDate(),
+                comment.isSameCommenter(commenterId)
         );
     }
 
@@ -160,7 +179,7 @@ public class CommentService {
         if (!comment.isSameScheduleId(scheduleId)) {
             throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
         }
-        if (!comment.isSameCommenter(commenter)) {
+        if (!comment.isSameCommenter(commenter.getId())) {
             throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
         }
     }
