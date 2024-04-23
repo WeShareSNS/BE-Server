@@ -1,6 +1,9 @@
 package com.weshare.api.v1.event.schedule.statistics;
 
 public class StatisticsScheduleNotFound extends RuntimeException{
+    public StatisticsScheduleNotFound() {
+    }
+
     public StatisticsScheduleNotFound(String message) {
         super(message);
     }

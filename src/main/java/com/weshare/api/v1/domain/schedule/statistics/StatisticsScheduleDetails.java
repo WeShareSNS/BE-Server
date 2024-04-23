@@ -42,8 +42,8 @@ public class StatisticsScheduleDetails extends BaseTimeEntity {
         this.totalExpense = totalExpense;
     }
 
-    public void updateScheduleTotalExpense(Long totalExpense) {
-        if (totalExpense == null) {
+    public void updateScheduleTotalExpense(long totalExpense) {
+        if (totalExpense == 0) {
             throw new IllegalStateException("통계테이블에 업데이트할 총 금액이 존재하지 않습니다.");
         }
         this.totalExpense = totalExpense;
@@ -51,5 +51,12 @@ public class StatisticsScheduleDetails extends BaseTimeEntity {
 
     public void incrementTotalCommentCount() {
         this.totalCommentCount += 1;
+    }
+
+    public void decrementTotalCount(int deletedCount) {
+        if (totalCommentCount - deletedCount <= 0) {
+            throw new IllegalStateException("총 카운트 수는 음수일 수 없습니다.");
+        }
+        totalCommentCount -= deletedCount;
     }
 }

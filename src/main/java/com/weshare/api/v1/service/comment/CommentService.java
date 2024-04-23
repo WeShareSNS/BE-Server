@@ -8,17 +8,20 @@ import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsParentCommentTotalCount;
 import com.weshare.api.v1.domain.user.User;
 import com.weshare.api.v1.event.schedule.CommentCreatedEvent;
+import com.weshare.api.v1.event.schedule.CommentDeletedEvent;
 import com.weshare.api.v1.repository.comment.CommentRepository;
 import com.weshare.api.v1.repository.comment.CommentTotalCountRepository;
 import com.weshare.api.v1.repository.schedule.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +45,7 @@ public class CommentService {
         final Comment comment = createParentComment(createParentCommentDto, findSchedule.getId());
         commentRepository.save(comment);
 
-        CommentCreatedEvent commentCreatedEvent = new CommentCreatedEvent(findSchedule.getId(), null);
-        eventPublisher.publishEvent(commentCreatedEvent);
+        eventPublisher.publishEvent(new CommentCreatedEvent(findSchedule.getId(), null));
         return createParentCommentResponse(comment);
     }
 
@@ -168,6 +170,53 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
 
         validateUserAndScheduleId(comment, deleteCommentDto.scheduleId(), deleteCommentDto.commenter());
+        Slice<Comment> parentComments = commentRepository.findByParentComment(comment, PageRequest.of(0, 3));
+
+        int deletedCount = 0;
+        if (!parentComments.isEmpty()) {
+            deletedCount = deleteChildComments(parentComments, comment);
+        }
+
         commentRepository.delete(comment);
+        publishDeletedEvent(deletedCount + 1, comment);
+    }
+
+    private int deleteChildComments(Slice<Comment> parentComments, Comment comment) {
+        final List<Long> deleteCommentIds = new ArrayList<>();
+        addAllDeleteCommentIds(parentComments, deleteCommentIds);
+
+        while (parentComments.hasNext()) {
+            Pageable pageRequest = parentComments.nextPageable();
+            parentComments = commentRepository.findByParentComment(comment, pageRequest);
+            addAllDeleteCommentIds(parentComments, deleteCommentIds);
+        }
+
+        List<Comment> deleteComments = commentRepository.findCommentByIdIn(deleteCommentIds);
+        commentRepository.deleteAll(deleteComments);
+
+        return deleteComments.size();
+    }
+
+    private void addAllDeleteCommentIds(Slice<Comment> parentComments, List<Long> deleteCommentIds) {
+        deleteCommentIds.addAll(parentComments.getContent()
+                .stream()
+                .map(Comment::getId)
+                .toList());
+    }
+
+    private void publishDeletedEvent(int deletedCount, Comment comment) {
+        if (deletedCount > 1) {
+            eventPublisher.publishEvent(new CommentDeletedEvent(
+                    comment.getScheduleId(), comment.getId(), null, deletedCount));
+            return;
+        }
+        eventPublisher.publishEvent(new CommentDeletedEvent(
+                comment.getScheduleId(), comment.getId(), getCommentParentId(comment), deletedCount));
+    }
+
+    private Long getCommentParentId(Comment comment) {
+        return comment.getParentComment()
+                .map(Comment::getId)
+                .orElse(null);
     }
 }

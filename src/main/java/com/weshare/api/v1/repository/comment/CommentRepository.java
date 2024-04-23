@@ -29,5 +29,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             """)
     List<Comment> findCommentByScheduleIds(List<Long> scheduleIds);
 
+    Slice<Comment> findByParentComment(Comment parentComment, Pageable pageable);
+
+    List<Comment> findCommentByIdIn(List<Long> commentIds);
+
     void deleteByScheduleId(Long scheduleId);
 }
