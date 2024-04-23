@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "comment_like")
+@Table(name = "comment_like", indexes = {
+        @Index(name = "idx_comment_liker", columnList = "comment_id, liker_id")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentLike extends BaseTimeEntity {
     @Id

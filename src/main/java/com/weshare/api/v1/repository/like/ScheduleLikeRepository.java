@@ -33,5 +33,5 @@ public interface ScheduleLikeRepository extends JpaRepository<ScheduleLike, Long
 
     void deleteByScheduleId(Long scheduleId);
 
-    Optional<Object> findByLikerAndScheduleId(User liker, Long id);
+    Optional<Object> findByScheduleIdAndLiker(Long scheduleId, User liker);
 }

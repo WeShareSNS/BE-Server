@@ -51,7 +51,7 @@ public class LikeService {
         final Schedule findSchedule = scheduleRepository.findById(createScheduleLikeDto.scheduleId())
                 .orElseThrow(ScheduleNotFoundException::new);
 
-        scheduleLikeRepository.findByLikerAndScheduleId(createScheduleLikeDto.liker(), findSchedule.getId())
+        scheduleLikeRepository.findByScheduleIdAndLiker(findSchedule.getId(), createScheduleLikeDto.liker())
                 .ifPresent((like -> {
                     throw new DuplicateLikeException();}));
 
@@ -94,9 +94,10 @@ public class LikeService {
         Comment comment = commentRepository.findById(createCommentLikeDto.commentId())
                 .orElseThrow(CommentNotFoundException::new);
 
-        commentLikeRepository.findByLikerAndCommentId(createCommentLikeDto.liker(), comment.getId())
+        commentLikeRepository.findByCommentIdAndLiker(comment.getId(), createCommentLikeDto.liker())
                 .ifPresent((like -> {
-                    throw new DuplicateLikeException();}));
+                    throw new DuplicateLikeException();
+                }));
 
         CommentLike commentLike = createCommentLike(createCommentLikeDto, comment);
         commentLikeRepository.save(commentLike);

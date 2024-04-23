@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "schedule_like")
+@Table(name = "schedule_like", indexes = {
+        @Index(name = "idx_schedule_liker", columnList = "schedule_id, liker_id")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ScheduleLike extends BaseTimeEntity implements ScheduleIdProvider {
     @Id
