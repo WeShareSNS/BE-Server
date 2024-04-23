@@ -69,7 +69,8 @@ class CommentServiceTest extends ScheduleTestSupport {
         CreateParentCommentResponse lastComment = commentService.saveScheduleParentComment(createParentCommentDto);
         PageRequest pageRequest = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "createdDate"));
         // when
-        Slice<FindAllParentCommentResponse> allScheduleCommentSlice = commentService.findAllScheduleParentComment(schedule.getId(), pageRequest);
+        FindAllParentCommentDto findAllParentCommentDto = new FindAllParentCommentDto(user.getId(), schedule.getId(), pageRequest);
+        Slice<FindAllParentCommentResponse> allScheduleCommentSlice = commentService.findAllScheduleParentComment(findAllParentCommentDto);
         // then
         List<FindAllParentCommentResponse> allScheduleComment = allScheduleCommentSlice.getContent();
         assertThat(allScheduleComment).hasSize(1)
@@ -98,7 +99,8 @@ class CommentServiceTest extends ScheduleTestSupport {
         commentService.deleteScheduleComment(deleteCommentDto);
         // then
         PageRequest pageRequest = PageRequest.of(0, 1);
-        List<FindAllParentCommentResponse> allScheduleComment = commentService.findAllScheduleParentComment(schedule.getId(),pageRequest).getContent();
+        FindAllParentCommentDto findAllParentCommentDto = new FindAllParentCommentDto(user.getId(), schedule.getId(), pageRequest);
+        List<FindAllParentCommentResponse> allScheduleComment = commentService.findAllScheduleParentComment(findAllParentCommentDto).getContent();
         assertThat(allScheduleComment).isEmpty();
     }
 
@@ -116,7 +118,8 @@ class CommentServiceTest extends ScheduleTestSupport {
         commentService.updateComment(updateCommentDto);
         // then
         PageRequest pageRequest = PageRequest.of(0, 1);
-        List<FindAllParentCommentResponse> allScheduleComment = commentService.findAllScheduleParentComment(schedule.getId(),pageRequest).getContent();
+        FindAllParentCommentDto findAllParentCommentDto = new FindAllParentCommentDto(user.getId(), schedule.getId(), pageRequest);
+        List<FindAllParentCommentResponse> allScheduleComment = commentService.findAllScheduleParentComment(findAllParentCommentDto).getContent();
         assertThat(allScheduleComment).hasSize(1)
                 .extracting("commentId", "commenterName", "content", "createdDate")
                 .containsExactly(

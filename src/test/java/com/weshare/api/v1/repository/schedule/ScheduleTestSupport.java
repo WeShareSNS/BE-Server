@@ -94,7 +94,7 @@ public abstract class ScheduleTestSupport {
         Schedule schedule = entityManager.find(Schedule.class, scheduleId);
         User user = entityManager.find(User.class, userId);
         ScheduleLike scheduleLike = ScheduleLike.builder()
-                .user(user)
+                .liker(user)
                 .scheduleId(schedule.getId())
                 .build();
         entityManager.persist(scheduleLike);
