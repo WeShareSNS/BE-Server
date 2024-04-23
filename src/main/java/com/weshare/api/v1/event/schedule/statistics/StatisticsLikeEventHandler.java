@@ -3,6 +3,7 @@ package com.weshare.api.v1.event.schedule.statistics;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsCommentTotalCount;
 import com.weshare.api.v1.domain.schedule.statistics.StatisticsScheduleDetails;
 import com.weshare.api.v1.event.schedule.CommentLikedEvent;
+import com.weshare.api.v1.event.schedule.CommentUnlikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleLikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUnlikedEvent;
 import com.weshare.api.v1.repository.like.CommentLikeTotalCountRepository;
@@ -55,4 +56,14 @@ public class StatisticsLikeEventHandler {
         commentLikeTotalCountRepository.save(statisticsCommentTotalCount);
     }
 
+    @EventListener
+    @Transactional
+    @Async
+    public void decrementCommentLikeTotalCount(CommentUnlikedEvent unlikedEvent) {
+        final Long commentId = unlikedEvent.commentId();
+        final StatisticsCommentTotalCount statisticsCommentTotalCount = commentLikeTotalCountRepository.findByCommentId(commentId)
+                .orElseThrow(StatisticsCommentTotalCountNotFound::new);
+
+        statisticsCommentTotalCount.decrementTotalCount();
+    }
 }

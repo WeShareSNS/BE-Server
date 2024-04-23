@@ -30,4 +30,12 @@ public class CommentLike extends BaseTimeEntity {
         this.liker = liker;
         this.commentId = commentId;
     }
+
+    public boolean isSameLiker(Long likerId) {
+        return this.liker.isSameId(likerId);
+    }
+
+    public boolean isSameCommentId(Long commentId) {
+        return this.commentId.equals(commentId);
+    }
 }

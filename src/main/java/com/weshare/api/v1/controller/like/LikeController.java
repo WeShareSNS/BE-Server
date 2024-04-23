@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +52,7 @@ public class LikeController {
         final CreateScheduleLikeDto createScheduleLikeDto = new CreateScheduleLikeDto(scheduleId, liker);
         CreateScheduleLikeResponse createScheduleLikeResponse = likeService.saveScheduleLike(createScheduleLikeDto);
 
-        return response.success(createScheduleLikeResponse);
+        return response.success(createScheduleLikeResponse, "여행 일정 좋아요 등록 성공", HttpStatus.CREATED);
     }
 
     @Operation(security = {@SecurityRequirement(name = "bearer-key")},
@@ -62,9 +63,11 @@ public class LikeController {
             @ApiResponse(responseCode = "404", description = "취소할 좋아요가 없습니다."),
     })
     @DeleteMapping("/schedules/{scheduleId}/likes/{likeId}")
-    public void deleteScheduleLike(@PathVariable Long scheduleId,
-                                   @PathVariable Long likeId,
-                                   @AuthenticationPrincipal User liker) {
+    public void deleteScheduleLike(
+            @PathVariable Long scheduleId,
+            @PathVariable Long likeId,
+            @AuthenticationPrincipal User liker
+    ) {
         final DeleteScheduleLikeDto deleteScheduleLikeDto = new DeleteScheduleLikeDto(scheduleId, likeId, liker);
         likeService.deleteScheduleLike(deleteScheduleLikeDto);
     }
@@ -74,7 +77,7 @@ public class LikeController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "좋아요 등록에 성공했습니다."),
             @ApiResponse(responseCode = "400", description = "요청이 올바르지 않습니다."),
-            @ApiResponse(responseCode = "404", description = "해당하는 여행일정이 존재하지 않습니다."),
+            @ApiResponse(responseCode = "404", description = "해당하는 댓글이 존재하지 않습니다."),
             @ApiResponse(responseCode = "409", description = "이미 좋아요를 등록한 사용자 입니다.")
     })
     @PostMapping("/comments/{commentId}/likes")
@@ -85,6 +88,23 @@ public class LikeController {
         final CreateCommentLikeDto createCommentLikeDto = new CreateCommentLikeDto(commentId, liker);
         CreateCommentLikeResponse createScheduleLikeResponse = likeService.saveCommentLike(createCommentLikeDto);
 
-        return response.success(createScheduleLikeResponse);
+        return response.success(createScheduleLikeResponse,"댓글 좋아요 등록 성공", HttpStatus.CREATED);
+    }
+
+    @Operation(security = {@SecurityRequirement(name = "bearer-key")},
+            summary = "댓글 좋아요 삭제 API", description = "사용자는 댓글에 등록했던 좋아요를 삭제할 수 있다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "좋아요 삭제에 성공했습니다."),
+            @ApiResponse(responseCode = "400", description = "해당하는 댓글 혹은 사용자가 올바르지 않습니다."),
+            @ApiResponse(responseCode = "404", description = "취소할 좋아요가 없습니다."),
+    })
+    @DeleteMapping("/comments/{commentId}/likes/{likeId}")
+    public void deleteCommentLike(
+            @PathVariable Long commentId,
+            @PathVariable Long likeId,
+            @AuthenticationPrincipal User liker
+    ) {
+        DeleteCommentLikeDto deleteCommentLikeDto = new DeleteCommentLikeDto(commentId, likeId, liker);
+        likeService.deleteCommentLike(deleteCommentLikeDto);
     }
 }

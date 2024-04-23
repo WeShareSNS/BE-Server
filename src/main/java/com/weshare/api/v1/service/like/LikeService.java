@@ -5,11 +5,13 @@ import com.weshare.api.v1.domain.schedule.comment.Comment;
 import com.weshare.api.v1.domain.schedule.comment.exception.CommentNotFoundException;
 import com.weshare.api.v1.domain.schedule.like.CommentLike;
 import com.weshare.api.v1.domain.schedule.like.ScheduleLike;
+import com.weshare.api.v1.domain.schedule.like.exception.CommentLikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.like.exception.DuplicateLikeException;
 import com.weshare.api.v1.domain.schedule.like.exception.ScheduleLikeNotFoundException;
 import com.weshare.api.v1.domain.schedule.Schedule;
 import com.weshare.api.v1.domain.schedule.exception.ScheduleNotFoundException;
 import com.weshare.api.v1.event.schedule.CommentLikedEvent;
+import com.weshare.api.v1.event.schedule.CommentUnlikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleLikedEvent;
 import com.weshare.api.v1.event.schedule.ScheduleUnlikedEvent;
 import com.weshare.api.v1.repository.comment.CommentRepository;
@@ -121,5 +123,20 @@ public class LikeService {
                 commentLike.getLiker().getName(),
                 commentLike.getCreatedDate()
         );
+    }
+
+    public void deleteCommentLike(DeleteCommentLikeDto deleteCommentLikeDto) {
+        final CommentLike commentLike = commentLikeRepository.findById(deleteCommentLikeDto.likeId())
+                .orElseThrow(CommentLikeNotFoundException::new);
+
+        if (!commentLike.isSameLiker(deleteCommentLikeDto.liker().getId())) {
+            throw new IllegalArgumentException("사용자가 올바르지 않습니다.");
+        }
+        if (!commentLike.isSameCommentId(deleteCommentLikeDto.commentId())) {
+            throw new IllegalArgumentException("여행일정이 올바르지 않습니다.");
+        }
+
+        commentLikeRepository.delete(commentLike);
+        eventPublisher.publishEvent(new CommentUnlikedEvent(commentLike.getCommentId()));
     }
 }
