@@ -191,10 +191,8 @@ public class CommentService {
             addAllDeleteCommentIds(parentComments, deleteCommentIds);
         }
 
-        List<Comment> deleteComments = commentRepository.findCommentByIdIn(deleteCommentIds);
-        commentRepository.deleteAll(deleteComments);
-
-        return deleteComments.size();
+        commentRepository.deleteAllByIds(deleteCommentIds);
+        return deleteCommentIds.size();
     }
 
     private void addAllDeleteCommentIds(Slice<Comment> parentComments, List<Long> deleteCommentIds) {

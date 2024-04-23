@@ -4,6 +4,7 @@ import com.weshare.api.v1.domain.schedule.comment.Comment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -31,7 +32,12 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Slice<Comment> findByParentComment(Comment parentComment, Pageable pageable);
 
-    List<Comment> findCommentByIdIn(List<Long> commentIds);
-
     void deleteByScheduleId(Long scheduleId);
+
+    @Modifying
+    @Query("""
+            delete from Comment c 
+            where c.id in :commentIds
+            """)
+    void deleteAllByIds(List<Long> commentIds);
 }
