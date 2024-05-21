@@ -1,4 +1,4 @@
-![image](https://github.com/WeShareSNS/be-server/assets/110734817/ed62d2d3-abfc-410d-b811-26b375ac0536)# We Share: 국내 여행지를 공유하는 커뮤니티
+# We Share: 국내 여행지를 공유하는 커뮤니티
 사용자들이 여행한 국내 여행지를 소개해주는 커뮤니티 서비스 입니다.
 <img width="500px" alt="메인 페이지" src="https://github.com/WeShareSNS/be-server/assets/110734817/8d8f65c0-e929-440c-a502-0ba1be4cf911"> | <img width="500px" alt="여행 일정 작성 페이지" src="https://github.com/WeShareSNS/be-server/assets/110734817/4cc92ab5-99c4-498d-8563-d0131e5624e5"> 
 | :---: | :---: |
