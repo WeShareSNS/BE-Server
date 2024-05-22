@@ -19,5 +19,5 @@
 단일 서버 환경에서 사용자의 request 로그를 기록하기 위해 서블릿 필터를 활용해서 로그를 기록했습니다.
 ![image](https://github.com/WeShareSNS/be-server/assets/110734817/7bb54446-e9db-42c0-bc14-55dec2160799)
 
-### API Reference
-![image](https://github.com/WeShareSNS/be-server/assets/110734817/0a0cbb15-8bfc-4866-8b58-ecd89ddffd9e)
+### Swagger API 문서 관리
+<img width="700px" alt="메인 페이지" src="https://github.com/WeShareSNS/be-server/assets/110734817/0a0cbb15-8bfc-4866-8b58-ecd89ddffd9e">
